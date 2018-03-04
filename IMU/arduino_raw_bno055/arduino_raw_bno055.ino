@@ -1,13 +1,14 @@
-    #include <Wire.h>
-    #include <Adafruit_Sensor.h>
-    #include <Adafruit_BNO055.h>
-    #include <utility/imumaths.h>
-      
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
+#define BNO055_SAMPLERATE_DELAY_MS (100)
+
     Adafruit_BNO055 bno = Adafruit_BNO055(55);
     
 void setup() {
   // put your setup code here, to run once:
-      Serial.begin(9600);
+      Serial.begin(115200);
       Serial.println("Orientation Sensor Test"); Serial.println("");
       
       /* Initialise the sensor */
@@ -34,6 +35,9 @@ void loop() {
       Serial.print("\tZ: ");
       Serial.print(linaccel.z(),4);
       Serial.println("");
+
+  delay(BNO055_SAMPLERATE_DELAY_MS);
+
 
 
 }
