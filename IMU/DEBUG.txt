@@ -1,0 +1,31 @@
+rlgrey:~/Documents/IMU/Adafruit_Python_BNO055$ python examples/simpletest.py 
+Traceback (most recent call last):
+  File "examples/simpletest.py", line 34, in <module>
+    bno = BNO055.BNO055(serial_port='/dev/ttyACM0', rst=18)
+  File "build/bdist.linux-x86_64/egg/Adafruit_BNO055/BNO055.py", line 223, in __init__
+  File "build/bdist.linux-x86_64/egg/Adafruit_GPIO/GPIO.py", line 426, in get_platform_gpio
+RuntimeError: Could not determine platform.
+nrw@earlgrey:~/Documents/IMU/Adafruit_Python
+
+
+
+/usr/local/lib/python2.7/dist-packages/setuptools-3.5.1-py2.7.egg
+
+copying build/lib.linux-x86_64-2.7/setuptools/depends.py -> build/bdist.linux-x86_64/egg/setuptools
+installing library code to build/bdist.linux-x86_64/egg
+
+running install_lib
+running build_py
+creating build
+creating build/lib.linux-x86_64-2.7
+copying pkg_resources.py -> build/lib.linux-x86_64-2.7
+copying easy_install.py -> build/lib.linux-x86_64-2.7
+creating build/lib.linux-x86_64-2.7/setuptools
+
+(venv) nrw@earlgrey:~/Documents/IMU/Adafruit_Python_BNO055$ sudo python ez_setup.py
+
+==============
+#
+==============
+Eh turns out I don't need webGL / python to calibrate. See:
+Arduino > Exampldes > Adafruit BNO055 > save_offsets.inoaaye
