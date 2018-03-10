@@ -15,6 +15,7 @@
    sensor in any data logs, etc.  To assign a unique ID, simply
    provide an appropriate value in the constructor below (12345
    is used by default in this example).
+
    History
    =======
    2015/MAR/03  - First release (KTOWN)
@@ -23,7 +24,7 @@
 
 /* Set the delay between fresh samples */
 //#define BNO055_SAMPLERATE_DELAY_MS (100)
-#define BNO055_SAMPLERATE_DELAY_MS (15)
+#define BNO055_SAMPLERATE_DELAY_MS (50)
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 float currTime  = 0;
@@ -248,11 +249,10 @@ void setup(void)
 
     delay(1000);
     if (foundCalib){
-        Serial.println("test");
-        Serial.println("afdMove sensor slightly to calibrate magnetometers");
+        Serial.println(":] Move sensor slightly to calibrate magnetometers");
         while (!bno.isFullyCalibrated())
         {
-            Serial.println("test");
+            Serial.println("");
             bno.getEvent(&event);
             displayCalStatus();
 
@@ -269,20 +269,6 @@ void setup(void)
 
 
     bno.setExtCrystalUse(true);
-
-    Serial.println("Keep still, averaging Z:");
-    Serial.println("--------------------------------");
-    delay(1000);
-    avgAccelZeroZ = 0;
-    for (i=0; i<= 100; i++){
-        imu::Vector<3> linaccel = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL); // !!!!
-        avgAccelZeroZ += linaccel.z();
-        delay(10);
-    }
-    avgAccelZeroZ = avgAccelZeroZ / 100;
-    Serial.println("averaged zero Z: ");
-    Serial.print(avgAccelZeroZ);
-    prevTime = millis();
 }
 
 /**************************************************************************/
@@ -301,9 +287,16 @@ void loop(void) {
     imu::Vector<3> grav = bno.getVector(Adafruit_BNO055::VECTOR_GRAVITY); // !!!!
     imu::Vector<3> linaccel = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL); // !!!!
 
+       Serial.print("gravX: ");
+       Serial.print(grav.x(), 4);
+       Serial.print("\tgravY: ");
+       Serial.print(grav.y(), 4);
+       Serial.print("\tgravZ: ");
+       Serial.print(grav.z(), 4);
+       Serial.println("");
 
-    temp = linaccel.z() - avgAccelZeroZ; 
-
+    //temp = linaccel.z() - avgAccelZeroZ; 
+/*
     if  (temp < 0.005) { az += 0; }
         else{az += temp;}
     if (i%5 == 0){
@@ -317,6 +310,7 @@ void loop(void) {
         z += vz * dt / 1000; // millimeters
         az = 0;
     }
+*/
 
     /* Display the floating point data */
     /*
@@ -332,10 +326,10 @@ void loop(void) {
      */
 
     /* Occassionally display the floating point data */
+/*
     i+=1;
     if (i%50 == 0) {
         i = 0;
-        // /*
         Serial.print("Z in mm: ");
         Serial.println(z,4);
         Serial.print("\taz m/s^2: ");
@@ -346,8 +340,8 @@ void loop(void) {
         Serial.println(vz,4);
         Serial.print("\tdt s: ");
         Serial.println(dt,4);
-        // */
     }
+*/
     //Serial.print("\tY: ");
     //Serial.print(linaccel.y(),4);
     //Serial.print("\tZ: ");
