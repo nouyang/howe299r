@@ -4,7 +4,7 @@
 #include <utility/imumaths.h>
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 
-    Adafruit_BNO055 bno = Adafruit_BNO055(55);
+Adafruit_BNO055 bno = Adafruit_BNO055(55);
     
 void setup() {
   // put your setup code here, to run once:
@@ -20,7 +20,6 @@ void setup() {
       }
       
       delay(1000);
-        
       bno.setExtCrystalUse(true);
 }
 
