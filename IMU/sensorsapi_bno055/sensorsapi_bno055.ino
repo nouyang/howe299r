@@ -27,18 +27,6 @@
 #define BNO055_SAMPLERATE_DELAY_MS (50)
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
-float currTime  = 0;
-float prevTime = 0;
-float dt = 0;
-float az = 0;
-float vz = 0;
-
-int i = 0;
-float z = 0;
-
-double avgAccelZeroZ = 0;
-double avgAccelZ = 0;
-double temp = 0;
 /**************************************************************************/
 /*
    Display the raw calibration offset and radius data
@@ -89,39 +77,6 @@ void displaySensorDetails(void)
     Serial.println("------------------------------------");
     Serial.println("");
     delay(500);
-}
-
-void displaySensorUnits(void)
-{
-
-
-    //
-
-    //https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/overview
-
-
-    //  // From doc notes, the units are:
-    // https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor?view=all
-    //    print('Temperature: {} degrees C'.format(sensor.temperature))
-    //    print('Accelerometer (m/s^2): {}'.format(sensor.accelerometer))
-    //    print('Magnetometer (microteslas): {}'.format(sensor.magnetometer))
-    //    print('Gyroscope (deg/sec): {}'.format(sensor.gyroscope))
-    //    print('Euler angle: {}'.format(sensor.euler))
-    //    print('Quaternion: {}'.format(sensor.quaternion))
-    //    print('Linear acceleration (m/s^2): {}'.format(sensor.linear_acceleration))
-    //    print('Gravity (m/s^2): {}'.format(sensor.gravity))
-    //
-    //
-    //    temperature - The sensor temperature in degrees Celsius.
-    //    accelerometer - This is a 3-tuple of X, Y, Z axis accelerometer values in meters per second squared.
-    //    magnetometer - This is a 3-tuple of X, Y, Z axis magnetometer values in microteslas.
-    //    gyroscope - This is a 3-tuple of X, Y, Z axis gyroscope values in degrees per second.
-    //    euler - This is a 3-tuple of orientation Euler angle values.
-    //    quaternion - This is a 4-tuple of orientation quaternion values.
-    //    linear_acceleration - This is a 3-tuple of X, Y, Z linear acceleration values (i.e. without effect of gravity) in meters per second squared.
-    //    gravity - This is a 3-tuple of X, Y, Z gravity acceleration values (i.e. without the effect of linear acceleration) in meters per second squared.
-    //
-    // https://learn.adafruit.com/bno055-absolute-orientation-sensor-with-raspberry-pi-and-beaglebone-black/webgl-example#sensor-calibration
 }
 
 /**************************************************************************/
@@ -285,75 +240,17 @@ void loop(void) {
     // bno.getEvent(&event);
     //https://github.com/adafruit/Adafruit_BNO055/blob/5565ed3497994fc74c18e9270ff74e205e8c839b/Adafruit_BNO055.cpp#L337
     imu::Vector<3> grav = bno.getVector(Adafruit_BNO055::VECTOR_GRAVITY); // !!!!
-    imu::Vector<3> linaccel = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL); // !!!!
+    //imu::Vector<3> linaccel = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL); // !!!!
 
-       Serial.print("gravX: ");
-       Serial.print(grav.x(), 4);
-       Serial.print("\tgravY: ");
-       Serial.print(grav.y(), 4);
-       Serial.print("\tgravZ: ");
-       Serial.print(grav.z(), 4);
-       Serial.println("");
-
-    //temp = linaccel.z() - avgAccelZeroZ; 
-/*
-    if  (temp < 0.005) { az += 0; }
-        else{az += temp;}
-    if (i%5 == 0){
-        avgAccelZ = az/5;
-
-        currTime = millis();
-        dt = (currTime - prevTime) / 1000.0; //seconds
-        prevTime = currTime;
-
-        vz += avgAccelZ * dt;
-        z += vz * dt / 1000; // millimeters
-        az = 0;
-    }
-*/
-
-    /* Display the floating point data */
-    /*
-       Serial.print("X: ");
-       Serial.print(linaccel.x(), 4);
-       Serial.print("\tY: ");
-       Serial.print(linaccel.y(), 4);
-       Serial.print("linaccel Z - avgAccelZeroZ: ");
-       Serial.print(az, 4);
-       Serial.print("\tgravZ: ");
-       Serial.print(grav.z(), 4);
-       Serial.println("");
-     */
-
-    /* Occassionally display the floating point data */
-/*
-    i+=1;
-    if (i%50 == 0) {
-        i = 0;
-        Serial.print("Z in mm: ");
-        Serial.println(z,4);
-        Serial.print("\taz m/s^2: ");
-        Serial.println(az,4);
-        Serial.print("\tAvg Accel Z m/s^2: ");
-        Serial.println(avgAccelZ,4);
-        Serial.print("\tvz m/s: ");
-        Serial.println(vz,4);
-        Serial.print("\tdt s: ");
-        Serial.println(dt,4);
-    }
-*/
-    //Serial.print("\tY: ");
-    //Serial.print(linaccel.y(),4);
-    //Serial.print("\tZ: ");
-
-    /* Optional: Display calibration status */
-    //displayCalStatus();
-
-    /* Optional: Display sensor status (debug only) */
-    //displaySensorStatus();
-
-    /* New line for the next sample */
-    //Serial.println("");
+    Serial.print("gravX, ");
+    Serial.print(grav.x(), 4);
+    Serial.print(";\tgravY, ");
+    Serial.print(grav.y(), 4);
+    Serial.print(";\tgravZ, ");
+    Serial.print(grav.z(), 4);
+    Serial.print(";");
+    displayCalStatus();
+    Serial.println(";");
 
     /* Wait the specified delay before requesting nex data */
     delay(BNO055_SAMPLERATE_DELAY_MS);
