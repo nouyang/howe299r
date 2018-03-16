@@ -29,3 +29,77 @@ creating build/lib.linux-x86_64-2.7/setuptools
 ==============
 Eh turns out I don't need webGL / python to calibrate. See:
 Arduino > Exampldes > Adafruit BNO055 > save_offsets.inoaaye
+
+==============
+# sensor types
+==============
+
+
+/*
+    typedef enum
+    {
+      SENSOR_TYPE_ACCELEROMETER         = (1),   /**< Gravity + linear acceleration */
+      SENSOR_TYPE_MAGNETIC_FIELD        = (2),
+      SENSOR_TYPE_ORIENTATION           = (3),
+      SENSOR_TYPE_GYROSCOPE             = (4),
+      SENSOR_TYPE_LIGHT                 = (5),
+      SENSOR_TYPE_PRESSURE              = (6),
+      SENSOR_TYPE_PROXIMITY             = (8),
+      SENSOR_TYPE_GRAVITY               = (9),
+      SENSOR_TYPE_LINEAR_ACCELERATION   = (10),  /**< Acceleration not including gravity */
+      SENSOR_TYPE_ROTATION_VECTOR       = (11),
+      SENSOR_TYPE_RELATIVE_HUMIDITY     = (12),
+      SENSOR_TYPE_AMBIENT_TEMPERATURE   = (13),
+      SENSOR_TYPE_VOLTAGE               = (15),
+      SENSOR_TYPE_CURRENT               = (16),
+      SENSOR_TYPE_COLOR                 = (17)
+    } sensors_type_t;
+*/
+
+'struct sensors_event_t' has no member named 'accelerometer'
+
+------->eh? only has orientation <--------------
+==============
+# URL 
+==============
+
+
+https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/arduino-code
+
+==============
+#  sensorapi example 
+==============
+
+  /* Get a new sensor event */ 
+  sensors_event_t event; 
+  bno.getEvent(&event);
+  
+  /* Display the floating point data */
+  Serial.print("X: ");
+  Serial.print(event.orientation.x, 4);
+
+==============
+#  raw sensor example
+==============
+
+If you don't want to use the Adafruit Unified Sensor system (for example if you want to access the raw accelerometer, magnetometer or gyroscope data directly before the sensor fusion algorithms process it), you can use the raw helper functions in the driver.
+
+
+imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
+
+Serial.print("X: ");
+Serial.print(euler.x());
+
+==============
+#  raw sensor types 
+==============
+
+Type can be:
+
+    VECTOR_MAGNETOMETER 
+    VECTOR_GYROSCOPE 
+    VECTOR_EULER  (degrees)
+    VECTOR_ACCELEROMETER
+    VECTOR_LINEARACCEL 
+    VECTOR_GRAVITY 
+

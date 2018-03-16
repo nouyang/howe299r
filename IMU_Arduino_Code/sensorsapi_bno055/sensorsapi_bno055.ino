@@ -39,7 +39,20 @@ void displaySensorOffsets(const adafruit_bno055_offsets_t &calibData)
     Serial.print(calibData.accel_offset_y); Serial.print(" ");
     Serial.print(calibData.accel_offset_z); Serial.print(" ");
 
-    Serial.print("\nGyro: ");
+    Serial.print("\nGyro: ");  sensors_event_t event; 
+  bno.getEvent(&event);
+  
+  /* Display the floating point data */
+  Serial.print("X: ");
+  Serial.print(event.orientation.x, 4);
+  Serial.print("\tY: ");
+  Serial.print(event.orientation.y, 4);
+  Serial.print("\tZ: ");
+  Serial.print(event.orientation.z, 4);
+  Serial.println("");
+  
+  delay(100);
+
     Serial.print(calibData.gyro_offset_x); Serial.print(" ");
     Serial.print(calibData.gyro_offset_y); Serial.print(" ");
     Serial.print(calibData.gyro_offset_z); Serial.print(" ");
@@ -205,6 +218,7 @@ void setup(void)
     delay(1000);
     if (foundCalib){
         Serial.println(":] Move sensor slightly to calibrate magnetometers");
+        Serial.println(":] Move sensor slightly to calibrate magnetometers");
         while (!bno.isFullyCalibrated())
         {
             Serial.println("");
@@ -232,6 +246,9 @@ void setup(void)
    should go here)
  */
 /**************************************************************************/
+
+
+
 void loop(void) {
 
 
@@ -239,6 +256,7 @@ void loop(void) {
     //sensors_event_t event;
     // bno.getEvent(&event);
     //https://github.com/adafruit/Adafruit_BNO055/blob/5565ed3497994fc74c18e9270ff74e205e8c839b/Adafruit_BNO055.cpp#L337
+/*
     imu::Vector<3> grav = bno.getVector(Adafruit_BNO055::VECTOR_GRAVITY); // !!!!
     //imu::Vector<3> linaccel = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL); // !!!!
 
@@ -252,6 +270,21 @@ void loop(void) {
     displayCalStatus();
     Serial.println(";");
 
-    /* Wait the specified delay before requesting nex data */
+*/
+  sensors_event_t event; 
+  bno.getEvent(&event);
+  
+  /* Display the floating point data */
+  Serial.print("X; ");
+  Serial.print(event.orientation.x, 4);
+  Serial.print("; Y; ");
+  Serial.print(event.orientation.y, 4);
+  Serial.print("; Z; ");
+  Serial.print(event.orientation.z, 4);
+  Serial.print("; ");
+  displayCalStatus();
+  Serial.println(";");
+
+  /* Wait the specified delay before requesting nex data */
     delay(BNO055_SAMPLERATE_DELAY_MS);
 }
