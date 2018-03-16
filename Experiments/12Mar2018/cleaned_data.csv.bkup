@@ -1,0 +1,218 @@
+0;
+gravX, 0.7000;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.7000;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+1;
+gravX, 0.7100;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6600;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+2;
+gravX, 0.6700;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6600;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+3;
+gravX, 0.6600;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6400;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+4;
+gravX, 0.7100;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6500;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+5;
+gravX, 0.6900;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6700;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+6;
+gravX, 0.6700;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6800;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+7;
+gravX, 0.7400;	gravY, -0.0200;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6700;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+8;
+gravX, 0.7400;	gravY, -0.0200;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6900;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+9;
+gravX, 0.7800;	gravY, -0.0200;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.7600;	gravY, -0.0200;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+10;
+gravX, 0.8500;	gravY, -0.0200;	gravZ, -9.7600;	Sys:3 G:3 A:3 M:3;
+gravX, 0.7300;	gravY, -0.0300;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+11;
+gravX, 0.8200;	gravY, -0.0200;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6800;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+12;
+gravX, 0.7700;	gravY, -0.0300;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6400;	gravY, -0.0300;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+13;
+zero gravX, 0.7500;	gravY, -0.0300;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6400;	gravY, -0.0300;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+14;
+gravX, 0.8000;	gravY, -0.0300;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6500;	gravY, -0.0300;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+15;
+gravX, 0.7300;	gravY, -0.0200;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:2;
+gravX, 0.5900;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:2;
+16;
+gravX, 0.8500;	gravY, -0.0100;	gravZ, -9.7600;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6500;	gravY, -0.0100;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+17;
+gravX, 0.8300;	gravY, -0.0200;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.6400;	gravY, -0.0100;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+18; 
+gravX, 0.7900;	gravY, -0.0100;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.5800;	gravY, -0.0100;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+19; 
+gravX, 0.7700;	gravY, -0.0100;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.5500;	gravY, -0.0100;	gravZ, -9.7900;	Sys:3 G:3 A:3 M:3;
+20 zero; 
+gravX, 0.7400;	gravY, -0.0100;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.4900;	gravY, -0.0100;	gravZ, -9.7900;	Sys:3 G:3 A:3 M:3;
+21 zero; 
+gravX, 0.7100;	gravY, -0.0100;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.4600;	gravY, 0.0000;	gravZ, -9.7900;	Sys:3 G:3 A:3 M:3;
+22 zero; 
+gravX, 0.7000;	gravY, -0.0100;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.4400;	gravY, 0.0000;	gravZ, -9.7900;	Sys:3 G:3 A:3 M:3;
+23 zero;
+gravX, 0.6800;	gravY, -0.0100;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.4300;	gravY, -0.0100;	gravZ, -9.7900;	Sys:3 G:3 A:3 M:3;
+24 zero;
+gravX, 0.7000;	gravY, -0.0100;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.4300;	gravY, -0.0100;	gravZ, -9.7900;	Sys:3 G:3 A:3 M:3;
+25 zero;
+gravX, 0.7100;	gravY, -0.0100;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.4700;	gravY, -0.0100;	gravZ, -9.7900;	Sys:3 G:3 A:3 M:3;
+26;
+gravX, 0.7300;	gravY, -0.0100;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.4500;	gravY, 0.0000;	gravZ, -9.7900;	Sys:3 G:3 A:3 M:3;
+27;
+gravX, 0.7300;	gravY, -0.0100;	gravZ, -9.7700;	Sys:3 G:3 A:3 M:3;
+gravX, 0.3600;	gravY, -0.0100;	gravZ, -9.7900;	Sys:3 G:3 A:3 M:3;
+28;
+gravX, 0.3600;	gravY, -0.0100;	gravZ, -9.7900;	Sys:3 G:3 A:3 M:3;
+gravX, 0.3600;	gravY, 0.0000;	gravZ, -9.7900;	Sys:2 G:3 A:3 M:3;
+29;
+gravX, 0.6800;	gravY, 0.0000;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.3900;	gravY, 0.0000;	gravZ, -9.7900;	Sys:3 G:3 A:3 M:3;
+30;
+gravX, 0.6300;	gravY, -0.0100;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.2800;	gravY, 0.0000;	gravZ, -9.8000;	Sys:3 G:3 A:3 M:3;
+31;
+gravX, 0.6400;	gravY, 0.0000;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.2200;	gravY, 0.0000;	gravZ, -9.8000;	Sys:3 G:3 A:3 M:3;
+32;
+gravX, 0.5900;	gravY, 0.0000;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.1700;	gravY, 0.0000;	gravZ, -9.8000;	Sys:3 G:3 A:3 M:3;
+33;
+gravX, 0.6300;	gravY, -0.0100;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.1700;	gravY, 0.0000;	gravZ, -9.8000;	Sys:3 G:3 A:3 M:3;
+34;
+gravX, 0.6000;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.1400;	gravY, -0.0100;	gravZ, -9.8000;	Sys:3 G:3 A:3 M:3;
+35;
+gravX, 0.6400;	gravY, -0.0100;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.2600;	gravY, -0.0100;	gravZ, -9.8000;	Sys:3 G:3 A:3 M:3;
+36;
+gravX, 0.6500;	gravY, 0.0000;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.2200;	gravY, 0.0000;	gravZ, -9.8000;	Sys:3 G:3 A:3 M:3;
+37;
+gravX, 0.5700;	gravY, -0.0200;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.1100;	gravY, -0.0200;	gravZ, -9.8000;	Sys:3 G:3 A:3 M:3;
+38;
+gravX, 0.6100;	gravY, -0.0300;	gravZ, -9.7800;	Sys:3 G:3 A:3 M:3;
+gravX, 0.0800;	gravY, -0.0200;	gravZ, -9.8000;	Sys:3 G:3 A:3 M:3;
+39;
+gravX, 0.5400;	gravY, -0.0300;	gravZ, -9.7900;	Sys:3 G:3 A:3 M:3;
+gravX, 0.0500;	gravY, -0.0300;	gravZ, -9.8000;	Sys:3 G:3 A:3 M:3;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
