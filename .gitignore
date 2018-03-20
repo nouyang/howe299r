@@ -105,3 +105,6 @@ ENV/
 
 # libreoffice
 .~lock.*
+
+# big files
+__bigfiles/
