@@ -11,7 +11,7 @@ file(GLOB SOURCE_FILES "src/*.cc")
 include_directories(AprilTags . /opt/local/include)
 add_library(apriltags ${SOURCE_FILES})
  
-find_package(OpenCV)
+find_package(OpenCV 2.4.9.1 EXACT REQUIRED) #EDIT NOUYANG
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(apriltags ${OpenCV_LIBS}) #-pg) #-fopenmp)
 pods_use_pkg_config_packages(apriltags eigen3)
