@@ -1,0 +1,15 @@
+ sudo apt install libvxl1-dev libfltk1.3-dev libxft-dev
+
+export MTHOME='/home/nrw/Documents/howe299r/__bigfiles/MicronTracker3'
+
+/home/nrw/Documents/howe299r/__bigfiles/MicronTracker3/bin/bin_x64
+
+
+===
+*** Error #1
+====
+Generally, the numbers after the .so are version numbers, and you'll often find that they are symlinks to each other, so if you have version 1.1 of libfoo.so, you'll have a real file libfoo.so.1.0, and symlinks foo.so and foo.so.1 pointing to the libfoo.so.1.0. And if you install version 1.1 without removing the other one, you'll have a libfoo.so.1.1, and libfoo.so.1 and libfoo.so will now point to the new one, but any code that requires that exact version can use the libfoo.so.1.0 file. Code that just relies on the version 1 API, but doesn't care if it's 1.0 or 1.1 will specify libfoo.so.1. As orip pointed out in the comments, this is explained well at http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html.
+
+nrw@earlgrey:~/Documents/howe299r/__bigfiles/MicronTracker3/bin/bin_x64$ ./mtsimpledemoc 
+./mtsimpledemoc: error while loading shared libraries: libvnl.so.1.14: cannot open shared object file: No such file or directory
+

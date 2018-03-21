@@ -1,0 +1,103 @@
+Quickstart
+
+# edit file
+cd ~/Documents/howe299r/apriltags 
+vi example/apriltags_demo.cpp
+
+# Compile
+cd ~/Documents/howe299r/apriltags
+make
+
+# Run file 
+cd ~/Documents/howe299r/apriltags/build/bin 
+./apriltags_demo
+
+====
+***
+====
+
+nrw@earlgrey:~/Documents/howe299r/__bigfiles/apriltags$ pkg-config --modversion opencv
+2.4.9.1
+
+https://answers.ros.org/question/277859/ros-kinetic-opencv3-and-apriltags-regression/
+
+
+-- Found OpenCV: /opt/ros/lunar (found version "3.3.1") 
+
+Delete ROS package 
+nrw@earlgrey:~/catkin_ws/src$ ls
+apriltags_ros
+
+
+nrw@earlgrey:~/catkin_ws$ rm -rf devel build
+nrw@earlgrey:~/catkin_ws$ catkin_make
+
+
+vi apriltags/CMakesLists.txt
+find_package(OpenCV)
+
+
+find_package(OpenCV REQUIRED PATHS "/usr/opencv-2.4.10")
+find_package(OpenCV REQUIRED PATHS "/usr/include/opencv")
+
+find_package(OpenCV 2.4.9.1 EXACT REQUIRED PATHS "/usr/include/opencv") #EDIT NOUYANG
+
+===
+
+
+
+
+https://people.csail.mit.edu/kaess/apriltags/
+
+udo apt-get install subversion cmake libopencv-dev libeigen3-dev libv4l-dev
+
+libopencv-dev is already the newest version (2.4.9.1+dfsg-1.5ubuntu1).
+
+===
+***
+===  
+9.23346 fps
+0 tags detected:
+0 tags detected:
+0 tags detected:
+0 tags detected:
+0 tags detected:
+0 tags detected:
+0 tags detected:
+0 tags detected:
+1 tags detected:
+OpenCV Error: Assertion failed (mtype == type0 || (((((mtype) & ((512 - 1) << 3)) >> 3) + 1) == 1 && ((1 << type0) & fixedDepthMask) != 0)) in create, file /tmp/binarydeb/ros-lunar-opencv3-3.3.1/modules/core/src/matrix.cpp, line 2542
+terminate called after throwing an instance of 'cv::Exception'
+  what():  /tmp/binarydeb/ros-lunar-opencv3-3.3.1/modules/core/src/matrix.cpp:2542: error: (-215) mtype == type0 || (((((mtype) & ((512 - 1) << 3)) >> 3) + 1) == 1 && ((1 << type0) & fixedDepthMask) != 0) in function create
+
+  Id: 15 (Hamming: 1)Aborted (core dumped)
+
+
+===
+***
+===
+
+http://wiki.tekkotsu.org/index.php/AprilTags#Running_the_TagTest_Demo
+
+MIT's C++ wrapper: http://people.csail.mit.edu/kaess/apriltags/
+Original code: https://april.eecs.umich.edu/media/apriltag/apriltag-2016-12-01.tgz 
+My "external" folder that builds the tar: https://github.com/HarvardAgileRoboticsLab/ContactData/tree/master/externals 
+===
+***
+===
+
+
+https://answers.ros.org/question/280018/apriltag_detector-node-crashes-after-viewing-an-apriltag-receive-opencv-error/?answer=280458
+
+====
+pman
+
+https://answers.ros.org/question/105881/has-anyone-used-april-tags-with-ros/
+
+Regretably, it only worked in Kinetic until a month ago. Since then it crashes. See my question about apriltags a month ago.
+Sietse gravatar imageSietse ( Jan 21 '18 )
+
+I cloned the repo last week in a colleagues computer and made it work with an Xtion Primesense on Friday, did no changes that I can remember. The computer runs an Ubuntu 16.04, Ros Kinetic distro and I can't remember now which version of Opencv, but I'd guess 3.0.
+dasanche gravatar imagedasanche ( Jan 21 '18 )
+
+The problem started with the upgrade of opencv 3.2 to (currently) 3.3.1. It is a problem in apriltags itself, not ros I think.
