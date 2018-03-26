@@ -20,6 +20,7 @@ using namespace std;
 #include <vector>
 #include <list>
 #include <sys/time.h>
+#include <iomanip>
 
 const string usage = "\n"
   "Usage:\n"
@@ -124,7 +125,7 @@ void wRo_to_euler(const Eigen::Matrix3d& wRo, double& yaw, double& pitch, double
 }
 
 
-class Demo {
+class Demo {  // TODO set constants up
 
   AprilTags::TagDetector* m_tagDetector;
   AprilTags::TagCodes m_tagCodes;
@@ -135,7 +136,7 @@ class Demo {
 
   int m_width; // image size in pixels
   int m_height;
-  double m_tagSize; // April tag side length in meters of square black frame
+  double m_tagSize; // April tag side length in meters of square black frame 
   double m_fx; // camera focal length in pixels
   double m_fy;
   double m_px; // camera principal point
@@ -167,11 +168,17 @@ public:
 
     m_width(640),
     m_height(480),
-    m_tagSize(0.166),
-    m_fx(600),
-    m_fy(600),
-    m_px(m_width/2),
-    m_py(m_height/2),
+    m_tagSize(0.00615), // in meters
+    m_fx(667), // in pixels
+    m_fy(666), //
+    m_px(344), // principal point
+    m_py(227),
+
+    //m_tagSize(0.166), // in meters
+    //m_fx(600), // in pixels
+    //m_fy(600), //
+    //m_px(m_width/2), // principal point
+    //m_py(m_height/2),
 
     m_exposure(-1),
     m_gain(-1),
@@ -369,13 +376,14 @@ public:
     double yaw, pitch, roll;
     wRo_to_euler(fixed_rot, yaw, pitch, roll);
 
-    cout << "  distance=" << translation.norm()
+
+    cout << "  distance=" << fixed << setprecision(3) << translation.norm()
          << "m, x=" << translation(0)
          << ", y=" << translation(1)
          << ", z=" << translation(2)
          << ", yaw=" << yaw
          << ", pitch=" << pitch
-         << ", roll=" << roll
+         << ", roll=" << roll << "\n"
          << endl;
 
     // Also note that for SLAM/multi-view application it is better to
@@ -404,7 +412,7 @@ public:
     }
 
     // print out each detection
-    cout << detections.size() << " tags detected:" << endl;
+    //cout << detections.size() << " tags detected:" << endl;
     for (int i=0; i<detections.size(); i++) {
       print_detection(detections[i]);
     }
@@ -478,7 +486,7 @@ public:
       frame++;
       if (frame % 10 == 0) {
         double t = tic();
-        cout << "  " << 10./(t-last_t) << " fps" << endl;
+        //cout << "  " << 10./(t-last_t) << " fps" << endl;
         last_t = t;
       }
 

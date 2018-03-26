@@ -101,3 +101,51 @@ I cloned the repo last week in a colleagues computer and made it work with an Xt
 dasanche gravatar imagedasanche ( Jan 21 '18 )
 
 The problem started with the upgrade of opencv 3.2 to (currently) 3.3.1. It is a problem in apriltags itself, not ros I think.
+
+
+
+===
+pip install opencv-python matplotlib numpy pyYAML
+https://github.com/smidm/video2calibration
+pip install opencv-python==3.4.0.12
+
+
+No module named yaml
+
+(venv) nrw@earlgrey:~/projects/video2calibration$ sudo pip uninstall pyyaml 
+(venv) nrw@earlgrey:~/projects/video2calibration$ sudo -H pip install pyyaml --upgrade
+
+ ./calibrate.py example_input/chessboard.avi calibration.yaml --debug-dir out
+
+
+(venv) nrw@earlgrey:~/Downloads$ g++ camera_calibration.cpp `pkg-config --libs --cflags opencv`
+(venv) nrw@earlgrey:~/Downloads$ ./a.out
+https://docs.opencv.org/2.4/doc/tutorials/calib3d/camera_calibration/camera_calibration.html
+
+https://docs.opencv.org/3.1.0/pattern.png
+
+===
+nrw@earlgrey:~/projects/video2calibration$ ./calibrate.py ~/Videos/Webcam/2018-03-26-112657.webm calibration.yaml --debug-dir out
+
+
+Performing calibration...
+RMS: 0.442700776066
+camera matrix:
+[[ 666.78668352    0.          343.73827809]
+ [   0.          665.79103853  227.19081685]
+ [   0.            0.            1.        ]]
+distortion coefficients:  [  6.06301194e-02  -1.94620209e-02   1.45555284e-04   1.24410189e-03
+  -2.51439333e-01]
+
+
+===
+nrw@earlgrey:~/projects/video2calibration$ ./calibrate.py ~/Videos/Webcam/2018-03-26-112832.webm calibration.yaml --debug-dir out
+
+Performing calibration...
+RMS: 0.563088171744
+camera matrix:
+[[ 655.09002363    0.          343.53267715]
+ [   0.          654.44454609  224.30590268]
+ [   0.            0.            1.        ]]
+distortion coefficients:  [ 0.04569011 -0.0324199   0.0012601   0.00065064 -0.24495153]
+
