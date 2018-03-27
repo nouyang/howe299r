@@ -1,5 +1,4 @@
-/**
- * @file april_tags.cpp
+/* @file april_tags.cpp
  * @brief Example application for April tags library
  * @author: Michael Kaess
  *
@@ -21,6 +20,7 @@ using namespace std;
 #include <list>
 #include <sys/time.h>
 #include <iomanip>
+#include <algorithm> //remove newline
 
 const string usage = "\n"
   "Usage:\n"
@@ -353,8 +353,8 @@ public:
   void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING 
     const int TIMESTEP = 10;
 
-    cout << "  Id: " << detection.id
-         << " (Hamming: " << detection.hammingDistance << ")";
+    cout << "Id:" << detection.id;
+         //<< "(Ham: " << detection.hammingDistance << ")";
 
     // recovering the relative pose of a tag:
 
@@ -377,14 +377,28 @@ public:
     wRo_to_euler(fixed_rot, yaw, pitch, roll);
 
 
-    cout << "  distance=" << fixed << setprecision(3) << translation.norm()
-         << "m, x=" << translation(0)
-         << ", y=" << translation(1)
-         << ", z=" << translation(2)
-         << ", yaw=" << yaw
-         << ", pitch=" << pitch
-         << ", roll=" << roll << "\n"
+    //cout << "  distance=" << fixed << setprecision(3) << translation.norm()
+         //<< "; x=" << translation(0)
+         //<< "; y=" << translation(1)
+         //<< "; z=" << translation(2)
+         //<< "; yaw=" << yaw
+         //<< "; pitch=" << pitch
+         //<< "; roll=" << roll << "\n"
+         //<< endl;
+
+    time_t now = time(0);
+    char* dt = ctime(&now); // get human readable current time
+    *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
+    cout << " [" << dt << "] distance,x,y,z,yaw,pitch,roll; " 
+         << fixed << setprecision(6) << translation.norm()
+         << "; " << translation(0)
+         << "; " << translation(1)
+         << "; " << translation(2)
+         << "; " << yaw
+         << "; " << pitch
+         << "; " << roll << "\n"
          << endl;
+
 
     // Also note that for SLAM/multi-view application it is better to
     // use reprojection error of corner points, because the noise in
