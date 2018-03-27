@@ -1,0 +1,6 @@
+I appear to have forgotten to take Apriltags data for 80, 90, and 100g (I have IMU data). on pos04
+
+I took an wrong datapoint on 50g on pos7 IMU.
+50;
+[2018-03-27 07:04:08]   Sys:3+-----------+XYZ; 357.0000; -0.3125; 176.8125;
+
