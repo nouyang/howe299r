@@ -109,6 +109,6 @@ ENV/
 # big files
 __bigfiles/*
 
-apriltags/pod-build/*
+apriltags/pod-build/
 *.swo
 *.swn
