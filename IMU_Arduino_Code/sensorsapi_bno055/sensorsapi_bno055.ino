@@ -43,7 +43,7 @@ void displaySensorOffsets(const adafruit_bno055_offsets_t &calibData)
   bno.getEvent(&event);
   
   /* Display the floating point data */
-  Serial.print("X: ");
+  Serial.print("XYZ: ");
   Serial.print(event.orientation.x, 4);
   Serial.print("\tY: ");
   Serial.print(event.orientation.y, 4);
@@ -275,14 +275,14 @@ void loop(void) {
   bno.getEvent(&event);
   
   /* Display the floating point data */
-  Serial.print("X; ");
-  Serial.print(event.orientation.x, 4);
-  Serial.print("; Y; ");
-  Serial.print(event.orientation.y, 4);
-  Serial.print("; Z; ");
-  Serial.print(event.orientation.z, 4);
-  Serial.print("; ");
   displayCalStatus();
+  Serial.print(";");
+  Serial.print("XYZ; ");
+  Serial.print(event.orientation.x, 4);
+  Serial.print("; ");
+  Serial.print(event.orientation.y, 4);
+  Serial.print("; ");
+  Serial.print(event.orientation.z, 4);
   Serial.println(";");
 
   /* Wait the specified delay before requesting nex data */

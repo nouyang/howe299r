@@ -168,7 +168,8 @@ public:
 
     m_width(640),
     m_height(480),
-    m_tagSize(0.00615), // in meters
+    //m_tagSize(0.00615), // in meters
+    m_tagSize(0.00944),
     m_fx(667), // in pixels
     m_fy(666), //
     m_px(344), // principal point
@@ -396,7 +397,7 @@ public:
          << "; " << translation(2)
          << "; " << yaw
          << "; " << pitch
-         << "; " << roll << "\n"
+         << "; " << roll << ";\n"
          << endl;
 
 
