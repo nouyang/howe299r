@@ -12,3 +12,6 @@ zz
 zt
 ctrl-u
 https://github.com/lambdalisue/jupyter-vim-binding/pull/21/files
+
+ git checkout -- apriltags/pod-build/
+ git update-index --assume-unchanged apriltags/pod-build/
