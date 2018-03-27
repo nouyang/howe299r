@@ -107,4 +107,8 @@ ENV/
 .~lock.*
 
 # big files
-__bigfiles/
+__bigfiles/*
+
+apriltags/pod-build/*
+*.swo
+*.swn
