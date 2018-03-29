@@ -67,6 +67,7 @@ x across length of finger
 z is up and down
 
 
+therefore, roll = x axis, pitch = y axis, yaw = z axis
     
     
 
