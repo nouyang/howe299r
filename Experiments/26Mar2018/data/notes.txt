@@ -4,3 +4,75 @@ I took an wrong datapoint on 50g on pos7 IMU.
 50;
 [2018-03-27 07:04:08]   Sys:3+-----------+XYZ; 357.0000; -0.3125; 176.8125;
 
+
+at the back of the finger: 1 cm ~70px
+near phone screen: 1 cm ~60px
+at the front edge of the finger: 1cm ~80px
+(tag is 9.44 mm; about 80 px -- so maybe 85 px per cM?)
+
+round down to 80 px per cm 
+
+=======      ====================.
+ {CL}  || --- || 15  12  9  6  3 ||
+ {AM}  || --- || 14  11  8  5  2 ||
+ {P }  || --- || 13  10  7  4  1 ||
+=======      ====================.
+
+
+  [[---]]
+||  WEB  ||
+||  CAM  ||
+  ||--- ||
+    
+
+dist from origin to first point (distX) = 2.6cm
+dist between points = 0.5 cm
+distance from center to side point (distY) = 0.3cm
+
+
+FORCES max
+position | grams
+1 = 80
+2 = 80
+3 = 80
+4 = 100
+7 = 120
+
+
+m
+
+APRIL TAG
+THIS IS MESSED UP -- because I kind of arbitrarily stuck the tag on in terms of orientation, it
+could be rotated...
+
+yaw is up/down (biggest magnitude)
+pitch is twist left/right
+roll is swing left/right (should be ~0)
+Units for orientation are radians
+
+
+dist is where force was applied, not how much IMU deflected !
+
+
+IMU
+orientation.y = yaw (biggest magnitude)
+orientation.x = pitch (2nd biggest, twist)
+orientation.z = roll (should be ~0)
+Units for orientation are degrees
+
+
+TRUE
+y across width of finger
+x across length of finger
+z is up and down
+
+
+    
+    
+
+pos 02 and 01
+    m_tagSize(0.00615),
+
+pos 03
+    m_tagSize(0.00944),
+

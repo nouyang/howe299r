@@ -17,8 +17,8 @@ pos 02 and 01
 pos 03
     m_tagSize(0.00944),
 
-ID 0 = pointer;
-ID 7 = finger;
+ID 7= pointer;
+ID 1 = finger;
 0 CALIB;
 
 MAX CALIB;
