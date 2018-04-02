@@ -309,7 +309,7 @@ public:
     // opening the device via OpenCV; confirmed to work with Logitech
     // C270; try exposure=20, gain=100, brightness=150
 
-    string video_str = "/dev/video0";
+    string video_str = "/dev/video1h i ";
     video_str[10] = '0' + m_deviceId;
     int device = v4l2_open(video_str.c_str(), O_RDWR | O_NONBLOCK);
 
@@ -378,7 +378,7 @@ public:
     wRo_to_euler(fixed_rot, yaw, pitch, roll);
 
 
-    //cout << "  distance=" << fixed << setprecision(3) << translation.norm()
+    //cout << "  distance=" << fixed << setprecision(3) << t,yranslation.norm()
          //<< "; x=" << translation(0)
          //<< "; y=" << translation(1)
          //<< "; z=" << translation(2)
@@ -506,7 +506,13 @@ public:
       }
 
       // exit if any key is pressed
-      if (cv::waitKey(1) >= 0) break;
+      //if (cv::waitKey(1) >= 0) break;
+      char k;
+      k = cv::waitKey(30);
+      if (k == 27) { //ASCII esc code
+          cout << k;
+      }
+/////
     }
   }
 
