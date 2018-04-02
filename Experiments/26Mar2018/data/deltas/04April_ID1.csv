@@ -1,0 +1,10 @@
+yaw,pitch,roll,force,dist x,dist y,dist z,Distance (#),notes
+-0.009729,0.004141,0.003289,10,4.1,3,0,4,yaw is up/down (z)
+-0.023484,-0.003495,0.002803,20,4.1,3,0,4,pitch is twist left/right
+-0.034414,-0.007306,-0.022718,30,4.1,3,0,4,roll is swing left/right
+-0.046538,0.001537,-0.005712,40,4.1,3,0,4,"dist is where force was applied, not how much IMU deflected"
+-0.062491,0.002461,-0.004973,50,4.1,3,0,4,
+-0.074352,-0.007376,-0.003522,60,4.1,3,0,4,Units for orientation are radians
+-0.092313,-0.01082,0.004304,70,4.1,3,0,4,
+,,,,,,,,force is in grams
+,,,,,,?? zero with respect to surface of finger,,distance is in cm
