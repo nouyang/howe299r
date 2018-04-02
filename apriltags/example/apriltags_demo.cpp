@@ -11,6 +11,10 @@
  * option to send tag detections via a serial port, for example when
  * running on a Raspberry Pi that is connected to an Arduino.
  */
+/*
+ * use q to close
+ * c to write data to ./example.txt
+ */
 
 using namespace std;
 
@@ -21,6 +25,8 @@ using namespace std;
 #include <sys/time.h>
 #include <iomanip>
 #include <algorithm> //remove newline
+#include <fstream>
+using namespace std;
 
 const string usage = "\n"
   "Usage:\n"
@@ -390,7 +396,7 @@ public:
     time_t now = time(0);
     char* dt = ctime(&now); // get human readable current time
     *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
-    cout << " [" << dt << "] distance,x,y,z,yaw,pitch,roll; " 
+    cout << " [" << dt << "] distance,x,y,z,yaw,pitch,roll; "  //nrw
          << fixed << setprecision(6) << translation.norm()
          << "; " << translation(0)
          << "; " << translation(1)
@@ -398,7 +404,26 @@ public:
          << "; " << yaw
          << "; " << pitch
          << "; " << roll << ";\n"
-         << endl;
+         << endl; //nrw
+
+    char k;
+      k = cv::waitKey(30); 
+      if (k == 'c') { //ASCII code for ESC is  27
+          cout << "wrote to file \n"; //nrw
+
+          ofstream myfile;
+          myfile.open ("data.txt", std::ios_base::app | std::ios_base::out); //open in append mode
+        myfile <<  " [" << dt << "] distance,x,y,z,yaw,pitch,roll; "  //nrw
+             << fixed << setprecision(6) << translation.norm()
+             << "; " << translation(0)
+             << "; " << translation(1)
+             << "; " << translation(2)
+             << "; " << yaw
+             << "; " << pitch
+             << "; " << roll << ";\n"
+             << endl; //nrw
+
+      }
 
 
     // Also note that for SLAM/multi-view application it is better to
@@ -507,12 +532,10 @@ public:
 
       // exit if any key is pressed
       //if (cv::waitKey(1) >= 0) break;
-      char k;
-      k = cv::waitKey(30);
-      if (k == 27) { //ASCII esc code
-          cout << k;
-      }
-/////
+      //char k;
+      //k = cv::waitKey(30); 
+      if (cv::waitKey(1) == 'q') break;
+      //}
     }
   }
 
@@ -521,13 +544,20 @@ public:
 
 // here is were everything begins
 int main(int argc, char* argv[]) {
+      ofstream myfile;
+      myfile.open ("data.txt", std::ios_base::app | std::ios_base::out); //open in append mode
+        time_t now = time(0);
+        char* dt = ctime(&now); // get human readable current time
+        *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
+      myfile << " [" << dt << "] BEGIN DATA COLLECTION ";  //nrw
+
+
   Demo demo;
 
   // process command line options
   demo.parseOptions(argc, argv);
 
   demo.setup();
-
   if (demo.isVideo()) {
     cout << "Processing video" << endl;
 
