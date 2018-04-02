@@ -27,6 +27,7 @@ using namespace std;
 #include <algorithm> //remove newline
 #include <fstream>
 using namespace std;
+int flag = 0;
 
 const string usage = "\n"
   "Usage:\n"
@@ -164,7 +165,7 @@ public:
 
   // default constructor
   Demo() :
-    // default settings, most can be modified through command line options (see below)
+    // default settiwgs, most can be modified through command line options (see below)
     m_tagDetector(NULL),
     m_tagCodes(AprilTags::tagCodes36h11),
 
@@ -357,7 +358,7 @@ public:
 
   }
 
-  void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING 
+void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING 
     const int TIMESTEP = 10;
 
     cout << "Id:" << detection.id;
@@ -407,21 +408,22 @@ public:
          << endl; //nrw
 
     char k;
-      k = cv::waitKey(30); 
-      if (k == 'c') { //ASCII code for ESC is  27
-          cout << "wrote to file \n"; //nrw
+    k = cv::waitKey(10); 
+    if (k == 'c') { //ASCII code for ESC is  27
+        cout << "wrote to file \n"; //nrw
 
-          ofstream myfile;
-          myfile.open ("data.txt", std::ios_base::app | std::ios_base::out); //open in append mode
+        ofstream myfile;
+        myfile.open ("data.txt", std::ios_base::app | std::ios_base::out); //open in append mode
         myfile <<  " [" << dt << "] distance,x,y,z,yaw,pitch,roll; "  //nrw
-             << fixed << setprecision(6) << translation.norm()
-             << "; " << translation(0)
-             << "; " << translation(1)
-             << "; " << translation(2)
-             << "; " << yaw
-             << "; " << pitch
-             << "; " << roll << ";\n"
-             << endl; //nrw
+            << fixed << setprecision(6) << translation.norm()
+            << "; " << translation(0)
+            << "; " << translation(1)
+            << "; " << translation(2)
+            << "; " << yaw
+            << "; " << pitch
+            << "; " << roll << ";\n"
+            << endl; //nrw
+        flag = 1;
 
       }
 
@@ -459,11 +461,11 @@ public:
 
     // show the current image including any detections
     if (m_draw) {
-      for (int i=0; i<detections.size(); i++) {
-        // also highlight in the image
-        detections[i].draw(image);
-      }
-      imshow(windowName, image); // OpenCV call
+        for (int i=0; i<detections.size(); i++) {
+            // also highlight in the image
+            detections[i].draw(image);
+        }
+        imshow(windowName, image); // OpenCV call
     }
 
     // optionally send tag information to serial port (e.g. to Arduino)
@@ -525,9 +527,9 @@ public:
       // print out the frame rate at which image frames are being processed
       frame++;
       if (frame % 10 == 0) {
-        double t = tic();
-        //cout << "  " << 10./(t-last_t) << " fps" << endl;
-        last_t = t;
+          double t = tic();
+          //cout << "  " << 10./(t-last_t) << " fps" << endl;
+          last_t = t;
       }
 
       // exit if any key is pressed
@@ -535,7 +537,17 @@ public:
       //char k;
       //k = cv::waitKey(30); 
       if (cv::waitKey(1) == 'q') break;
-      //}
+      if (flag == 1){
+          cout << "wrote to file \n"; //nrw
+          time_t now = time(0);
+          char* dt = ctime(&now); // get human readable current time
+          *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
+          std::string str(dt);
+          str += "_image.jpg";
+          imwrite( str, image );
+          flag = 0;
+      }
+
     }
   }
 
@@ -544,34 +556,34 @@ public:
 
 // here is were everything begins
 int main(int argc, char* argv[]) {
-      ofstream myfile;
-      myfile.open ("data.txt", std::ios_base::app | std::ios_base::out); //open in append mode
-        time_t now = time(0);
-        char* dt = ctime(&now); // get human readable current time
-        *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
-      myfile << " [" << dt << "] BEGIN DATA COLLECTION ";  //nrw
+    ofstream myfile;
+    myfile.open ("data.txt", std::ios_base::app | std::ios_base::out); //open in append mode
+    time_t now = time(0);
+    char* dt = ctime(&now); // get human readable current time
+    *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
+    myfile << " [" << dt << "] BEGIN DATA COLLECTION ";  //nrw
 
 
-  Demo demo;
+    Demo demo;
 
-  // process command line options
-  demo.parseOptions(argc, argv);
+    // process command line options
+    demo.parseOptions(argc, argv);
 
-  demo.setup();
-  if (demo.isVideo()) {
-    cout << "Processing video" << endl;
+    demo.setup();
+    if (demo.isVideo()) {
+        cout << "Processing video" << endl;
 
-    // setup image source, window for drawing, serial port...
-    demo.setupVideo();
+        // setup image source, window for drawing, serial port...
+        demo.setupVideo();
 
-    // the actual processing loop where tags are detected and visualized
-    demo.loop();
+        // the actual processing loop where tags are detected and visualized
+        demo.loop();
 
-  } else {
-    cout << "Processing image" << endl;
+    } else {
+        cout << "Processing image" << endl;
 
-    // process single image
-    demo.loadImages();
+        // process single image
+        demo.loadImages();
 
   }
 
