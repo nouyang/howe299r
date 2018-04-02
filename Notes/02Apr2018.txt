@@ -1,0 +1,81 @@
+j arduino
+sudo ./arduino
+j sensorsapi_bno055
+vi sensors  
+
+
+j example
+vi apriltags_demo.cpp
+./run.sh
+
+./build/bin/apriltags_demo
+
+
+j apriltags
+make clean
+make
+
+
+j python
+begin
+
+
+==
+sudo apt install inotify-toolsj
+
+====
+** $ watch -n 0.2 tail tailtest.txt
+===
+
+
+oooh
+
+ Also note that what a human considers a "modify" might not always work: this will catch an append for example, but it will not catch an editor such as vim (file watched is renamed or swapped with a backup), nor perl -i (in-place edit) which replaces the file with a new one. Once either of those happens, inotifywait will never return. Watching an inode and watching a filename aren't quite the same thing, so it depends on the use case
+
+https://unix.stackexchange.com/questions/166341/constantly-check-if-file-is-modified-bash
+
+
+tail -f "filename.txt"
+
+echo asdf >> tailtest.txt
+
+however, writing with vi does nothing.
+
+
+watch cat example.txt 
+however, my output will be more than one screen...
+
+
+===
+***
+===
+https://stackoverflow.com/questions/4706499/how-do-you-append-to-a-file#4706520
+
+===
+***
+===
+sudo apt install python3-serial
+https://askubuntu.com/questions/741943/problem-in-import-installing-python-modules-pyserial-in-ubuntu-15
+
+
+
+https://stackoverflow.com/questions/27858041/oserror-errno-13-permission-denied-dev-ttyacm0-using-pyserial-from-pyth#27886201
+
+02. Create a rule in /etc/udev/rules.d that will set the permissions of the device (a restart will be required):
+
+# navigate to rules.d directory
+cd /etc/udev/rules.d
+#create a new rule file
+sudo touch my-newrule.rules
+# open the file
+sudo vim my-newrule.rules
+# add the following
+KERNEL=="ttyACM0", MODE="0666"
+
+
+===
+***
+===
+
+this is some good serial code for checking which port is open
+https://stackoverflow.com/questions/20892133/storing-string-from-arduino-to-text-file-using-python
