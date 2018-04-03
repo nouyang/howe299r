@@ -1,0 +1,58 @@
+import os
+import serial
+import tty
+import time
+import tkinter as tk
+import threading
+
+# https://stackoverflow.com/questions/459083/how-do-you-run-your-own-code-alongside-tkinters-event-loop#459131
+class App(threading.Thread):
+
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.start()
+
+    def callback(self):
+        self.root.quit()
+
+    def run(self):
+        self.root = tk.Tk()
+        self.root.protocol("WM_DELETE_WINDOW", self.callback)
+        self.root.geometry('300x200')
+        text = tk.Text(self.root, background='black', foreground='white', font=('Comic Sans MS', 12))
+        text.pack()
+        self.root.bind('<KeyPress>', self.onKeyPress)
+        self.root.mainloop()
+
+    def onKeyPress(self, event):
+        print('Key pressed!')
+        outf.write(x)
+        outf.flush()
+        print('done writing')
+
+
+app = App()
+print('Now we can continue running code while mainloop runs!')
+
+baud  = 115200
+fname = 'accel_data.txt'
+fmode = 'ab'
+reps  = 100
+
+
+outf = open(fname,fmode)
+
+# https://stackoverflow.com/questions/17815686/detect-key-input-in-python
+if os.path.exists('/dev/ttyACM0'):
+    addr  = '/dev/ttyACM0'
+else:
+    addr  = '/dev/ttyACM1'
+
+print('using addr', addr)
+
+port = serial.Serial(addr,baud)
+while 1:
+    x = port.readline()
+    print(x)
+
+
