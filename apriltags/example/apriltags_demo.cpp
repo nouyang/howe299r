@@ -17,10 +17,6 @@
  * option to send tag detections via a serial port, for example when
  * running on a Raspberry Pi that is connected to an Arduino.
  */
-/*
- * use q to close
- * c to write data to ./example.txt
- */
 
 using namespace std;
 
@@ -34,6 +30,7 @@ using namespace std;
 #include <fstream>
 using namespace std;
 int flag = 0;
+std::string fname = "";
 
 const string usage = "\n"
   "Usage:\n"
@@ -407,7 +404,8 @@ void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING
     if (cv::waitKey(1) >= 0) {
         cout << "wrote to file \n"; //nrw
         ofstream myfile;
-        myfile.open ("data.txt", std::ios_base::app | std::ios_base::out); //open in append mode
+        
+        myfile.open (fname.c_str(), std::ios_base::app | std::ios_base::out); //open in append mode
         myfile <<  " [" << dt << "] distance,x,y,z,yaw,pitch,roll; "  //nrw
             << fixed << setprecision(6) << translation.norm()
             << "; " << translation(0)
@@ -535,9 +533,12 @@ void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING
           time_t now = time(0);
           char* dt = ctime(&now); // get human readable current time
           *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
-          std::string str(dt);
-          str += "_image.jpg";
-          imwrite( str, image );
+          std::string imageout = string(dt);
+          imageout +="_images.jpg";
+          //std::string astr = "images/";
+          //astr += string(dt);
+          //astr += "_image.jpg";
+          imwrite(imageout, image );
           flag = 0;
       }
     }
@@ -549,9 +550,13 @@ void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING
 // here is were everything begins
 int main(int argc, char* argv[]) {
     ofstream myfile;
-    myfile.open("data.txt", std::ios_base::app | std::ios_base::out); //open in append mode
+
     time_t now = time(0);
     char* dt = ctime(&now); // get human readable current time
+    *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
+    fname += string(dt);
+    fname += "_openCV.txt";
+    myfile.open(fname.c_str(), std::ios_base::app | std::ios_base::out); //open in append mode
     *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
     myfile << " [" << dt << "] BEGIN DATA COLLECTION ";  //This does not work anymore, not sure why //nrw
 

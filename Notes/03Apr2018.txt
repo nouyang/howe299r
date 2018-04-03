@@ -1,0 +1,12 @@
+~/Documents/howe299r/python
+begin
+python testserial2.py
+> accel_data.txt
+
+
+~/Documents/howe299r/apriltags/build/bin$ 
+./apriltags_demo
+> data.txt
+
+
+

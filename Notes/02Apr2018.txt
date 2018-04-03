@@ -73,9 +73,12 @@ sudo vim my-newrule.rules
 KERNEL=="ttyACM0", MODE="0666"
 
 
-===
-***
-===
 
 this is some good serial code for checking which port is open
 https://stackoverflow.com/questions/20892133/storing-string-from-arduino-to-text-file-using-python
+
+===
+**
+---
+Works with Python 3 on Linux as well. Much better than getch, because readchar allows printing to
+stdout while waiting for key (via threads or asyncio).

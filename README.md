@@ -15,3 +15,11 @@ https://github.com/lambdalisue/jupyter-vim-binding/pull/21/files
 
  git checkout -- apriltags/pod-build/
  git update-index --assume-unchanged apriltags/pod-build/
+
+ git rm -r --cached apriltags/pod-build/
+
+ git rm -r --cached apriltags/pod-build/
+
+Run this command: git rm -r --cached . (which removes everything from the git index in order to refresh your git repository)
+Then run this command: git add . (to add everything back to the repo)
+Finally, commit these changes using git commit -m ".gitignore Fixed" 
