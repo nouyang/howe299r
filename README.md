@@ -15,3 +15,10 @@ https://github.com/lambdalisue/jupyter-vim-binding/pull/21/files
 
  git checkout -- apriltags/pod-build/
  git update-index --assume-unchanged apriltags/pod-build/
+
+
+ :g!/^\s*Id:7/d
+ :g!/^\s*[20/d
+
+ pip install numpy sklearn pandas jupyter ipython matplotlib 
+
