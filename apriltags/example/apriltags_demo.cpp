@@ -1,3 +1,9 @@
+/* 03 April 2018
+ * Edited by nrw
+ * Additions: Press any key to simultaneously write data to file and capture image to file
+ * Maintains stream of data to terminal
+ * Ctrl-C must now be used to exit program
+ */
 /* @file april_tags.cpp
  * @brief Example application for April tags library
  * @author: Michael Kaess
@@ -384,16 +390,6 @@ void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING
     double yaw, pitch, roll;
     wRo_to_euler(fixed_rot, yaw, pitch, roll);
 
-
-    //cout << "  distance=" << fixed << setprecision(3) << t,yranslation.norm()
-         //<< "; x=" << translation(0)
-         //<< "; y=" << translation(1)
-         //<< "; z=" << translation(2)
-         //<< "; yaw=" << yaw
-         //<< "; pitch=" << pitch
-         //<< "; roll=" << roll << "\n"
-         //<< endl;
-
     time_t now = time(0);
     char* dt = ctime(&now); // get human readable current time
     *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
@@ -407,11 +403,9 @@ void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING
          << "; " << roll << ";\n"
          << endl; //nrw
 
-    char k;
-    k = cv::waitKey(10); 
-    if (k == 'c') { //ASCII code for ESC is  27
+    // Write time and data to file upon any keypress
+    if (cv::waitKey(1) >= 0) {
         cout << "wrote to file \n"; //nrw
-
         ofstream myfile;
         myfile.open ("data.txt", std::ios_base::app | std::ios_base::out); //open in append mode
         myfile <<  " [" << dt << "] distance,x,y,z,yaw,pitch,roll; "  //nrw
@@ -423,8 +417,7 @@ void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING
             << "; " << pitch
             << "; " << roll << ";\n"
             << endl; //nrw
-        flag = 1;
-
+        flag = 1; //send signal to write image as well
       }
 
 
@@ -532,11 +525,11 @@ void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING
           last_t = t;
       }
 
-      // exit if any key is pressed
+      // exit if any key is pressed -- DISABLED by above loop capturing any key
       //if (cv::waitKey(1) >= 0) break;
-      //char k;
-      //k = cv::waitKey(30); 
-      if (cv::waitKey(1) == 'q') break;
+      //if (cv::waitKey(1) == 'q') break;
+      
+      // Write image to file
       if (flag == 1){
           cout << "wrote to file \n"; //nrw
           time_t now = time(0);
@@ -547,7 +540,6 @@ void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING
           imwrite( str, image );
           flag = 0;
       }
-
     }
   }
 
@@ -557,12 +549,11 @@ void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING
 // here is were everything begins
 int main(int argc, char* argv[]) {
     ofstream myfile;
-    myfile.open ("data.txt", std::ios_base::app | std::ios_base::out); //open in append mode
+    myfile.open("data.txt", std::ios_base::app | std::ios_base::out); //open in append mode
     time_t now = time(0);
     char* dt = ctime(&now); // get human readable current time
     *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
-    myfile << " [" << dt << "] BEGIN DATA COLLECTION ";  //nrw
-
+    myfile << " [" << dt << "] BEGIN DATA COLLECTION ";  //This does not work anymore, not sure why //nrw
 
     Demo demo;
 

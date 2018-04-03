@@ -1,3 +1,8 @@
+# 03 April 2018 
+# Reads in (arduino) serial port line by line, printing out on terminal. 
+# Also opens tkinter window. Pressing any key in there writes the next serial line to a file
+# In the terminal, Ctrl-C twice will exit the program. 
+# Author: nrw
 import os
 import serial
 import tty
@@ -19,6 +24,8 @@ class App(threading.Thread):
         self.root = tk.Tk()
         self.root.protocol("WM_DELETE_WINDOW", self.callback)
         self.root.geometry('300x200')
+        label = tk.Label(self.root, text="Press any key to append to file")
+        label.pack()
         text = tk.Text(self.root, background='black', foreground='white', font=('Comic Sans MS', 12))
         text.pack()
         self.root.bind('<KeyPress>', self.onKeyPress)
