@@ -20,3 +20,24 @@ tac tmp.txt | sed "1,$n{d}" | tac > out.txt; cat out.txt > tmp.txt
 2. turn into delta files
 3. extract only the columns of data we want
 4. turn into 
+
+
+===
+data timesstamps
+lines | timestamp | position
+    42 2018-04-03 05:26:10_accel_data.txt | pos02
+    42 2018-04-03 05:37:59_accel_data.txt | pos01
+    42 2018-04-03 05:49:04_accel_data.txt | pos03
+    48 2018-04-03 05:58:52_accel_data.txt | pos04
+    55 2018-04-03 06:26:08_accel_data.txt | pos05
+    49 2018-04-03 06:52:51_accel_data.txt | pos06
+    60 2018-04-03 07:03:00_accel_data.txt | pos07
+    66 2018-04-03 07:14:56_accel_data.txt | pos08
+    66 2018-04-03 07:26:46_accel_data.txt | pos09
+    78 2018-04-03 07:48:55_accel_data.txt | pos10
+    84 2018-04-03 08:04:53_accel_data.txt | pos11
+    78 2018-04-03 08:18:09_accel_data.txt | pos12
+    90 2018-04-03 08:32:08_accel_data.txt | pos13
+    96 2018-04-03 08:52:40_accel_data.txt | pos14
+    90 2018-04-03 09:23:44_accel_data.txt | pos15
+
