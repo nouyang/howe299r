@@ -14,4 +14,9 @@ n=4
 tac tmp.txt | sed "1,$n{d}" | tac > out.txt; cat out.txt > tmp.txt
 
 
-
+===
+1. get text files
+1b. clean of accidental  duplicate data (pressed capture twice for same force value)
+2. turn into delta files
+3. extract only the columns of data we want
+4. turn into 

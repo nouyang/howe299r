@@ -1,0 +1,33 @@
+===========
+** 26 Mar 2018
+===========
+https://github.com/jpapon/apriltag2#preliminaryResults
+ROS and apriltag2
+
+
+Okayyy let's just calibrate the openCV setup. Although stereo seems a little more stable?
+
+I guess I could just write down the stereo readings... eh... or see how to spit it out?
+Would have physical moutning issues, though could just place on stool.
+
+
+> open CV calibration *using* aprilTag. how to calibrate apriltag itself?
+>https://stackoverflow.com/questions/13482797/what-is-the-purpose-of-calibrating-in-opencv
+
+
+Getting started with apritags
+> http://robocomp.readthedocs.io/en/latest/code-examples/apriltags/
+
+> April tags 2
+> https://april.eecs.umich.edu/media/pdfs/wang2016iros.pdf
+ The  ground truth was measured using a laser tape measure
+
+ With  decimation  by  a  factor  of  2,  the  new  detector  only
+ takes  0.072  microseconds  per  pixel,  or  about  22  ms  for
+ a  640  x  480  image.  The  detector  performance  is  good
+ enough  to  run  on  the  relatively  lower-powered  iPhone  and
+ similar smartphone processors, opening up new possibilities
+ in embedding AprilTags into small-scale applications
+
+
+http://support.logitech.com/en_us/product/webcam-c250/specs
