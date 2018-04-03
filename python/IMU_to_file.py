@@ -34,9 +34,14 @@ class App(threading.Thread):
 
     def onKeyPress(self, event):
         print('Key pressed!')
-        outf.write(x)
-        outf.flush()
-        print('done writing')
+        data = datetime.now().strftime('%Y-%m-%d %H:%M:%S').encode()
+        data += x 
+        try:
+            outf.write(data)
+            outf.flush()
+            print('done writing')
+        except IOError as ioex: 
+            print("I/O error({0}): {1}".format(ioex.errno, os.strerror(ioex.errno)))
 
 
 app = App()
