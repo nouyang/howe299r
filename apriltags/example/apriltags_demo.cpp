@@ -1,3 +1,9 @@
+/* 03 April 2018
+ * Edited by nrw
+ * Additions: Press any key to simultaneously write data to file and capture image to file
+ * Maintains stream of data to terminal
+ * Ctrl-C must now be used to exit program
+ */
 /* @file april_tags.cpp
  * @brief Example application for April tags library
  * @author: Michael Kaess
@@ -21,6 +27,10 @@ using namespace std;
 #include <sys/time.h>
 #include <iomanip>
 #include <algorithm> //remove newline
+#include <fstream>
+using namespace std;
+int flag = 0;
+std::string fname = "";
 
 const string usage = "\n"
   "Usage:\n"
@@ -158,7 +168,7 @@ public:
 
   // default constructor
   Demo() :
-    // default settings, most can be modified through command line options (see below)
+    // default settiwgs, most can be modified through command line options (see below)
     m_tagDetector(NULL),
     m_tagCodes(AprilTags::tagCodes36h11),
 
@@ -309,7 +319,7 @@ public:
     // opening the device via OpenCV; confirmed to work with Logitech
     // C270; try exposure=20, gain=100, brightness=150
 
-    string video_str = "/dev/video0";
+    string video_str = "/dev/video1h i ";
     video_str[10] = '0' + m_deviceId;
     int device = v4l2_open(video_str.c_str(), O_RDWR | O_NONBLOCK);
 
@@ -351,7 +361,7 @@ public:
 
   }
 
-  void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING 
+void print_detection(AprilTags::TagDetection& detection) const { //todo FAILING 
     const int TIMESTEP = 10;
 
     cout << "Id:" << detection.id;
@@ -377,20 +387,10 @@ public:
     double yaw, pitch, roll;
     wRo_to_euler(fixed_rot, yaw, pitch, roll);
 
-
-    //cout << "  distance=" << fixed << setprecision(3) << translation.norm()
-         //<< "; x=" << translation(0)
-         //<< "; y=" << translation(1)
-         //<< "; z=" << translation(2)
-         //<< "; yaw=" << yaw
-         //<< "; pitch=" << pitch
-         //<< "; roll=" << roll << "\n"
-         //<< endl;
-
     time_t now = time(0);
     char* dt = ctime(&now); // get human readable current time
     *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
-    cout << " [" << dt << "] distance,x,y,z,yaw,pitch,roll; " 
+    cout << " [" << dt << "] distance,x,y,z,yaw,pitch,roll; "  //nrw
          << fixed << setprecision(6) << translation.norm()
          << "; " << translation(0)
          << "; " << translation(1)
@@ -398,7 +398,25 @@ public:
          << "; " << yaw
          << "; " << pitch
          << "; " << roll << ";\n"
-         << endl;
+         << endl; //nrw
+
+    // Write time and data to file upon any keypress
+    if (cv::waitKey(1) >= 0) {
+        cout << "wrote to file \n"; //nrw
+        ofstream myfile;
+        
+        myfile.open (fname.c_str(), std::ios_base::app | std::ios_base::out); //open in append mode
+        myfile <<  " [" << dt << "] distance,x,y,z,yaw,pitch,roll; "  //nrw
+            << fixed << setprecision(6) << translation.norm()
+            << "; " << translation(0)
+            << "; " << translation(1)
+            << "; " << translation(2)
+            << "; " << yaw
+            << "; " << pitch
+            << "; " << roll << ";\n"
+            << endl; //nrw
+        flag = 1; //send signal to write image as well
+      }
 
 
     // Also note that for SLAM/multi-view application it is better to
@@ -434,11 +452,11 @@ public:
 
     // show the current image including any detections
     if (m_draw) {
-      for (int i=0; i<detections.size(); i++) {
-        // also highlight in the image
-        detections[i].draw(image);
-      }
-      imshow(windowName, image); // OpenCV call
+        for (int i=0; i<detections.size(); i++) {
+            // also highlight in the image
+            detections[i].draw(image);
+        }
+        imshow(windowName, image); // OpenCV call
     }
 
     // optionally send tag information to serial port (e.g. to Arduino)
@@ -500,13 +518,29 @@ public:
       // print out the frame rate at which image frames are being processed
       frame++;
       if (frame % 10 == 0) {
-        double t = tic();
-        //cout << "  " << 10./(t-last_t) << " fps" << endl;
-        last_t = t;
+          double t = tic();
+          //cout << "  " << 10./(t-last_t) << " fps" << endl;
+          last_t = t;
       }
 
-      // exit if any key is pressed
-      if (cv::waitKey(1) >= 0) break;
+      // exit if any key is pressed -- DISABLED by above loop capturing any key
+      //if (cv::waitKey(1) >= 0) break;
+      //if (cv::waitKey(1) == 'q') break;
+      
+      // Write image to file
+      if (flag == 1){
+          cout << "wrote to file \n"; //nrw
+          time_t now = time(0);
+          char* dt = ctime(&now); // get human readable current time
+          *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
+          std::string imageout = string(dt);
+          imageout +="_images.jpg";
+          //std::string astr = "images/";
+          //astr += string(dt);
+          //astr += "_image.jpg";
+          imwrite(imageout, image );
+          flag = 0;
+      }
     }
   }
 
@@ -515,27 +549,37 @@ public:
 
 // here is were everything begins
 int main(int argc, char* argv[]) {
-  Demo demo;
+    ofstream myfile;
 
-  // process command line options
-  demo.parseOptions(argc, argv);
+    time_t now = time(0);
+    char* dt = ctime(&now); // get human readable current time
+    *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
+    fname += string(dt);
+    fname += "_openCV.txt";
+    myfile.open(fname.c_str(), std::ios_base::app | std::ios_base::out); //open in append mode
+    *std::remove(dt, dt+strlen(dt), '\n') = '\0'; //remove newline
+    myfile << " [" << dt << "] BEGIN DATA COLLECTION ";  //This does not work anymore, not sure why //nrw
 
-  demo.setup();
+    Demo demo;
 
-  if (demo.isVideo()) {
-    cout << "Processing video" << endl;
+    // process command line options
+    demo.parseOptions(argc, argv);
 
-    // setup image source, window for drawing, serial port...
-    demo.setupVideo();
+    demo.setup();
+    if (demo.isVideo()) {
+        cout << "Processing video" << endl;
 
-    // the actual processing loop where tags are detected and visualized
-    demo.loop();
+        // setup image source, window for drawing, serial port...
+        demo.setupVideo();
 
-  } else {
-    cout << "Processing image" << endl;
+        // the actual processing loop where tags are detected and visualized
+        demo.loop();
 
-    // process single image
-    demo.loadImages();
+    } else {
+        cout << "Processing image" << endl;
+
+        // process single image
+        demo.loadImages();
 
   }
 

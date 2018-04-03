@@ -1,0 +1,17 @@
+~/Documents/howe299r/python
+begin
+python IMU_to_file.py
+> accel_data.txt
+watch -n 0.2 tail tailtest.txt
+
+
+
+~/Documents/howe299r/apriltags/build/bin$ 
+./apriltags_demo
+> data.txt
+
+n=4
+tac tmp.txt | sed "1,$n{d}" | tac > out.txt; cat out.txt > tmp.txt
+
+
+
