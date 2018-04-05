@@ -1,3 +1,4 @@
+NOTE THIS IS FAKE ZERO CALIBRATION, copied from next zero calib, as the original was malformed and did not have data) 2018-04-03 05:49:36	Sys:3 G:3 A:3 M:3;XYZ; 52.0000; 2.1250; 177.6250;
 2018-04-03 05:49:25	Sys:3 G:3 A:3 M:3;XYZ; 51.9375; 0.8750; 177.8125;
 2018-04-03 05:49:36	Sys:3 G:3 A:3 M:3;XYZ; 52.0000; 2.1250; 177.6250;
 2018-04-03 05:49:46	Sys:3 G:3 A:3 M:3;XYZ; 51.9375; 0.2500; 177.8125;
