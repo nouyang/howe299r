@@ -26,7 +26,7 @@ BigTorque = np.zeros((1,3))
 #### DECLARE CONSTANTS ####
 #===============================================
 listpos = range(15)
-#listpos = [2]
+listpos = [2]
 #listpos = range(1,3)
 xs = [4.6, 4.1, 3.5, 3.1, 2.6]#pos 1 x = 4.6 cm
 #ys = [0.4, 0.1, -0.2]

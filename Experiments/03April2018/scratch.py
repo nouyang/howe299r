@@ -1,3 +1,6 @@
+# This allows copying a python list or numpy array, as printed out to the terminal, and turning it
+# back into a numpy array
+# i.e. for debugging purposes
 import re
 import numpy as np
 
@@ -6,7 +9,6 @@ K = '''
 [  24.70393703  145.55461666   38.67206181]
 [   0.            0.            0.        ]] '''
 
-print ( float('145'))
 
 thetas = ''' 
  [[  0.      -1.4375   0.    ]
@@ -64,13 +66,6 @@ def print_to_list(astr):
     arr = np.array(alist,dtype=float).reshape(numtimes, -1)
     return arr
 
-# def pprint(astr,z):
-    # print(astr)
-    # print(z)
-
-# a = [1,2,3]
-# pprint('a', eval('a'))
-
 K = print_to_list(K)
 thetas= print_to_list(thetas)
 torques = print_to_list(torques)
@@ -81,7 +76,10 @@ print('K\n', K)
 print('torque est')
 torq_est = np.dot(K, thetas.T)
 #print(torq_est.shape)
-#print(torq_est.T)
+print(torq_est.T)
 #print(torq_est.T - torques)
 mse = ((torq_est.T - torques) ** 2).mean(axis=0)
-print('rmse', np.sqrt(mse))
+print('\nrmse', np.sqrt(mse))
+
+# rmse of torques: 100 g * cm rmse, with average of 3.5cm distance for x, results in about a 30 g
+# error in force estimate! 
