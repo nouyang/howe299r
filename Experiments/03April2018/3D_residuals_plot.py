@@ -1,5 +1,4 @@
 """
-,p#IMUDats = [ '%02dIMU.txt'% x for x in pos ]
 Created on Thu Apr 9 
 @author: nrw
 """
@@ -26,20 +25,14 @@ IMUCols = ['timeSysCal', 'XYZ','X', 'Y', 'Z']
 #===============================================
 #### DECLARE CONSTANTS ####
 #===============================================
-listpos = range(15)
-xs = [4.6, 4.1, 3.5, 3.1, 2.6] #pos 1, x coord = 4.6 cm
-ys = [0.4, 0.1, -0.2]
-posX = np.repeat(xs,3)
-posY = np.tile(ys, 5)
-posZ = np.array([0]*15)
 
 print('number of datapoints', BigTheta.shape)
 
 #### CALCULATE K ####
 print('\n======================')
-matK = np.linalg.lstsq(BigTorque, BigTheta, rcond=None)[0]
-print(matK.shape)
-print('numpy lstsq K coefficients (numpy lstsq):\n', matK)
+# matK = np.linalg.lstsq(BigTorque, BigTheta, rcond=None)[0]
+# print(matK.shape)
+# print('numpy lstsq K coefficients (numpy lstsq):\n', matK)
 
 #===============================================
 #### FIT TO ESTIMATE K ####
@@ -89,18 +82,27 @@ print('\n======================')
 #### PLOT ####
 #===============================================
 
-xplot = torq_est[:,1] 
+print(resid)
+print(resid.shape)
+xplot = torq_est.T[:,1]
+xplot2 = torq[:,1]
+print(xplot.shape)
 yplot = resid[:,1] 
+print(yplot.shape)
 
 trace0 = go.Scatter( x = xplot, y = yplot, mode = 'markers',
-    name = 'resid(tau_y)  vs est. tau_y, in g*cm (by IMU), using 3x3 K' )
+    name = 'y-axis torque estimated' )
+
+trace1 = go.Scatter( x = xplot2, y = yplot, mode = 'markers',
+    name = 'y-axis torque calculated from data' )
 # trace1 = go.Scatter( x = BigTheta[:,dim], y = torq, mode = 'markers',  name = torq_names[dim] + ' torque (from data), in g*cm (by IMU), using 3d K' ) 
-data = [trace0]
+# trace1 = go.Scatter( x = BigTheta[:,dim], y = torq, mode = 'markers',  name = torq_names[dim] + ' torque (from data), in g*cm (by IMU), using 3d K' ) 
+data = [trace0, trace1]
 
 layout = go.Layout(
-    title= 'resid plot',
-    yaxis=dict(title= 'resid of tau_y estimate (in grams cm)'),
-    xaxis=dict(title='tau_y est'),
+    title='Y-axis Torque: resid vs sklearn linreg estimate (with 3x3 K) (IMU data)',
+    yaxis=dict(title= 'resid (g cm)'),
+    xaxis=dict(title='torque (g cm)'),
     legend=dict(x=.1, y=0.8) )
 
 fig = go.Figure(data=data, layout=layout)
