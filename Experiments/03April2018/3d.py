@@ -25,12 +25,12 @@ BigTorque = np.zeros((1,3))
 #===============================================
 #### DECLARE CONSTANTS ####
 #===============================================
-listpos = range(1)
-#listpos = [12]
+listpos = range(15)
+#listpos = [2]
 #listpos = range(1,3)
 xs = [4.6, 4.1, 3.5, 3.1, 2.6]#pos 1 x = 4.6 cm
 #ys = [0.4, 0.1, -0.2]
-ys = [-0.4, 0.1, 0.2]
+ys = [0.4, 0.1, -0.2]
 posX = np.repeat(xs,3)
 posY = np.tile(ys, 5)
 posZ = np.array([0]*15)
@@ -45,6 +45,7 @@ for i in listpos:
     imuDat = pd.read_csv(path+fname, header=None,sep=';', 
                         names = IMUCols, skip_blank_lines=True, usecols=[0,1,2,3,4]) 
     imuDat = imuDat.drop(['timeSysCal', 'XYZ'], 1)
+    #print('dataframe stats')
     #print(imuDat.describe())
     #print(imuDat.head())
     bkgd = imuDat.iloc[0::2]  
@@ -73,6 +74,7 @@ for i in listpos:
     #print(forces)
 
     torques = np.cross(pos.reshape(-1,1).T, forces) #n.3
+    #torques = np.cross(forces, pos.reshape(-1,1).T) #n.3
     #print('3D torques:\n', torques)
     #print('3D deflections: \n', thetas)
     #torquesX, torquesY, torquesZ = torques[:,0] , torques[:,1], torques[:,2]
@@ -81,7 +83,7 @@ for i in listpos:
 
 BigTheta = BigTheta[1:,:] #remove first row of zeros, from init
 BigTorque = BigTorque[1:,:]
-print(BigTheta) #n.3
+print(BigTheta.shape) #n.3
 print(BigTorque) #n.3
 
 print('number of datapoints', BigTheta.shape)
@@ -114,12 +116,13 @@ myy = torq_1D
 regr = linear_model.LinearRegression()
 regr.fit(myX, myy)
 coef_ridge = regr.coef_
+K = regr.coef_
 #gridx = np.linspace(myX.min(), myX.max(), 20)
 #coef_ = regr.coef_ * gridx + regr.intercept_
 yPred= regr.predict(myX) 
 
 print('\n======================')
-print('K Coefficients: \n', regr.coef_)
+print('K Coefficients: \n', K)
 #print("Mean squared error: %.2f" % mean_squared_error(torq_1D, yPred)) 
 #print('Variance score (ideal 1): %.2f' % r2_score(thetaY))
 print('\n======================')
@@ -139,9 +142,9 @@ print('torques about y axis: Min', myy.min(), '; Max', myy.max(), 'grams * cm')
 
 
 trace0 = go.Scatter( x = BigTheta[:,dim], y = yPred, mode = 'markers',
-    name = torq_names[dim] + ' torque (predicted), in g*cm (by IMU)' )
+    name = torq_names[dim] + ' torque (predicted), in g*cm (by IMU), using 3d K' )
 trace1 = go.Scatter( x = BigTheta[:,dim], y = torq_1D, mode = 'markers',
-    name = torq_names[dim] + ' torque (from data), in g*cm (by IMU)' )
+    name = torq_names[dim] + ' torque (from data), in g*cm (by IMU), using 3d K' )
 
 # coef_ridge = regr.coef_
 # gridx = np.linspace(myX.min(), myX.max(), 20)
@@ -153,11 +156,13 @@ trace1 = go.Scatter( x = BigTheta[:,dim], y = torq_1D, mode = 'markers',
     # name = 'linear fit (w/ridge penalty)' )
 
 data = [trace0, trace1]
+K_str = ['%.02f' % x for x in K]
+K_str = ', '.join(K_str)
     
 layout = go.Layout(
-    title= 'pitch (up/down) degrees of deflection, vs '+ torq_names[dim] + ' torque',
-    yaxis=dict(title='torque (in grams cm)'),
-    xaxis=dict(title='degrees'),
+    title= 'pitch (up/down) degrees of deflection, vs %s torque <br>K: %s' % (torq_names[dim], K_str),
+    yaxis=dict(title= torq_names[dim] + 'axis torque (in grams cm)'),
+    xaxis=dict(title='pitch degrees'),
     legend=dict(x=.1, y=0.8) )
 
 fig = go.Figure(data=data, layout=layout)
