@@ -1,0 +1,4 @@
+$ sudo apt install optipng
+$ optipng *.png
+$ convert  -resize 50%  *.png
+

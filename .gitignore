@@ -112,3 +112,5 @@ __bigfiles/*
 apriltags/pod-build/
 *.swo
 *.swn
+
+*.ipyn

@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import plotly.plotly as py
 import plotly.offline as po
 import plotly.graph_objs as go
+from plotly import tools
+
 from sklearn import linear_model
 from sklearn.linear_model import Ridge
 from sklearn import metrics
@@ -76,8 +78,6 @@ print('\n======================')
 
 # torq_est[column 1] = torque y's
 
-
-
 #===============================================
 #### PLOT ####
 #===============================================
@@ -99,17 +99,24 @@ trace0 = go.Scatter( x = xplot, y = yplot, mode = 'markers',
 
 trace1 = go.Scatter( x = xplot2, y = yplot, mode = 'markers', 
 name = '%s-axis %s calculated from data'%(names[dim], param))
-# trace1 = go.Scatter( x = BigTheta[:,dim], y = torq, mode = 'markers',  name = torq_names[dim] + ' torque (from data), in g*cm (by IMU), using 3d K' ) 
-# trace1 = go.Scatter( x = BigTheta[:,dim], y = torq, mode = 'markers',  name = torq_names[dim] + ' torque (from data), in g*cm (by IMU), using 3d K' ) 
-data = [trace0, trace1]
+data = [trace0]
 
 layout = go.Layout(
     title='%s-axis %s: Resid vs Estimate (with 3x3 K, using SkLearn LinReg) (IMU data)' % (names[dim], param),
     yaxis=dict(title= 'resid (g cm)'),
     xaxis=dict(title='%s (g cm)' % param),
-    legend=dict(x=.1, y=0.8) )
+    legend=dict(x=.5, y=0.1) )
 
-fig = go.Figure(data=data, layout=layout)
+fig = tools.make_subplots(rows=2, cols=1, subplot_titles=(trace1.name, trace0.name))
+
+fig.append_trace(trace0, 1,1)
+fig.append_trace(trace1, 2,1)
+fig['layout'].update(title = layout.title)
+fig['layout']['xaxis2'].update(title=layout.xaxis['title'])
+fig['layout']['yaxis1'].update(title = layout.yaxis['title'])
+fig['layout']['yaxis2'].update(title = layout.yaxis['title'])
+
+#fig = go.Figure(data=data, layout=layout)
 
 po.plot(fig)
 
