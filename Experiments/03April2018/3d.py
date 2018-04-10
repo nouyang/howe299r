@@ -12,8 +12,7 @@ import plotly.offline as po
 import plotly.graph_objs as go
 from sklearn import linear_model
 from sklearn.linear_model import Ridge
-
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn import metrics
 
 path = "~/Documents/projects_Spring2018/howe299r/Experiments/03April2018/WIP/"
 #IMUDats = [ '%02dIMU.txt'% x for x in pos ]
@@ -26,12 +25,12 @@ BigTorque = np.zeros((1,3))
 #===============================================
 #### DECLARE CONSTANTS ####
 #===============================================
-listpos = range(15)
-listpos = [12]
+listpos = range(1)
+#listpos = [12]
 #listpos = range(1,3)
 xs = [4.6, 4.1, 3.5, 3.1, 2.6]#pos 1 x = 4.6 cm
 #ys = [0.4, 0.1, -0.2]
-ys = [0.4, 0.1, -0.2]
+ys = [-0.4, 0.1, 0.2]
 posX = np.repeat(xs,3)
 posY = np.tile(ys, 5)
 posZ = np.array([0]*15)
@@ -82,8 +81,8 @@ for i in listpos:
 
 BigTheta = BigTheta[1:,:] #remove first row of zeros, from init
 BigTorque = BigTorque[1:,:]
-print(BigTheta.shape) #n.3
-print(BigTorque.shape) #n.3
+print(BigTheta) #n.3
+print(BigTorque) #n.3
 
 print('number of datapoints', BigTheta.shape)
 
@@ -95,13 +94,14 @@ print(matK)
 print('position number: ', i+1)
 
 #===============================================
-#### PLOT ####
+#### FIT TO ESTIMATE K ####
 #===============================================
 
 # let us retrieve estimates of K via sklearn library to check numpy.lstsq, which gives us all zeros
 # for the third row of K :(
 
-names = ['x:roll', 'y:pitch', 'z:yaw']
+## Note: For the IMU, orientation.Y is pitch; X is roll; Z is yaw
+torq_names = ['x', 'y', 'z']
 dim = 1
 torq_1D = BigTorque[:,dim] #z col
 #theta_1D = BigTheta[:,dim]
@@ -118,54 +118,51 @@ coef_ridge = regr.coef_
 #coef_ = regr.coef_ * gridx + regr.intercept_
 yPred= regr.predict(myX) 
 
+print('\n======================')
 print('K Coefficients: \n', regr.coef_)
-print("Mean squared error: %.2f" % mean_squared_error(torq_1D, yPred)) 
+#print("Mean squared error: %.2f" % mean_squared_error(torq_1D, yPred)) 
 #print('Variance score (ideal 1): %.2f' % r2_score(thetaY))
+print('\n======================')
+print('Mean Absolute Error:', metrics.mean_absolute_error(torq_1D, yPred))  
+print('Mean Squared Error:', metrics.mean_squared_error(torq_1D, yPred))  
+print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(torq_1D, yPred)))
+print('\n======================')
+print('torques about y axis: Min', myy.min(), '; Max', myy.max(), 'grams * cm')
+
+#gridx = np.linspace(myX.min(), myX.max(), 20)
 
 # http://stackabuse.com/linear-regression-in-python-with-scikit-learn/
-'''
+
 #===============================================
 #### PLOT ####
 #===============================================
 
-# let us retrieve estimates of K via sklearn library to check numpy.lstsq, which gives us all zeros
-# for the third row of K :(
 
-## Note: For the IMU, orientation.Y is pitch; X is roll; Z is yaw
+trace0 = go.Scatter( x = BigTheta[:,dim], y = yPred, mode = 'markers',
+    name = torq_names[dim] + ' torque (predicted), in g*cm (by IMU)' )
+trace1 = go.Scatter( x = BigTheta[:,dim], y = torq_1D, mode = 'markers',
+    name = torq_names[dim] + ' torque (from data), in g*cm (by IMU)' )
 
-trace0 = go.Scatter( x = torq_1D, y = theta_1D, mode = 'markers',
-    name = names[dim] + ' deflection in degrees (by IMU)' )
+# coef_ridge = regr.coef_
+# gridx = np.linspace(myX.min(), myX.max(), 20)
+#coef_ = regr.coef_ * gridx + regr.intercept_
 
-myX = theta_1D.reshape(-1,1)
-myy = torq_1D 
-
-#regr= Ridge(fit_intercept=True, alpha=1.0, random_state=0, normalize=True)
-regr = linear_model.LinearRegression()
-regr.fit(myX, myy)
-coef_ridge = regr.coef_
-gridx = np.linspace(myX.min(), myX.max(), 20)
-coef_ = regr.coef_ * gridx + regr.intercept_
-#print(regr.coef_)
-#print(regr.intercept_)
-yPred= regr.predict(myX) 
 #plt.plot(gridx, coef_, 'g-', label="ridge regression")
 
-trace2 = go.Scatter( x= gridx, y = coef_,
-    name = 'linear fit (w/ridge penalty)' )
+# trace2 = go.Scatter( x= gridx, y = coef_,
+    # name = 'linear fit (w/ridge penalty)' )
 
-data = [trace0, trace2]
+data = [trace0, trace1]
     
 layout = go.Layout(
-    title= names[dim] + ' degrees of deflection vs torque',
-    yaxis=dict(title='torque (in grams)'),
+    title= 'pitch (up/down) degrees of deflection, vs '+ torq_names[dim] + ' torque',
+    yaxis=dict(title='torque (in grams cm)'),
     xaxis=dict(title='degrees'),
-    legend=dict(x=.1, y=-.5) )
+    legend=dict(x=.1, y=0.8) )
 
 fig = go.Figure(data=data, layout=layout)
 
-print('K Coefficients: \n', regr.coef_)
-print("Mean squared error: %.2f" % mean_squared_error(theta_1D, yPred)) 
+#print("Mean squared error: %.2f" % metrics.mean_squared_error(torq_1D, yPred)) 
 #print('Variance score (ideal 1): %.2f' % r2_score(thetaY))
 po.plot(fig)
 
-'''
