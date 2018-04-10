@@ -84,25 +84,29 @@ print('\n======================')
 
 print(resid)
 print(resid.shape)
-xplot = torq_est.T[:,1]
-xplot2 = torq[:,1]
+names = ['X', 'Y', 'Z']
+param = 'Torque'
+dim = 1
+
+xplot = torq_est.T[:,dim]
+xplot2 = torq[:,dim]
 print(xplot.shape)
-yplot = resid[:,1] 
+yplot = resid[:,dim] 
 print(yplot.shape)
 
 trace0 = go.Scatter( x = xplot, y = yplot, mode = 'markers',
-    name = 'y-axis torque estimated' )
+    name = '%s-axis %s estimated'%(names[dim], param))
 
-trace1 = go.Scatter( x = xplot2, y = yplot, mode = 'markers',
-    name = 'y-axis torque calculated from data' )
+trace1 = go.Scatter( x = xplot2, y = yplot, mode = 'markers', 
+name = '%s-axis %s calculated from data'%(names[dim], param))
 # trace1 = go.Scatter( x = BigTheta[:,dim], y = torq, mode = 'markers',  name = torq_names[dim] + ' torque (from data), in g*cm (by IMU), using 3d K' ) 
 # trace1 = go.Scatter( x = BigTheta[:,dim], y = torq, mode = 'markers',  name = torq_names[dim] + ' torque (from data), in g*cm (by IMU), using 3d K' ) 
 data = [trace0, trace1]
 
 layout = go.Layout(
-    title='Y-axis Torque: resid vs sklearn linreg estimate (with 3x3 K) (IMU data)',
+    title='%s-axis %s: Resid vs Estimate (with 3x3 K, using SkLearn LinReg) (IMU data)' % (names[dim], param),
     yaxis=dict(title= 'resid (g cm)'),
-    xaxis=dict(title='torque (g cm)'),
+    xaxis=dict(title='%s (g cm)' % param),
     legend=dict(x=.1, y=0.8) )
 
 fig = go.Figure(data=data, layout=layout)
