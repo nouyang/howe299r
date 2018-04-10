@@ -90,7 +90,10 @@ print('number of datapoints', BigTheta.shape)
 
 #### CALCULATE K ####
 matK = np.linalg.lstsq(BigTheta, BigTorque, rcond=None)[0]
-
+# a = BigTheta.T
+# b = BigTorque
+# SOL = np.dot(np.dot(np.linalg.inv(np.dot(a.T,a)),a.T),b)
+# print(SOL.shape)
 print(matK.shape)
 print(matK)
 print('position number: ', i+1)
@@ -112,8 +115,8 @@ print('torq1d shape', torq_1D.shape)
 myX = BigTheta#theta_1Dreshape(-1,1)
 myy = torq_1D 
 
-#regr= Ridge(fit_intercept=True, alpha=1.0, random_state=0, normalize=True)
-regr = linear_model.LinearRegression()
+regr= Ridge(fit_intercept=False, alpha=1.0, random_state=0, normalize=True)
+#regr = linear_model.LinearRegression()
 regr.fit(myX, myy)
 coef_ridge = regr.coef_
 K = regr.coef_
@@ -160,7 +163,7 @@ K_str = ['%.02f' % x for x in K]
 K_str = ', '.join(K_str)
     
 layout = go.Layout(
-    title= 'pitch (up/down) degrees of deflection, vs %s torque <br>K: %s' % (torq_names[dim], K_str),
+    title= 'Ridge Regr, pitch (up/down) degrees of deflection, vs %s torque <br>K: %s' % (torq_names[dim], K_str),
     yaxis=dict(title= torq_names[dim] + 'axis torque (in grams cm)'),
     xaxis=dict(title='pitch degrees'),
     legend=dict(x=.1, y=0.8) )
