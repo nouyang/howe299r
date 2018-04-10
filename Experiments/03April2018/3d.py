@@ -27,7 +27,7 @@ BigTorque = np.zeros((1,3))
 #### DECLARE CONSTANTS ####
 #===============================================
 listpos = range(15)
-listpos = [0]
+listpos = [14]
 #listpos = range(1,3)
 xs = [4.6, 4.1, 3.5, 3.1, 2.6]#pos 1 x = 4.6 cm
 #ys = [0.4, 0.1, -0.2]
@@ -54,6 +54,12 @@ for i in listpos:
     #### DECLARE CONSTANTS ####
     pos = np.array([posX[i], posY[i], posZ[i]])
     thetas = sig-zer
+    # np.delete(mat, (indx), axis=0)
+
+# we have some issues with overflow of 3rd col
+    overflow_idx = np.where(thetas[:,2] < -300)
+    thetas[overflow_idx, :] += np.array([0,0,2*179])
+
  #IMU.z is roll IRL. But in our coordinate system, torque_z = yaw
     thetas = np.fliplr(thetas)
     #thetaX, thetaY, thetaZ = thetas[:,0], thetas[:,1], thetas[:,2]
@@ -75,12 +81,14 @@ for i in listpos:
 BigTheta = BigTheta[1:,:] #remove first row of zeros, from init
 BigTorque = BigTorque[1:,:]
 
+
 print('number of datapoints', BigTheta.shape)
 
 #### CALCULATE K ####
 matK = np.linalg.lstsq(BigTorque, BigTheta, rcond=None)[0]
 print(matK.shape)
 print(matK)
+print('position number: ', i+1)
 
 '''
 #===============================================
