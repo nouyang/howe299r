@@ -56,6 +56,7 @@ for i in listpos:
     #### DECLARE CONSTANTS ####
     pos = np.array([posX[i], posY[i], posZ[i]])
     thetas = sig-zer
+    print('thetas\n', thetas)
     # np.delete(mat, (indx), axis=0)
 
 # we have some issues with overflow of 3rd col
@@ -74,6 +75,7 @@ for i in listpos:
     #print(forces)
 
     torques = np.cross(pos.reshape(-1,1).T, forces) #n.3
+    print('torques\n', torques)
     #torques = np.cross(forces, pos.reshape(-1,1).T) #n.3
     #print('3D torques:\n', torques)
     #print('3D deflections: \n', thetas)
@@ -89,13 +91,13 @@ print(BigTorque) #n.3
 print('number of datapoints', BigTheta.shape)
 
 #### CALCULATE K ####
-matK = np.linalg.lstsq(BigTheta, BigTorque, rcond=None)[0]
+matK = np.linalg.lstsq(BigTorque, BigTheta, rcond=None)[0]
 # a = BigTheta.T
 # b = BigTorque
 # SOL = np.dot(np.dot(np.linalg.inv(np.dot(a.T,a)),a.T),b)
 # print(SOL.shape)
 print(matK.shape)
-print(matK)
+print('K coefficients (numply lstsq):\n', matK)
 print('position number: ', i+1)
 
 #===============================================
@@ -108,15 +110,16 @@ print('position number: ', i+1)
 ## Note: For the IMU, orientation.Y is pitch; X is roll; Z is yaw
 torq_names = ['x', 'y', 'z']
 dim = 1
-torq_1D = BigTorque[:,dim] #z col
+torq_1D = BigTorque[:,dim] 
+torq_1D = BigTorque
 #theta_1D = BigTheta[:,dim]
 print('torq1d shape', torq_1D.shape)
 
 myX = BigTheta#theta_1Dreshape(-1,1)
 myy = torq_1D 
 
-regr= Ridge(fit_intercept=False, alpha=1.0, random_state=0, normalize=True)
-#regr = linear_model.LinearRegression()
+#regr= Ridge(fit_intercept=False, alpha=1.0, random_state=0, normalize=True)
+regr = linear_model.LinearRegression()
 regr.fit(myX, myy)
 coef_ridge = regr.coef_
 K = regr.coef_
