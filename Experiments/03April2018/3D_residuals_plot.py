@@ -125,7 +125,6 @@ fig['layout']['yaxis2'].update(title = layout.yaxis['title'])
 po.plot(fig)
 '''
 
-
 #===============================================
 #### PLOT: Residuals (of Y torque_est - torque) vs Force (Z only)
 #===============================================
@@ -172,4 +171,3 @@ fig['layout']['yaxis2'].update(title=yaxistitle)
 #fig = go.Figure(data=data, layout=layout)
 
 po.plot(fig)
-

@@ -62,7 +62,8 @@ for i in listpos:
     #print('torques\n', torques)
     BigTheta = np.vstack((BigTheta, thetas))
     BigTorque = np.vstack((BigTorque, torques))
-    BigPosition = np.vstack((BigPosition, pos))
+    positions = np.tile(pos, n).reshape(n, -1)
+    BigPosition = np.vstack((BigPosition, positions))
     BigForce = np.vstack((BigForce, forces))
 
 BigTheta = BigTheta[1:,:] #remove first row of zeros, from init
@@ -80,3 +81,12 @@ with shelve.open('calculated_data', 'c') as shelf:
     shelf['BigPosition'] = BigPosition
     # shelf['forces'] = forces 
     # shelf['posXYZ'] = posXYZ 
+
+
+print(BigPosition.shape)
+print(BigForce.shape)
+print(BigTheta.shape)
+print(BigTorque.shape)
+full_data = np.hstack((BigPosition, BigForce, BigTheta, BigTorque)) 
+
+np.savetxt("full_calculated_data.csv", full_data, delimiter=",", fmt='%0.02f')
