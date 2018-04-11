@@ -81,14 +81,14 @@ def plot_vs_resid(dataA, dataA_list,  dataB = None, dataB_xtitle =''):
     po.plot(fig)
     return
 
-#plot_vs_resid(BigForce[:,2], ['ForceZ', 'g'])
+plot_vs_resid(BigForce[:,2], ['ForceZ', 'g'])
 #plot_vs_resid(BigPosition[:,0], ['PositionX', 'cm'])
 #plot_vs_resid(BigPosition[:,1], ['PositionY', 'cm'])
 #plot_vs_resid(BigTheta[:,0], ['ThetaX', 'deg'])
 #plot_vs_resid(BigTheta[:,1], ['ThetaY', 'deg'])
 #plot_vs_resid(BigTheta[:,2], ['ThetaZ', 'deg'])
-#plot_vs_resid(torq_est[:,0], ['X Torq Est (K*measured thetas)', 'g cm'])
-plot_vs_resid(torq_est[:,1], ['Torq Est Y (K*measured thetas)', 'g cm'])
+#plot_vs_resid(torq_est[:,0], ['Torq Est X (K*measured thetas)', 'g cm'])
+#plot_vs_resid(torq_est[:,1], ['Torq Est Y (K*measured thetas)', 'g cm'])
 
 
 
