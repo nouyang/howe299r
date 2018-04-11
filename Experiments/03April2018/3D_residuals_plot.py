@@ -20,6 +20,8 @@ import shelve
 with shelve.open('calculated_data', 'r') as shelf:
     BigTheta = shelf['BigTheta']
     BigTorque = shelf['BigTorque']
+    BigForce = shelf['BigForce'] 
+    BigPosition = shelf['BigPosition'] 
 
 #path = "~/Documents/projects_Spring2018/howe299r/Experiments/03April2018/WIP/"
 IMUCols = ['timeSysCal', 'XYZ','X', 'Y', 'Z']
@@ -78,8 +80,10 @@ print('\n======================')
 
 # torq_est[column 1] = torque y's
 
+
+'''
 #===============================================
-#### PLOT ####
+#### PLOT: Residuals (of Y torque_est - torque) vs Torque_est (either Y or X axis)
 #===============================================
 
 print(resid)
@@ -113,6 +117,50 @@ fig.append_trace(trace0, 1,1)
 fig.append_trace(trace1, 2,1)
 fig['layout'].update(title = layout.title)
 fig['layout']['xaxis2'].update(title=layout.xaxis['title'])
+fig['layout']['yaxis1'].update(title = layout.yaxis['title'])
+fig['layout']['yaxis2'].update(title = layout.yaxis['title'])
+
+#fig = go.Figure(data=data, layout=layout)
+
+po.plot(fig)
+'''
+
+
+#===============================================
+#### PLOT: Residuals (of Y torque_est - torque) vs Force (Z only)
+#===============================================
+
+print(resid.shape)
+names = ['X', 'Y', 'Z']
+param = 'Torque'
+x2param = 'Force'
+dim = 0
+
+xplot = torq_est.T[:,dim]
+xplot2 = BigForce[:,2]
+yplot = resid[:,dim] 
+
+trace0 = go.Scatter( x = xplot, y = yplot, mode = 'markers',
+    name = '%s-axis %s estimated'%(names[dim], param))
+
+trace1 = go.Scatter( x = xplot2, y = yplot, mode = 'markers', 
+name = 'Z-axis Force, as applied')
+
+#data = [trace0]
+
+layout = go.Layout(
+    title='%s-axis %s: Resid vs Force applied (with 3x3 K, using SkLearn LinReg) (IMU data)' % (names[dim], param),
+    yaxis=dict(title= 'resid (g cm)'),
+    xaxis=dict(title='%s (g)' % x2param),
+    legend=dict(x=.5, y=0.1) )
+
+fig = tools.make_subplots(rows=2, cols=1, subplot_titles=(trace1.name, trace0.name))
+
+fig.append_trace(trace0, 1,1)
+fig.append_trace(trace1, 2,1)
+fig['layout'].update(title = layout.title)
+fig['layout']['xaxis1'].update(title='%s torque est (g cm)' % (names[dim]))
+fig['layout']['xaxis2'].update(title='force z-axis, as applied (g)')
 fig['layout']['yaxis1'].update(title = layout.yaxis['title'])
 fig['layout']['yaxis2'].update(title = layout.yaxis['title'])
 

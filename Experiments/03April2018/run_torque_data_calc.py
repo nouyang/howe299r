@@ -13,6 +13,9 @@ IMUCols = ['timeSysCal', 'XYZ','X', 'Y', 'Z']
 #===============================================
 BigTheta = np.zeros((1,3))
 BigTorque = np.zeros((1,3))
+BigForce = np.zeros((1,3))
+BigPosition = np.zeros((1,3))
+
 
 listpos = range(15)
 #listpos = [15]
@@ -59,9 +62,13 @@ for i in listpos:
     #print('torques\n', torques)
     BigTheta = np.vstack((BigTheta, thetas))
     BigTorque = np.vstack((BigTorque, torques))
+    BigPosition = np.vstack((BigPosition, pos))
+    BigForce = np.vstack((BigForce, forces))
 
 BigTheta = BigTheta[1:,:] #remove first row of zeros, from init
 BigTorque = BigTorque[1:,:]
+BigPosition = BigPosition[1:,:] #remove first row of zeros, from init
+BigForce = BigForce[1:,:]
 
 print('number of datapoints', BigTheta.shape)
 
@@ -69,5 +76,7 @@ with shelve.open('calculated_data', 'c') as shelf:
     shelf['BigTheta'] = BigTheta
     shelf['BigTorque'] = BigTorque
     shelf['listpos'] = listpos 
+    shelf['BigForce'] = BigForce
+    shelf['BigPosition'] = BigPosition
     # shelf['forces'] = forces 
     # shelf['posXYZ'] = posXYZ 
