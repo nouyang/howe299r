@@ -114,3 +114,7 @@ apriltags/pod-build/
 *.swn
 
 *.ipyn
+
+*.dir
+*.bak
+*.dat
