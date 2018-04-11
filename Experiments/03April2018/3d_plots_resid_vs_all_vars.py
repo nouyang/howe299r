@@ -48,10 +48,13 @@ def plot_vs_resid(dataA, dataA_list,  dataB = None, dataB_xtitle =''):
 
 
     trace0 = go.Scatter( x = x1, y = y1, mode = 'markers',
-        name = 'TorqueX residuals vs ' + Atitle)
+                        name = 'TorqueX residuals vs ' + Atitle, marker=dict(size=4,
+                                                                             symbol='circle'))
+    # https://plot.ly/python/reference/#scatter
 
     trace1 = go.Scatter( x = x1, y = y2, mode = 'markers', 
-        name = 'TorqueY residuals vs ' + Atitle)
+        name = 'TorqueY residuals vs ' + Atitle, marker=dict(size=4, symbol='circle'))
+
 
     strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -78,17 +81,19 @@ def plot_vs_resid(dataA, dataA_list,  dataB = None, dataB_xtitle =''):
     fig['layout']['yaxis1'].update(title='TorqueX residual (g*cm)')
     fig['layout']['yaxis2'].update(title='TorqueY residual (g*cm)')
 
-    po.plot(fig)
+    po.plot(fig, image='png', image_width=900, image_height=1000, filename= Atitle +'.html', image_filename = Atitle )
+    # po.plot(fig, filename= Atitle +'.html')
     return
 
+
 plot_vs_resid(BigForce[:,2], ['ForceZ', 'g'])
-#plot_vs_resid(BigPosition[:,0], ['PositionX', 'cm'])
-#plot_vs_resid(BigPosition[:,1], ['PositionY', 'cm'])
-#plot_vs_resid(BigTheta[:,0], ['ThetaX', 'deg'])
-#plot_vs_resid(BigTheta[:,1], ['ThetaY', 'deg'])
-#plot_vs_resid(BigTheta[:,2], ['ThetaZ', 'deg'])
-#plot_vs_resid(torq_est[:,0], ['Torq Est X (K*measured thetas)', 'g cm'])
-#plot_vs_resid(torq_est[:,1], ['Torq Est Y (K*measured thetas)', 'g cm'])
+plot_vs_resid(BigPosition[:,0], ['PositionX', 'cm'])
+plot_vs_resid(BigPosition[:,1], ['PositionY', 'cm'])
+plot_vs_resid(BigTheta[:,0], ['ThetaX', 'deg'])
+plot_vs_resid(BigTheta[:,1], ['ThetaY', 'deg'])
+plot_vs_resid(BigTheta[:,2], ['ThetaZ', 'deg'])
+plot_vs_resid(torq_est[:,0], ['Torq Est X (K*measured thetas)', 'g cm'])
+plot_vs_resid(torq_est[:,1], ['Torq Est Y (K*measured thetas)', 'g cm'])
 
 
 

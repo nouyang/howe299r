@@ -63,7 +63,8 @@ for i in listpos:
     #print('num datapoints: ',n)
 
     #### CALCULATE TORQUE ####
-    forcesZ = [20*f for f in range(1, n+1)] #start at 20g
+    forcesZ = [[20*f]*3 for f in range(1, int(n/3)+1)] #start at 20g
+    forcesZ = np.array(forcesZ).flatten()
     forces = np.column_stack((np.zeros((n,2)),forcesZ)) #n.3
 
     torques = np.cross(pos.reshape(-1,1).T, forces) #n.3
