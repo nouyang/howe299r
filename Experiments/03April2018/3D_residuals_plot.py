@@ -141,28 +141,33 @@ xplot2 = BigForce[:,2]
 yplot = resid[:,dim] 
 
 trace0 = go.Scatter( x = xplot, y = yplot, mode = 'markers',
-    name = '%s-axis %s estimated'%(names[dim], param))
+    name = 'resid_torqY vs %s-axis %s estimated'%(names[dim], param))
 
 trace1 = go.Scatter( x = xplot2, y = yplot, mode = 'markers', 
-name = 'Z-axis Force, as applied')
+name = 'resid_torqY vs Resid vs Z-axis Force, as applied')
 
 #data = [trace0]
 
+overall_title='%s-axis %s: Resid vs Force applied (with 3x3 K, using SkLearn LinReg) (IMU data)' % \
+    (names[dim], param) + '<br>K: ' + np.array_str(K, precision=2) + '<br>'
+
+yaxistitle= 'resid (g cm)'
+xaxistitle= 'force (g)'
+
 layout = go.Layout(
-    title='%s-axis %s: Resid vs Force applied (with 3x3 K, using SkLearn LinReg) (IMU data)' % (names[dim], param),
-    yaxis=dict(title= 'resid (g cm)'),
-    xaxis=dict(title='%s (g)' % x2param),
+    title = overall_title,
     legend=dict(x=.5, y=0.1) )
 
 fig = tools.make_subplots(rows=2, cols=1, subplot_titles=(trace0.name, trace1.name))
 
 fig.append_trace(trace0, 1,1)
 fig.append_trace(trace1, 2,1)
-fig['layout'].update(title = layout.title)
+
+fig['layout'].update(title=overall_title, showlegend=False)
 fig['layout']['xaxis1'].update(title='%s torque est (g cm)' % (names[dim]))
-fig['layout']['xaxis2'].update(title='force z-axis, as applied (g)')
-fig['layout']['yaxis1'].update(title = layout.yaxis['title'])
-fig['layout']['yaxis2'].update(title = layout.yaxis['title'])
+fig['layout']['xaxis2'].update(title=xaxistitle)
+fig['layout']['yaxis1'].update(title=yaxistitle)
+fig['layout']['yaxis2'].update(title=yaxistitle)
 
 #fig = go.Figure(data=data, layout=layout)
 

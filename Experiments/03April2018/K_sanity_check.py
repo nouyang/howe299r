@@ -83,3 +83,7 @@ print('\nrmse', np.sqrt(mse))
 
 # rmse of torques: 100 g * cm rmse, with average of 3.5cm distance for x, results in about a 30 g
 # error in force estimate! 
+
+
+#TODO: investigate >>> np.fromstring('1 2', dtype=int, sep=' ')
+
