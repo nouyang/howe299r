@@ -83,10 +83,10 @@ with shelve.open('calculated_data', 'c') as shelf:
     # shelf['posXYZ'] = posXYZ 
 
 
-print(BigPosition.shape)
-print(BigForce.shape)
-print(BigTheta.shape)
-print(BigTorque.shape)
-full_data = np.hstack((BigPosition, BigForce, BigTheta, BigTorque)) 
+# print(BigPosition.shape)
+# print(BigForce.shape)
+# print(BigTheta.shape)
+# print(BigTorque.shape)
 
-np.savetxt("full_calculated_data.csv", full_data, delimiter=",", fmt='%0.02f')
+# full_data = np.hstack((BigPosition, BigForce, BigTheta, BigTorque)) 
+# np.savetxt("full_calculated_data.csv", full_data, delimiter=",", fmt='%0.02f')

@@ -68,8 +68,8 @@ print('K Coefficients: \n', K)
 # print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(torq, yPred)))
 # print('\n======================')
 # print('torques about y axis: Min', myy.min(), '; Max', myy.max(), 'grams * cm')
-torq_est = np.dot(K, theta.T)
-resid = torq - torq_est.T
+torq_est = np.dot(K, theta.T).T #n.3
+resid = torq - torq_est
 mse = (resid ** 2).mean(axis=0)
 
 print('\n======================')
@@ -92,7 +92,7 @@ names = ['X', 'Y', 'Z']
 param = 'Torque'
 dim = 1
 
-xplot = torq_est.T[:,dim]
+xplot = torq_est[:,dim]
 xplot2 = torq[:,dim]
 print(xplot.shape)
 yplot = resid[:,dim] 
@@ -135,7 +135,7 @@ param = 'Torque'
 x2param = 'Force'
 dim = 0
 
-xplot = torq_est.T[:,dim]
+xplot = torq_est[:,dim]
 xplot2 = BigForce[:,2]
 yplot = resid[:,dim] 
 
@@ -170,4 +170,12 @@ fig['layout']['yaxis2'].update(title=yaxistitle)
 
 #fig = go.Figure(data=data, layout=layout)
 
-po.plot(fig)
+#po.plot(fig)
+
+full_data = np.hstack((BigPosition, BigForce, BigTheta, BigTorque)) 
+
+
+full_data = np.hstack((full_data, torq_est, resid))
+print(torq_est.shape)
+print(resid.shape)
+np.savetxt("full_calculated_data.csv", full_data, delimiter=",", fmt='%0.02f')
