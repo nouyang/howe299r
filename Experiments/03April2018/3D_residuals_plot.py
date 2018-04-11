@@ -154,7 +154,7 @@ layout = go.Layout(
     xaxis=dict(title='%s (g)' % x2param),
     legend=dict(x=.5, y=0.1) )
 
-fig = tools.make_subplots(rows=2, cols=1, subplot_titles=(trace1.name, trace0.name))
+fig = tools.make_subplots(rows=2, cols=1, subplot_titles=(trace0.name, trace1.name))
 
 fig.append_trace(trace0, 1,1)
 fig.append_trace(trace1, 2,1)
