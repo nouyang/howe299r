@@ -1,6 +1,9 @@
 """
 Created on Thu Apr 9 
 @author: nrw
+This plots residuals, 
+And also takes shelved torque data, adds in torque estimate and residual data
+And writes it all to a CSV
 """
 
 import pandas as pd
@@ -179,3 +182,8 @@ full_data = np.hstack((full_data, torq_est, resid))
 print(torq_est.shape)
 print(resid.shape)
 np.savetxt("full_calculated_data.csv", full_data, delimiter=",", fmt='%0.02f')
+
+with shelve.open('calculated_data2', 'c') as shelf:
+    shelf['torq_est'] = torq_est
+    shelf['resid'] = resid
+    shelf['K'] = K

@@ -1,3 +1,11 @@
+'''
+9 April 2018
+This file caculates the torques across all 492 datapoints and creates a CSV of format
+1 - posx posy posz - thetax thetay thetaz -  etc.
+|
+v
+nth datapoint
+'''
 import math
 import shelve
 
