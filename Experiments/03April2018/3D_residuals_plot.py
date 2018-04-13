@@ -36,10 +36,6 @@ IMUCols = ['timeSysCal', 'XYZ','X', 'Y', 'Z']
 print('number of datapoints', BigTheta.shape)
 
 #### CALCULATE K ####
-print('\n======================')
-# matK = np.linalg.lstsq(BigTorque, BigTheta, rcond=None)[0]
-# print(matK.shape)
-# print('numpy lstsq K coefficients (numpy lstsq):\n', matK)
 
 #===============================================
 #### FIT TO ESTIMATE K ####
@@ -48,7 +44,7 @@ print('\n======================')
 ## Note: For the IMU, orientation.Y is pitch; X is roll; Z is yaw
 torq_names = ['x', 'y', 'z']
 dim = 1
-torq_1d = BigTorque[:,dim] 
+#torq_1d = BigTorque[:,dim] 
 torq = BigTorque
 theta = BigTheta 
 print('torq shape', torq.shape)
@@ -56,32 +52,48 @@ print('torq shape', torq.shape)
 myX = BigTheta#theta_1Dreshape(-1,1)
 myy = torq 
 
-#regr= Ridge(fit_intercept=False, alpha=1.0, random_state=0, normalize=True)
-regr = linear_model.LinearRegression()
+regr= Ridge(fit_intercept=True, alpha=1.0, random_state=0, normalize=True)
+regr2 = linear_model.LinearRegression()
 regr.fit(myX, myy)
+regr2.fit(myX, myy)
 K = regr.coef_
+K2 = regr2.coef_ 
 yPred= regr.predict(myX) 
-
+yPred2= regr2.predict(myX) 
 print('\n======================')
-print('K Coefficients: \n', K)
-# #print('Variance score (ideal 1): %.2f' % r2_score(thetaY))
-# print('\n======================')
-# print('Mean Absolute Error:', metrics.mean_absolute_error(torq, yPred))  
-# print('Mean Squared Error:', metrics.mean_squared_error(torq, yPred))  
-# print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(torq, yPred)))
-# print('\n======================')
-# print('torques about y axis: Min', myy.min(), '; Max', myy.max(), 'grams * cm')
-torq_est = np.dot(K, theta.T).T #n.3
-resid = torq - torq_est
+matK = np.linalg.lstsq(BigTorque, BigTheta, rcond=None)[0]
+print(matK.shape)
+print('Numpy linalg.lstsq() K coefficients:\n', matK)
+print('LinReg K Coefficients: \n', K2)
+print('Ridge K Coefficients: \n', K)
+print('\n======================')
+
+torq_est = np.dot(K2, theta.T).T #n.3
+resid = torq - yPred
 mse = (resid ** 2).mean(axis=0)
-
-print('\n======================')
 print('resid shape', resid.shape)
-print('mse shape', mse.shape)
-print('rmse', np.sqrt(mse))
+print('RMSE Per Torque Dim', np.sqrt(mse))
+#print('Variance score (ideal 1): %.2f' % r2_score(thetaY))
+print('\n=======  SkLearn Metrics====')
+print('\n---- Using LinReg K dot theta. This has worse error as we have no intercept term. ===')
+print('Mean Absolute Error: %0.02f'  % metrics.mean_absolute_error(torq, torq_est))
+print('Mean Squared Error: %0.02f'  % metrics.mean_squared_error(torq, torq_est)  )
+print('Root Mean Squared Error %0.02f' % np.sqrt(metrics.mean_squared_error(torq, torq_est)))
+
+print('\n---- Using sklearn LinearRegression.pred(theta).   ========')
+print('Mean Absolute Error: %0.02f:' % metrics.mean_absolute_error(torq, yPred2)),
+print('Mean Squared Error: %0.02f' % metrics.mean_squared_error(torq, yPred2)  )
+print('Root Mean Squared Error: %0.02f' % np.sqrt(metrics.mean_squared_error(torq, yPred2)))
+
+print('\n---- Using sklearn Ridge.pred(theta).   ========')
+print('Mean Absolute Error: %0.02f' % metrics.mean_absolute_error(torq, yPred))  
+print('Mean Squared Error: %0.02f' % metrics.mean_squared_error(torq, yPred)  )
+print('Root Mean Squared Error: %0.02f' % np.sqrt(metrics.mean_squared_error(torq, yPred)))
+print('\n --- LinRegr has the best fit ----')
+
+print('\nNote: torques about y axis: Min', myy.min(), '; Max', myy.max(), 'grams * cm')
 print('\n======================')
 
-# torq_est[column 1] = torque y's
 
 
 '''
