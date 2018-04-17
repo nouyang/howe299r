@@ -6,6 +6,7 @@ Created on Fri Apr 10
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 import shelve
 from datetime import datetime
 
@@ -26,6 +27,7 @@ with shelve.open('calculated_data', 'r') as shelf:
     BigTorque = shelf['BigTorque']
     BigForce = shelf['BigForce'] 
     BigPosition = shelf['BigPosition'] 
+    BigPosIdx = shelf['BigPosIdx'] 
 
 with shelve.open('calculated_data2', 'r') as shelf:
     torq_est = shelf['torq_est'] 
@@ -35,28 +37,82 @@ with shelve.open('calculated_data2', 'r') as shelf:
 torq_estX = torq_est[:,0]
 torq_estY = torq_est[:,1] 
 
-def plot_vs_resid(dataA, dataA_list,  dataB = None, dataB_xtitle =''):
+
+
+# color_map = {Pass="yellow", High="red", Low= "cyan",
+                                  # Sigma= "magenta", Mean='limegreen', Fail="blue", Median="violet")
+color_map = ['grey', 'grey', 'grey', 
+             'orange', 'orange', 'orange',
+             'navy', 'navy', 'navy',
+             'green', 'green', 'green', 
+             'slateblue', 'slateblue', 'slateblue']
+
+
+color_map = {0:'grey', 1:'grey', 2:'grey', 
+             3:'orange', 4:'orange', 5:'orange',
+             6:'navy', 7:'navy', 8:'navy',
+             9:'green', 10:'green', 11:'green', 
+             12:'slateblue', 13:'slateblue', 14:'slateblue'}
+
+
+
+colorsList = [10, 10, 10,    
+              20, 20, 20, 
+              30, 30, 30, 
+              40, 40, 40, 
+              50, 50, 50]
+#colorsIdx =  [color_map[i] for i in BigPosIdx]
+colorsIdx =  [colorsList[i] for i in BigPosIdx]
+print(colorsIdx)
+
+N=5
+c= ['hsl('+str(h)+',50%'+',50%)' for h in np.linspace(0, 360, N)]
+
+def plot_vs_resid(dataA, dataA_list, posIdx, colorsIdx, dataB = None, dataB_xtitle =''):
     print(dataA.shape)
 
+    # y1 = torq_estX[0:50]
+    # y2 = torq_estY[0:50]
+    # dataA = dataA[0:50]
+    # posIdx = posIdx[0:50]
+    # colorsIdx=colorsIdx[0:50]
+    print(posIdx)
     y1 = torq_estX
     y2 = torq_estY
+    dataA = dataA
+    posIdx = posIdx
+    colorsIdx=colorsIdx
 
     ytitle = 'estimate torque'
     yunits = '(g*cm)'
 
     x1 = dataA # e.g. ForceZ
     Atitle, Aunit = dataA_list
+    # aDF= pd.DataFrame(dataA, columns= Atitle)
+    # aDF['ColorIdx'] = colorsIdx
 
     print('~~~~~~~~~~Plotting! ' + ytitle + ' X, Y vs ', Atitle , '~~~~~~~~')
 
 
-    trace0 = go.Scatter( x = x1, y = y1, mode = 'markers',
+    trace0 = go.Scattergl( x = x1, y = y1, mode = 'markers',
                         name = ytitle +  ' X vs ' + Atitle, 
-                        marker=dict(size=4, symbol='circle'))
+                        fillcolor='black',
+                        marker=dict(size=7, symbol='circle', 
+                                    color=colorsIdx, colorbar= go.ColorBar(title= 'colorbar'),
+                                #colorscale='jet')
+                                colorscale='flag',
+                                line = dict(
+                                width = 0.4,
+                                color = 'rgb(0, 0, 0)'
+                                ),
+                                opacity=0.8
+                        )
+              )
     # https://plot.ly/python/reference/#scatter
-    trace1 = go.Scatter( x = x1, y = y2, mode = 'markers', 
-                        name = ytitle +  ' Y vs ' + Atitle, 
-                        marker=dict(size=4, symbol='circle'))
+    # trace1 = go.Scatter( x = x1, y = y2, mode = 'markers', 
+                        # name = ytitle +  ' Y vs ' + Atitle, 
+                        # marker=dict(size=4, symbol='circle'),
+                        # )
 
     strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -67,27 +123,29 @@ def plot_vs_resid(dataA, dataA_list,  dataB = None, dataB_xtitle =''):
         title = overall_title,
         legend=dict(x=.5, y=0.1) )
 
-    fig = tools.make_subplots(rows=2, cols=1)#, subplot_titles=(trace0.name, trace1.name))
+    #fig = tools.make_subplots(rows=2, cols=1)#, subplot_titles=(trace0.name, trace1.name))
+    fig = dict(data=[trace0], layout=layout)
+    
 
-    fig.append_trace(trace0, 1,1)
-    fig.append_trace(trace1, 2,1)
+    #fig.append_trace(trace0, 1,1)
+    #fig.append_trace(trace1, 2,1)
 
     fig['layout'].update(title=overall_title, showlegend=False)
 
     fig['layout']['xaxis1'].update(title=Atitle + ' ' + Aunit)
-    fig['layout']['xaxis2'].update(title=Atitle + ' ' + Aunit + \
-        '<br><br>K: ' + np.array_str(K, precision=2) + \
-        '<br>Time: ' + strtime )
+    #fig['layout']['xaxis2'].update(title=Atitle + ' ' + Aunit + \
+    #    '<br><br>K: ' + np.array_str(K, precision=2) + \
+    #    '<br>Time: ' + strtime )
 
     fig['layout']['yaxis1'].update(title= ytitle + ' X ' + yunits)
-    fig['layout']['yaxis2'].update(title= ytitle + ' Y ' + yunits)
+    #fig['layout']['yaxis2'].update(title= ytitle + ' Y ' + yunits)
 
-    po.plot(fig, image='png', image_width=900, image_height=1000, filename= Atitle +'.html', image_filename = Atitle )
-    # po.plot(fig, filename= Atitle +'.html')
+    #po.plot(fig, image='png', image_width=900, image_height=1000, filename= Atitle +'.html', image_filename = Atitle )
+    po.plot(fig, filename= Atitle +'.html')
     return
 
-#plot_vs_resid(BigTorque[:,0], ['Torque X Real (Measured)', 'g'])
-plot_vs_resid(BigTorque[:,1], ['Torque Y Real (Measured)', 'g'])
+plot_vs_resid(BigTorque[:,0],  ['Torque X Real (Measured)', 'g*cm'], BigPosIdx, colorsIdx)
+# plot_vs_resid(BigTorque[:,1], ['Torque Y Real (Measured)', 'g*cm'])
 # plot_vs_resid(BigForce[:,2], ['ForceZ', 'g'])
 # plot_vs_resid(BigPosition[:,0], ['PositionX', 'cm'])
 # plot_vs_resid(BigPosition[:,1], ['PositionY', 'cm'])

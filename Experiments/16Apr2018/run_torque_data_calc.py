@@ -75,13 +75,14 @@ for i in listpos:
     positions = np.tile(pos, n).reshape(n, -1)
     BigPosition = np.vstack((BigPosition, positions))
     BigForce = np.vstack((BigForce, forces))
-    BigPosIdx.append(0)
+    BigPosIdx.extend([i]*n)
 
 BigTheta = BigTheta[1:,:] #remove first row of zeros, from init
 BigTorque = BigTorque[1:,:]
 BigPosition = BigPosition[1:,:] #remove first row of zeros, from init
 BigForce = BigForce[1:,:]
 BigPosIdx = np.array(BigPosIdx)
+print(BigPosIdx)
 
 print('number of datapoints', BigTheta.shape)
 
@@ -91,7 +92,7 @@ with shelve.open('calculated_data', 'c') as shelf:
     shelf['listpos'] = listpos 
     shelf['BigForce'] = BigForce
     shelf['BigPosition'] = BigPosition
-    shelf['BigPosIdx'] = BigPosition
+    shelf['BigPosIdx'] = BigPosIdx 
     # shelf['forces'] = forces 
     # shelf['posXYZ'] = posXYZ 
 

@@ -78,7 +78,11 @@ torq_est = yPred2
 torq_est2 = np.dot(matK, theta.T).T #n.3
 
 # --  quick sanity check 
-# resid = torq - torq_est 
+resid = torq - torq_est 
+print(resid.mean(axis=0))
+print(resid.std(axis=0))
+print(torq_est.mean(axis=0))
+print(torq_est.std(axis=0))
 # # resid2 = torq - torq_est2
 # mse = (resid ** 2).mean(axis=0)
 # print('resid shape', resid.shape)
@@ -94,7 +98,9 @@ print('Root Mean Squared Error: %s' % str(rmse))
 
 print('\n---- Using sklearn LinearRegression.pred(theta).   ========')
 rmse = metrics.mean_squared_error(torq, yPred2, multioutput='raw_values')**0.5
+stddev = resid.std(axis=0)
 print('Root Mean Squared Error: %s' % str(rmse))
+print('Population StdDev: %s' % str(stddev))
 
 print('\n---- Using sklearn Ridge.pred(theta).   ========')
 rmse = metrics.mean_squared_error(torq, yPred, multioutput='raw_values')**0.5
@@ -105,8 +111,7 @@ print('\nNote: torques about y axis: Min', myy.min(), '; Max', myy.max(), 'grams
 print('\n======================')
 
 
-full_data = np.hstack((BigPosition, BigForce, BigTheta, BigTorque, BigPosIdx))
-
+full_data = np.hstack((BigPosition, BigForce, BigTheta, BigTorque))#, BigPosIdx))
 
 full_data = np.hstack((full_data, torq_est, resid))
 print(torq_est.shape)
