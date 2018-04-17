@@ -54,14 +54,15 @@ print('torq shape', torq.shape)
 myX = BigTheta#theta_1Dreshape(-1,1)
 myy = torq 
 
-regr= Ridge(fit_intercept=True, alpha=1.0, random_state=0, normalize=True)
-regr2 = linear_model.LinearRegression()
+regr= Ridge(fit_intercept=False, alpha=1.0, random_state=0, normalize=True) #TODO how does fitting yintercept make rmse worse?
+regr2 = linear_model.LinearRegression(fit_intercept=False)
 regr.fit(myX, myy)
 regr2.fit(myX, myy)
 K = regr.coef_
 K2 = regr2.coef_ 
 yPred= regr.predict(myX) 
 yPred2= regr2.predict(myX) 
+
 print('\n======================')
 matK = np.linalg.lstsq(BigTorque, BigTheta, rcond=None)[0]
 print(matK.shape)
@@ -73,35 +74,32 @@ print('\n======================')
 #######################################
 # --  torq_est Definition 
 #######################################
-#torq_est = np.dot(K2, theta.T).T #n.3
 torq_est = yPred2
-resid = torq - torq_est 
-mse = (resid ** 2).mean(axis=0)
-print('resid shape', resid.shape)
-print('RMSE Per Torque Dim', np.sqrt(mse))
+torq_est2 = np.dot(matK, theta.T).T #n.3
+
+# --  quick sanity check 
+# resid = torq - torq_est 
+# # resid2 = torq - torq_est2
+# mse = (resid ** 2).mean(axis=0)
+# print('resid shape', resid.shape)
+# print('RMSE Per Torque Dim', np.sqrt(mse))
+
 #print('Variance score (ideal 1): %.2f' % r2_score(thetaY))
+#print('Mean Absolute Error: %0.02f' % metrics.mean_absolute_error(torq, yPred))  
+
 print('\n=======  SkLearn Metrics====')
-# print('\n---- Using LinReg K dot theta. This has worse error as we have no intercept term. ===')
-# print('Mean Absolute Error: %0.02f'  % metrics.mean_absolute_error(torq, torq_est))
-# print('Mean Squared Error: %0.02f'  % metrics.mean_squared_error(torq, torq_est)  )
-# print('Root Mean Squared Error %0.02f' % np.sqrt(metrics.mean_squared_error(torq, torq_est)))
+print('\n---- Using LinReg K dot theta. This has worse error as we have no intercept term. ===')
+rmse = metrics.mean_squared_error(torq, torq_est2, multioutput='raw_values')**0.5
+print('Root Mean Squared Error: %s' % str(rmse))
 
 print('\n---- Using sklearn LinearRegression.pred(theta).   ========')
-print('Mean Absolute Error: %0.02f:' % metrics.mean_absolute_error(torq, yPred2)),
-print('Mean Squared Error: %0.02f' % metrics.mean_squared_error(torq, yPred2)  )
-print('Root Mean Squared Error: %0.02f' % np.sqrt(metrics.mean_squared_error(torq, yPred2)))
-
-print(np.sqrt(((torq - yPred2) ** 2).mean())) #all columns
-print(np.sqrt(((torq[:,0] - yPred2[:,0]) ** 2).mean()))
-print(np.sqrt(((torq[:,1] - yPred2[:,1]) ** 2).mean()))
-print((torq - yPred2)[0:2,:])
-
+rmse = metrics.mean_squared_error(torq, yPred2, multioutput='raw_values')**0.5
+print('Root Mean Squared Error: %s' % str(rmse))
 
 print('\n---- Using sklearn Ridge.pred(theta).   ========')
-print('Mean Absolute Error: %0.02f' % metrics.mean_absolute_error(torq, yPred))  
-print('Mean Squared Error: %0.02f' % metrics.mean_squared_error(torq, yPred)  )
-print('Root Mean Squared Error: %0.02f' % np.sqrt(metrics.mean_squared_error(torq, yPred)))
-print('\n --- LinRegr has the best fit ----')
+rmse = metrics.mean_squared_error(torq, yPred, multioutput='raw_values')**0.5
+print('Root Mean Squared Error: %s' % str(rmse))
+print('\n --- LinRegr and Ridge have same the best fit after removing intercept----')
 
 print('\nNote: torques about y axis: Min', myy.min(), '; Max', myy.max(), 'grams * cm')
 print('\n======================')
