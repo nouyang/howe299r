@@ -1,5 +1,7 @@
 """
-Abstract version of 3d_residuals_plot.py, to handle making 14 graphs
+Let's make lots of plots!
+Now using seaborn.
+Now plotting by the three groups.
 Created on Fri Apr 10
 @author: nrw
 """
