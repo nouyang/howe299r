@@ -70,14 +70,16 @@ colorsList = [posX1, posX1, posX1,
                  posX4, posX4, posX4, 
                  posX5, posX5, posX5]
 
-colorsList = [posY1, posY1, posY1, posY1, posY1,
-                posY2, posY2, posY2, posY2, posY2,
-                posY3, posY3, posY3, posY3, posY3]
+# colorsList = [posY1, posY1, posY1, posY1, posY1,
+                # posY2, posY2, posY2, posY2, posY2,
+                # posY3, posY3, posY3, posY3, posY3]
 
 # ---- X position ----
 
 colorsIdx =  [colorsList[i] for i in BigPosIdx]
 
+
+'''
 residX = resid[:,0]
 residY = resid[:,1]
 df=pd.DataFrame({'Torq X measured':  BigTorque[:,0], 
@@ -87,18 +89,23 @@ df=pd.DataFrame({'Torq X measured':  BigTorque[:,0],
                  'Colors':colorsIdx})
 
 sns.set()
-g = sns.lmplot(x='Torq X measured', y='Torq X estimated', data=df, hue='Colors')
+g = sns.lmplot(x='Torq Y measured', y='Torq Y estimated', data=df, hue='Colors')
 plt.title('95% confidence interval')
 
+strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+ax = plt.gca()
+plt.text(1.1, 0, 'Time: '+strtime, 
+            horizontalalignment='left',
+            verticalalignment='bottom',
+            transform = ax.transAxes,
+            fontsize=6)
+ax.ylabel='<br>Time: ' + strtime
+
 plt.show()
+'''
 
 def plot_vs_resid(vsResid, vsResid_text):
 
-    # y1 = torq_estX[0:50]
-    # y2 = torq_estY[0:50]
-    # response = response[0:50]
-    # posIdx = posIdx[0:50]
-    # colorsIdx=colorsIdx[0:50]
 
     residX = resid[:,0]
     residY = resid[:,1]
@@ -120,15 +127,26 @@ def plot_vs_resid(vsResid, vsResid_text):
                      'Resid of TorqY fit':residY, horiztitle:vsResid, 'Colors':colorsIdx})
 
     # g = sns.PairGrid(df, hue='posIdx') 
+
     # hue=posIdx -> setting an array element with a sequence, b/c var, not text
-    g = sns.lmplot(x=horiztitle, y='Resid of TorqY fit', data=df, hue='Colors', size=4, aspect=1)
+    g = sns.lmplot(x=horiztitle, y='Resid of TorqX fit', data=df, hue='Colors')
     g.add_legend()
+
+    strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    ax = plt.gca()
+    plt.text(1.1, 0, 'Time: '+strtime, 
+            horizontalalignment='left',
+            verticalalignment='bottom',
+            transform = ax.transAxes,
+            fontsize=6)
+    ax.ylabel='<br>Time: ' + strtime
     plt.show()
 
 #sns.distplot(df['stand_square_feet'],kde = False, ax=ax[1][2])
 
 
-#plot_vs_resid(BigTorque[:,0],  ['Torque X Real (Measured)', 'g*cm'])
+plot_vs_resid(BigTorque[:,0],  ['Torque X Real (Measured)', 'g*cm'])
 #plot_vs_resid(BigTorque[:,1], ['Torque Y Real (Measured)', 'g*cm'])
 # plot_vs_resid(BigForce[:,2], ['ForceZ', 'g'])
 # plot_vs_resid(BigPosition[:,0], ['PositionX', 'cm'])

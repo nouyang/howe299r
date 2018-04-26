@@ -111,11 +111,19 @@ print('\n======================')
 
 
 full_data = np.hstack((BigPosition, BigForce, BigTheta, BigTorque))#, BigPosIdx))
-
 full_data = np.hstack((full_data, torq_est, resid))
+full_data[:,-1] = BigPosIdx
 print(torq_est.shape)
 print(resid.shape)
-np.savetxt("full_calculated_data.csv", full_data, delimiter=",", fmt='%0.02f')
+print(full_data.shape)
+
+f=open('full_calculated_data.csv', 'w')
+f.write('Big Pos, , , Big Force, , , BigTheta, , , BigTorque, , ,  \
+    Torq Est, , , Resid, , BigPosIdx\n')
+f.write('X, Y, Z,'*6 + ' \n')
+f.close()
+f=open('full_calculated_data.csv', 'a')
+np.savetxt(f, full_data, delimiter=",", fmt='%0.02f')
 
 with shelve.open('calculated_data2', 'c') as shelf:
     shelf['torq_est'] = torq_est

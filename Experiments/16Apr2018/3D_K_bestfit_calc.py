@@ -1,4 +1,5 @@
 """
+OLD
 NOTE: this old. for newer version see 3d_residuals_plot,
 which uses shelve
 Created on Thu Apr 9 
