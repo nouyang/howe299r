@@ -1,0 +1,135 @@
+SPI:
+Needs 2 analog pins, per "bus".
+On each bus, need a unique address per sensor.
+Some IC's you can set the address (requires an additional pin on your micro), some you can't.
+
+e.g. If the  datasheet for (another Ic) says 1001xxx -> this allows for 8 different addresses, if you dedicate 3 digital i/o
+pins.
+
+
+However, BMP280 only supports 1bit of change...
+https://cdn-shop.adafruit.com/datasheets/BST-BMP280-DS001-11.pdf
+The  7 - bit  device  address  is  111011 x .  The  6  MSB  bits are fixed .  The last bit  is  changeable  by SDO value  and  can  be  changed  during  operation .  Connecting SDO  to  GND  results  in  slave address 1110110 (0x76) ; connection it to V DDIO re sults in slave address 1110111 (0x77) , which is  the same as  BMP180 ’s I²C address .  The SDO pin  cannot  be  left  floating; if  left  floating,  the I²C address will be undefined. 
+
+(Note: BMP180 is previous version of this sensor).
+
+
+This would only allow two i2c addresses! The arduino breaks out 4 or 5 analog pins. We'd only be
+able to support 4 devices!
+
+
+Also, compare to MPL115A2 datasheet, which has a fixed 7bit I2C address, as mentioned on the first page:
+0x60. No options there!o
+
+###############
+# ---
+###############
+The article mentions "PCF8574 I/O expander ", which would allow you control 
+
+PCF8547Ns
+LHLL A2 A1 A0
+aka
+0100xxx 7 bit I2C address. Already, we can see this can't be used to read from any BMP280 addresses.
+(111011x).
+
+Thus, we cannot use the I/O expander. It is cool though!! This shows controlling 24 LEDs using just
+two analog pins on the arduino!
+http://tronixstuff.com/2010/10/29/tutorial-arduino-and-the-i2c-bus-part-two/
+
+http://www.ti.com/lit/ds/symlink/pcf8575.pdf
+
+
+###############
+# ---
+###############
+There *is* the question of whether the BMP280 would be suitable (e.g. if the diaphragm is directly
+under the sensor). If not, apparently the sensor is less sensitive.
+
+
+https://softroboticstoolkit.com/book/takktile-sensors
+. The diaphragm is cast under rubber, and vacuum degassed to bring rubber against the diaphragm.
+This greatly improves consistency and sensitivity.
+
+###############
+# ---
+###############
+
+How to create a three sensor array
+http://www.takktile.com/tutorial:thee-sensor-array
+
+http://www.takktile.com/tutorial:takkarray
+
+"""
+    TakkArray is an array of forty sensors.
+    Each row has a dedicated microcontroller (attiny) which makes it possible to activate required
+    sensor (i.e. chip select).
+"""
+
+###############
+# ---
+###############
+Fortunately, the BMP280 can use SPI. 
+
+http://tronixstuff.com/2011/06/15/tutorial-arduino-and-the-spi-bus-part-ii/
+
+However, must have a digital I/O per chip.
++SCK
++MOSI
++MISO
+
+20 GPIO on arduino uno, -2 for tx/rx,  = about 18 io. With 3 for the SPI comms, that means I can
+control about 15 i2c.
+https://arduino.stackexchange.com/questions/14407/use-all-pins-as-digital-i-o
+
+Eh, 3x4 array should be enough. Finger is only what, 1cm wide x 2.5 cm long, 
+
+That's a sensor every 250mm/4 = 6.25mm, which we could decrease by doing some staggering / flipping
+of the sensors.
+
+
+And... a lot more if i actually got clever and used other chips.   I have no deep desire to make an
+8x5 array... 3x4 is good enough for me. Maybe a contractor can make the 40 sensor array after I
+build a prelim 12 sensor array.
+
+
+    "oh no, top-ish hit on google images for reference imgae, has typo: PB6 should be PB5"
+
+
+TODO: how does this impact the maximum frequency at which we can read the array of sensors?
+Oh well, if we need faster data rates, the next person can design another sensor... open source
+hardware, maybe someone can fix it :)
+###############
+# ---
+###############
+https://github.com/harvardbiorobotics/takktile_ros
+
+###############
+# ---
+###############
+price
+https://octopart.com/search?q=bmp280&start=0
+3.48
+
+What... that's more than the cost of a breakout...
+Breakout ~$10 for 5, even from china... $8.66
+(I really hate that nowadays sellers have found a way around sorting for lowest price, by adding in
+a "99c" item in the "qty" box).
+
+Hmm. It's so late, I'll order out an Adafruit BM280 breaktout too, just in case.
+
+https://www.adafruit.com/product/2651 $10, or $11.8 with amazon prime. (uhmm.... that must be amazon playing with the prices again :/)o
+$4.55 shipping on adafruit.com....
+
+When talking about pressure, atmospheric pressure and barometric pressure are two terms which are
+used often. They essentially refer to the same thing, but depending on the usage they may have two
+distinct connotations. The main difference between barometric pressure and atmospheric pressure is
+that atmospheric pressure describes the pressure exerted by the atmosphere, whereas barometric
+pressure refers to a pressure measured by a barometer. 
+
+
+###############
+# ---
+###############
+
+Okay: outstanding questions: is the bmp280 going to respond happily after i stick it under rubber.
+To be found out on Saturday..
