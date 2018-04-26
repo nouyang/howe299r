@@ -18,6 +18,7 @@ from sklearn import metrics
 
 import seaborn as sns
 
+sns.set()
 #===============================================
 #### DECLARE CONSTANTS ####
 #===============================================
@@ -64,15 +65,17 @@ posY1 = 'Y pos1 = 0.4 cm'
 posY2 = 'Y pos2 = 0.1 cm'
 posY3 = 'Y pos3 = -0.2 cm' 
 
+
+# ----------------- Comment / uncomment colorsList to get x pos and y pos hues  --
 colorsList = [posX1, posX1, posX1, 
                  posX2, posX2, posX2, 
                  posX3, posX3, posX3, 
                  posX4, posX4, posX4, 
                  posX5, posX5, posX5]
 
-# colorsList = [posY1, posY1, posY1, posY1, posY1,
-                # posY2, posY2, posY2, posY2, posY2,
-                # posY3, posY3, posY3, posY3, posY3]
+colorsList = [posY1, posY1, posY1, posY1, posY1,
+                posY2, posY2, posY2, posY2, posY2,
+                posY3, posY3, posY3, posY3, posY3]
 
 # ---- X position ----
 
@@ -88,7 +91,6 @@ df=pd.DataFrame({'Torq X measured':  BigTorque[:,0],
                  'Torq Y estimated':  torq_est[:,1],
                  'Colors':colorsIdx})
 
-sns.set()
 g = sns.lmplot(x='Torq Y measured', y='Torq Y estimated', data=df, hue='Colors')
 plt.title('95% confidence interval')
 
@@ -104,6 +106,7 @@ ax.ylabel='<br>Time: ' + strtime
 plt.show()
 '''
 
+'''
 def plot_vs_resid(vsResid, vsResid_text):
 
 
@@ -120,39 +123,92 @@ def plot_vs_resid(vsResid, vsResid_text):
     # aDF= pd.DataFrame(response, columns= Atitle)
     # aDF['ColorIdx'] = colorsIdx
 
-    print('~~~~~~~~~~Plotting! ' + ytitle + ' of torq X Y fits, vs ', horiztitle,
-          '~~~~~~~~')
+    print('~~~~~~~~~~Plotting!' + '~~~~~~~~')
 
     df=pd.DataFrame({'Resid of TorqX fit':residX, 
                      'Resid of TorqY fit':residY, horiztitle:vsResid, 'Colors':colorsIdx})
 
-    # g = sns.PairGrid(df, hue='posIdx') 
+    #  Plot individual plot
+    # g = sns.lmplot(x=horiztitle, y='Resid of TorqX fit', data=df, hue='Colors')
+    # g.add_legend()
 
-    # hue=posIdx -> setting an array element with a sequence, b/c var, not text
-    g = sns.lmplot(x=horiztitle, y='Resid of TorqX fit', data=df, hue='Colors')
-    g.add_legend()
-
+    # Plot pair (or more) of plots
+    sns.pairplot(data=df, hue='Colors', y_vars=['Resid of TorqX fit', 'Resid of TorqY fit'],
+                 x_vars=horiztitle)
+    plt.suptitle('Residual investigation')
     strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
     ax = plt.gca()
-    plt.text(1.1, 0, 'Time: '+strtime, 
-            horizontalalignment='left',
-            verticalalignment='bottom',
-            transform = ax.transAxes,
-            fontsize=6)
-    ax.ylabel='<br>Time: ' + strtime
+    plt.text(1.1, 0, 'Time: '+strtime, horizontalalignment='left', verticalalignment='bottom',
+            transform = ax.transAxes, fontsize=6)
+
     plt.show()
 
 #sns.distplot(df['stand_square_feet'],kde = False, ax=ax[1][2])
 
 
 plot_vs_resid(BigTorque[:,0],  ['Torque X Real (Measured)', 'g*cm'])
-#plot_vs_resid(BigTorque[:,1], ['Torque Y Real (Measured)', 'g*cm'])
-# plot_vs_resid(BigForce[:,2], ['ForceZ', 'g'])
-# plot_vs_resid(BigPosition[:,0], ['PositionX', 'cm'])
-# plot_vs_resid(BigPosition[:,1], ['PositionY', 'cm'])
-# plot_vs_resid(BigTheta[:,0], ['ThetaX', 'deg'])
-# plot_vs_resid(BigTheta[:,1], ['ThetaY', 'deg'])
-# plot_vs_resid(BigTheta[:,2], ['ThetaZ', 'deg'])
-# plot_vs_resid(torq_est[:,0], ['Torq Est X (K*measured thetas)', 'g cm'])
-# plot_vs_resid(torq_est[:,1], ['Torq Est Y (K*measured thetas)', 'g cm'])
+plot_vs_resid(BigTorque[:,1], ['Torque Y Real (Measured)', 'g*cm'])
+plot_vs_resid(BigForce[:,2], ['ForceZ', 'g'])
+plot_vs_resid(BigPosition[:,0], ['PositionX', 'cm'])
+plot_vs_resid(BigPosition[:,1], ['PositionY', 'cm'])
+plot_vs_resid(BigTheta[:,0], ['ThetaX', 'deg'])
+plot_vs_resid(BigTheta[:,1], ['ThetaY', 'deg'])
+plot_vs_resid(BigTheta[:,2], ['ThetaZ', 'deg'])
+plot_vs_resid(torq_est[:,0], ['Torq Est X (K*measured thetas)', 'g cm'])
+plot_vs_resid(torq_est[:,1], ['Torq Est Y (K*measured thetas)', 'g cm'])
+'''
+
+
+
+print('~~~~~~~~~~Plotting!' + '~~~~~~~~')
+
+
+df=pd.DataFrame({'Resid of TorqX fit':resid[:,0],
+                 'Resid of TorqY fit':resid[:,1],
+                 'TorqX measured (g*cm)':BigTorque[:,0],
+                 'TorqY measured (g*cm)':BigTorque[:,1],
+                 'ForceZ (g)':BigForce[:,2],
+                 'PositionX (cm)': BigPosition[:,0],
+                 'PositionY (cm)': BigPosition[:,1],
+                 'ThetaX (deg)': BigTheta[:,0],
+                 'ThetaY (deg)': BigTheta[:,1],
+                 'ThetaZ (deg)': BigTheta[:,2],
+                 'TorqX estimated (g*cm)': torq_est[:,0],
+                 'TorqY estimated (g*cm)': torq_est[:,1],
+                 'Colors':colorsIdx})
+
+
+# ----------------------- Plot pair (or more) of plots
+# sns.pairplot(data=df, hue='Colors', y_vars=['Resid of TorqX fit', 'Resid of TorqY fit'],
+             # x_vars=[ 'TorqX measured (g*cm)', 'TorqY measured (g*cm)', 
+                 # 'TorqX estimated (g*cm)', 'TorqY estimated (g*cm)' ])
+
+# sns.pairplot(data=df, hue='Colors', y_vars=['Resid of TorqX fit', 'Resid of TorqY fit'],
+             # x_vars=[ 'ForceZ (g)','PositionX (cm)','PositionY (cm)'])
+
+
+sns.pairplot(data=df, hue='Colors', y_vars=['Resid of TorqX fit', 'Resid of TorqY fit'],
+             x_vars=[ 'ThetaX (deg)' ,'ThetaY (deg)', 'ThetaZ (deg)'])
+
+
+                 # 'TorqX measured (g*cm)'
+                 # 'TorqY measured (g*cm)'
+                 # 'ForceZ (g)'
+                 # 'PositionX (cm)'
+                 # 'PositionY (cm)'
+                 # 'ThetaX (deg)'
+                 # 'ThetaY (deg)'
+                 # 'ThetaZ (deg)'
+                 # 'TorqX estimated (g*cm)'
+                 # 'TorqY estimated (g*cm)'
+plt.suptitle('Residual investigation')
+strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+ax = plt.gca()
+plt.text(1.1, 0, 'Time: '+strtime, horizontalalignment='left', verticalalignment='bottom',
+        transform = ax.transAxes, fontsize=6)
+
+plt.show()
+
+#sns.distplot(df['stand_square_feet'],kde = False, ax=ax[1][2])
+
+
