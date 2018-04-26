@@ -60,9 +60,9 @@ posX3 = 'X pos3 = 3.5 cm'
 posX4 = 'X pos4 = 3.1 cm'     
 posX5 = 'X pos5 = 2.6 cm'     
 
-posY1 = 'Y pos1 = 0.4'
-posY2 = 'Y pos2 = 0.1'
-posY3 = 'Y pos3 = -0.2' 
+posY1 = 'Y pos1 = 0.4 cm'
+posY2 = 'Y pos2 = 0.1 cm'
+posY3 = 'Y pos3 = -0.2 cm' 
 
 colorsList = [posX1, posX1, posX1, 
                  posX2, posX2, posX2, 
@@ -77,6 +77,20 @@ colorsList = [posY1, posY1, posY1, posY1, posY1,
 # ---- X position ----
 
 colorsIdx =  [colorsList[i] for i in BigPosIdx]
+
+residX = resid[:,0]
+residY = resid[:,1]
+df=pd.DataFrame({'Torq X measured':  BigTorque[:,0], 
+                 'Torq Y measured':  BigTorque[:,1], 
+                 'Torq X estimated':  torq_est[:,0],
+                 'Torq Y estimated':  torq_est[:,1],
+                 'Colors':colorsIdx})
+
+sns.set()
+g = sns.lmplot(x='Torq X measured', y='Torq X estimated', data=df, hue='Colors')
+plt.title('95% confidence interval')
+
+plt.show()
 
 def plot_vs_resid(vsResid, vsResid_text):
 
@@ -107,7 +121,7 @@ def plot_vs_resid(vsResid, vsResid_text):
 
     # g = sns.PairGrid(df, hue='posIdx') 
     # hue=posIdx -> setting an array element with a sequence, b/c var, not text
-    g = sns.lmplot(x=horiztitle, y='Resid of TorqY fit', data=df, hue='Colors')
+    g = sns.lmplot(x=horiztitle, y='Resid of TorqY fit', data=df, hue='Colors', size=4, aspect=1)
     g.add_legend()
     plt.show()
 
@@ -115,7 +129,7 @@ def plot_vs_resid(vsResid, vsResid_text):
 
 
 #plot_vs_resid(BigTorque[:,0],  ['Torque X Real (Measured)', 'g*cm'])
-plot_vs_resid(BigTorque[:,1], ['Torque Y Real (Measured)', 'g*cm'])
+#plot_vs_resid(BigTorque[:,1], ['Torque Y Real (Measured)', 'g*cm'])
 # plot_vs_resid(BigForce[:,2], ['ForceZ', 'g'])
 # plot_vs_resid(BigPosition[:,0], ['PositionX', 'cm'])
 # plot_vs_resid(BigPosition[:,1], ['PositionY', 'cm'])

@@ -29,7 +29,8 @@ ax1.set_xlabel('$x$')
 ax1.set_ylabel('$y$')
 
 ax2.hist(data, bins=np.arange(data.min(), data.max()),
-                      label=('x', 'y'))
+                      label=('x', 'y')),p
 ax2.legend(loc=(0.65, 0.8))
 ax2.set_title('Frequencies of $x$ and $y$')
 ax2.yaxis.tick_right()
+ut t
