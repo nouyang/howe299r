@@ -1,0 +1,15 @@
+nrw@earlgrey: howe299r/apriltags/build/bin$ ./apriltags_demo
+nrw@earlgrey: howe299r/python$ python IMU_to_file.py 
+
+nrw@earlgrey: howe299r/apriltags/build/bin$ watch -n 0.2 tail "*_openCV.txt"
+nrw@earlgrey: howe299r/apriltags/build/bin$ watch -n 0.2 wc "*_openCV.txt"
+nrw@earlgrey: howe299r/python$ watch -n 0.2 tail "*_accel_data.txt" 
+nrw@earlgrey: howe299r/python$ watch -n 0.2 wc "*_accel_data.txt" 
+** $ watch -n 0.2 tail tailtest.txt
+
+
+
+
+$ n=4
+$ tac tmp.txt | sed "1,$n{d}" | tac > out.txt; cat out.txt > tmp.txt 
+
