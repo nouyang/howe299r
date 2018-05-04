@@ -28,3 +28,40 @@ var inline = {
   del: noop,
   text: /^[\s\S]+?(?=[\\<!\[`*]|\b_| {2,}\n|$)/
 }
+o
+
+
+https://github.com/wzpan/hexo-renderer-pandoc/issues/16
+npm install hexo-renderer-pandoc --save
+
+
+It works!
+Okay, so the admin interface: must make sure to change file *and* restart server!
+Half the time it seems my problem solved then... (or maybe it is the browsersync that is destroying me) 
+
+
+https://hexo.io/docs/server.html
+
+In static mode, only files in the public folder will be served and file watching is disabled. You
+have to run hexo generate before starting the server. Usually used in production.
+
+$ hexo server -s
+ hexo generate --watch
+
+ https://github.com/wzpan/hexo-renderer-pandoc
+
+node-modultes/ hexo-render-pandoc / index.js
+
+  var args = [ '-f', 'markdown'+extensions, '-t', 'html', math]
+pandoc:
+	#extensions: link_attributes
+	mathEngine: mathjax
+DEFINITELY DO NOT PUT INT.
+
+TypeError: config.extensions.forEach is not a function
+
+
+
+npm install hexo-renderer-pandoc
+
+make no further changes :)

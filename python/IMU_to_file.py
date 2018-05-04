@@ -5,6 +5,7 @@
 # Author: nrw
 import os
 import serial
+# pip install pyserial, NOT serial!
 import tty
 import time
 import tkinter as tk
@@ -36,14 +37,15 @@ class App(threading.Thread):
         print('Key pressed!')
         data = datetime.now().strftime('%Y-%m-%d %H:%M:%S').encode()
         data += x 
-        try:
-            outf.write(data)
-            outf.flush()
-            print('done writing')
-        except IOError as ioex: 
-            print("I/O error({0}): {1}".format(ioex.errno, os.strerror(ioex.errno)))
+        with open(fname,fmode) as outf :
+            try:
+                outf.write(data)
+                outf.flush()
+                print('done writing')
+            except IOError as ioex: 
+                print("I/O error({0}): {1}".format(ioex.errno, os.strerror(ioex.errno)))
 
-
+	
 app = App()
 print('Now we can continue running code while mainloop runs!')
 
@@ -51,10 +53,9 @@ baud  = 115200
 strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 fname = strtime + '_accel_data.txt'
 fmode = 'ab'
-reps  = 100
 
 
-outf = open(fname,fmode)
+#outf = open(fname,fmode)
 
 # https://stackoverflow.com/questions/17815686/detect-key-input-in-python
 if os.path.exists('/dev/ttyACM0'):
