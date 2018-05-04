@@ -38,12 +38,9 @@ class App(threading.Thread):
         data = datetime.now().strftime('%Y-%m-%d %H:%M:%S').encode()
         data += x 
         with open(fname,fmode) as outf :
-            try:
-                outf.write(data)
-                outf.flush()
-                print('done writing')
-            except IOError as ioex: 
-                print("I/O error({0}): {1}".format(ioex.errno, os.strerror(ioex.errno)))
+            outf.write(data)
+            outf.flush()
+            print('done writing')
 
 	
 app = App()
