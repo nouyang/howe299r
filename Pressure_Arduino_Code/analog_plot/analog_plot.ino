@@ -31,42 +31,51 @@ Plotting: Uses code from electronut.in
 #define BMP_CS3 8
 
 #define DELAY 50 
+#define SMALLDELAY 5 
 
 //Adafruit_BMP280 bme; // I2C
 //Adafruit_BMP280 bme(BMP_CS); // hardware SPI
 Adafruit_BMP280 bme(BMP_CS, BMP_MOSI, BMP_MISO,  BMP_SCK);
 Adafruit_BMP280 bme2(BMP_CS2, BMP_MOSI, BMP_MISO,  BMP_SCK);
 Adafruit_BMP280 bme3(BMP_CS3, BMP_MOSI, BMP_MISO,  BMP_SCK);
-unsigned long previousMillis=0;
-time_t t = now();
+
+unsigned long avgbme;
+unsigned long avgbme2;
 
 void setup() {
-  Serial.begin(115200);
+    Serial.begin(115200);
   /*Serial.println(F("BMP280 test"));*/
   /*if (!bme3.begin()) {  */
     /*Serial.println("Could not find a valid BMP280 #3 (pin 8) sensor, check wiring!");*/
     /*while (1);*/
   /*}*/
-  /*if (!bme2.begin()) {  */
-    /*Serial.println("Could not find a valid BMP280 #2 (pin 9) sensor, check wiring!");*/
-    /*while (1);*/
-  /*}*/
-  if (!bme.begin()) {  
-    Serial.println("Could not find a valid BMP280 sensor (pin 10), check wiring!");
-    while (1);
-  }
+    if (!bme2.begin()) {  
+        Serial.println("Could not find a valid BMP280 #2 (pin 9) sensor, check wiring!");
+        while (1);
+    }
+    if (!bme.begin()) {  
+        Serial.println("Could not find a valid BMP280 sensor (pin 10), check wiring!");
+        while (1);
+    }
 }
   
 void loop() {
     /*Serial.print("B1 Adafruit Breakout Pressure = ");*/
-    unsigned long currentMillis = millis(t);
-    unsigned long val2 = currentMillis - previousMillis;
-    Serial.print(bme.readPressure());
-    Serial.println(val2);
+    avgbme = 0;
+    avgbme2 = 0;
+    for (int i=0; i<10; i++){ 
+        avgbme += bme.readPressure();
+        avgbme2 += bme2.readPressure();
+        delay(SMALLDELAY);
+        
+    }
+    /*Serial.print(bme.readPressure());*/
+    Serial.print(avgbme/10);
     Serial.print(" ");
+    Serial.println(avgbme2/10);
+    /*Serial.println(bme2.readPressure());*/
+    /*Serial.print(" ");*/
     /*Serial.println(" Pa");*/
-    previousMillis = currentMillis;
-    delay(DELAY);
 
 
     /*[>Serial.print("B2 Generic Board Pressure = ");<]*/
