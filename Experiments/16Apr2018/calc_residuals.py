@@ -19,6 +19,7 @@ from sklearn import linear_model
 from sklearn.linear_model import Ridge
 from sklearn import metrics
 import shelve
+from sklearn.ensemble import RandomForestRegressor
 
 with shelve.open('calculated_data', 'r') as shelf:
     BigTheta = shelf['BigTheta']
@@ -55,12 +56,17 @@ myy = torq
 
 regr= Ridge(fit_intercept=False, alpha=1.0, random_state=0, normalize=True) #TODO how does fitting yintercept make rmse worse?
 regr2 = linear_model.LinearRegression(fit_intercept=False)
+
 regr.fit(myX, myy)
 regr2.fit(myX, myy)
 K = regr.coef_
 K2 = regr2.coef_ 
+linK = K2
 yPred= regr.predict(myX) 
 yPred2= regr2.predict(myX) 
+rfreg = RandomForestRegressor(max_depth=2, random_state=0)
+rfreg.fit(myX, myy)
+rfpred = rfreg.predict(myX)
 
 print('\n======================')
 matK = np.linalg.lstsq(BigTorque, BigTheta, rcond=None)[0]
@@ -93,6 +99,10 @@ print(torq_est.std(axis=0))
 print('\n=======  SkLearn Metrics====')
 print('\n---- Using LinReg K dot theta. This has worse error as we have no intercept term. ===')
 rmse = metrics.mean_squared_error(torq, torq_est2, multioutput='raw_values')**0.5
+print('Root Mean Squared Error: %s' % str(rmse))
+print('\n=======  SkLearn Metrics====')
+print('\n---- Using  RF ===')
+rmse = metrics.mean_squared_error(torq, rfpred, multioutput='raw_values')**0.5
 print('Root Mean Squared Error: %s' % str(rmse))
 
 print('\n---- Using sklearn LinearRegression.pred(theta).   ========')
@@ -128,4 +138,4 @@ np.savetxt(f, full_data, delimiter=",", fmt='%0.02f')
 with shelve.open('calculated_data2', 'c') as shelf:
     shelf['torq_est'] = torq_est
     shelf['resid'] = resid
-    shelf['K'] = K
+    shelf['K'] = K2 #linear fit
