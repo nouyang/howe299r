@@ -1,0 +1,14 @@
+
+
+All three thetas:
+|| lin rmse: [26.647]
+|| rf rmse: [22.477]
+
+Only Y theta
+|| lin rmse: [26.906]
+|| rf rmse: [22.600]
+
+
+Removing first X position, then testing that position
+|| lin test rmse: 23.332
+|| rf test rmse: 26.894
