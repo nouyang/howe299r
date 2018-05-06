@@ -53,6 +53,7 @@ class AnalogPlot:
             # print data
             if(len(data) == 2):
                 self.add(data)
+                print('data', data)
                 a0.set_data(range(self.maxLen), self.ax)
                 a1.set_data(range(self.maxLen), self.ay)
         except KeyboardInterrupt:
@@ -79,7 +80,7 @@ def main():
 
     print('using addr', addr)
 
-    port = serial.Serial(addr,baud)
+    ser = serial.Serial(addr,baud)
 
     # # create parser
     # parser = argparse.ArgumentParser(description="LDR serial")
@@ -99,11 +100,26 @@ def main():
 
     print('plotting data...')
 
+    # calculate y axis limits
+    line = ser.readline()
+    somedata = [float(val) for val in line.split()]
+    maxy = max(somedata)
+    miny = min(somedata)
+    print(somedata)
+    print(len(somedata))
+    print(miny, maxy)
+    ymin = miny*0.85
+    ymax  = maxy*1.15
+    print("setting ylims to", ymin, ymax)
+
     # set up animation
-    fig = plt.figure()
-    ax = plt.axes(xlim=(0, 100), ylim=(100900, 101200))
+    fig = plt.figure() 
+    ax = plt.axes(xlim=(0, 100), ylim=(ymin, ymax), 
+                  ylabel="Pressure (Pa)", xlabel="Time (# of datapoints)",
+                  title="BMP280 Pressure Sensors | 06 May 2018")
     a0, = ax.plot([], [])
     a1, = ax.plot([], [])
+   
     anim = animation.FuncAnimation(fig, analogPlot.update, 
                                    fargs=(a0, a1), 
                                    interval=50)
@@ -116,6 +132,12 @@ def main():
 
     print('exiting.')
         
+
+    #https://matplotlib.org/api/animation_api.html
+    # http://scipy-cookbook.readthedocs.io/items/Matplotlib_Animations.html
+    # https://matplotlib.org/examples/animation/index.html
+    # https://stackoverflow.com/questions/13181118/using-matplotlib-or-pyqtgraph-to-graph-real-time-data
+    # https://jakevdp.github.io/blog/2012/08/18/matplotlib-animation-tutorial/
 
 # call main
 if __name__ == '__main__':
