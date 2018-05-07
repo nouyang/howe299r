@@ -12,10 +12,10 @@ import shelve
 import pandas as pd
 import numpy as np
 
-path = "~/Documents/projects_Spring2018/howe299r/Experiments/06May2018/Python_Analysis"
+path = "~/Documents/projects_Spring2018/howe299r/Experiments/06May2018/Python_Analysis/IMU_data_no_tendon/"
 #IMUDats = [ '%02dIMU.txt'% x for x in pos ]
 IMUCols = ['timeSysCal', 'XYZ','X', 'Y', 'Z']
-possibForces = [20,50,70,100,150,200]
+ForcesList = [20,50,70,100,150,200]
 
 #===============================================
 #### DECLARE CONSTANTS ####
@@ -27,10 +27,10 @@ BigPosition = np.zeros((1,3))
 BigPosIdx = []
 
 
-listpos = range(15)
+listpos = [4,5,6,10,11,12]
 #listpos = [15]
 xs = [4.6, 4.1, 3.5, 3.1, 2.6] #pos 1, x coord = 4.6 cm
-ys = [0.4, 0.1, -0.2]
+ys = [0.2, -0.1, -0.3]
 posX = np.repeat(xs,3)
 posY = np.tile(ys, 5)
 posZ = np.array([0]*15)
@@ -39,9 +39,9 @@ posZ = np.array([0]*15)
 #### ACCUMULATE DATA ACROSS 15 POSITIONS  ####
 #===============================================
 for i in listpos:
-    print('position number: ', i+1)
+    print('position number: ', i)
     #### READ DATA ####
-    fname =  '%02dIMU.txt'%(i+1)
+    fname =  '%02d.txt'%(i)
     imuDat = pd.read_csv(path+fname, header=None,sep=';', 
                         names = IMUCols, skip_blank_lines=True, usecols=[0,1,2,3,4]) 
     imuDat = imuDat.drop(['timeSysCal', 'XYZ'], 1)
@@ -65,8 +65,16 @@ for i in listpos:
     #print('num datapoints: ',n)
 
     #### CALCULATE TORQUE ####
-    forcesZ = [[20*f]*3 for f in range(1, int(n/3)+1)] #start at 20g
-    forcesZ = np.array(forcesZ).flatten()
+    # we simplify model as only have force in z direction
+    # 36 datapoints / 3 samples pre position / 2 (zero and applied force) datapoints per sample
+    numforces = int(imuDat.shape[0]/6)
+    possibForces = np.array(ForcesList[0:numforces])
+    print('possib forces', possibForces)
+    forcesZ = np.repeat(possibForces, 3) 
+    print('forcesZ', forcesZ)
+
+    print('numforces', numforces, 'forcesZ shape', forcesZ.shape)
+    print('n', n)
     forces = np.column_stack((np.zeros((n,2)),forcesZ)) #n.3
 
     torques = np.cross(pos.reshape(-1,1).T, forces) #n.3
@@ -87,7 +95,7 @@ print(BigPosIdx)
 
 print('number of datapoints', BigTheta.shape)
 
-with shelve.open('calculated_data', 'c') as shelf:
+with shelve.open('cleaned_data', 'c') as shelf:
     shelf['BigTheta'] = BigTheta
     shelf['BigTorque'] = BigTorque
     shelf['listpos'] = listpos 
