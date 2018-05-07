@@ -37,7 +37,7 @@ def clean_data(inputpath, outfilename):
     xs = [4.1, 3.1] #pos 1, x coord = 4.6 cm
     ys = [0.2, -0.1, -0.4]
     posX = np.repeat(xs,3)
-    posY = np.tile(ys, 5)
+    posY = np.tile(ys, 2)
     posZ = np.array([0]*15)
 
     #===============================================
