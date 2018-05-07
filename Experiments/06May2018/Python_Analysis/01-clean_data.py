@@ -19,95 +19,97 @@ IMUCols = ['timeSysCal', 'XYZ','X', 'Y', 'Z']
 ForcesList = [15,44.7,64.5,94.4,144.5,193.7] #FIX: must account for unbalanced triple beam offset. NOTE: 200g is total guess/extrapolated
 
 
+
+
+def clean_data(inputpath, outfilename):
 #===============================================
 #### DECLARE CONSTANTS ####
 #===============================================
-BigTheta = np.zeros((1,3))
-BigTorque = np.zeros((1,3))
-BigForce = np.zeros((1,3))
-BigPosition = np.zeros((1,3))
-BigPosIdx = []
+    BigTheta = np.zeros((1,3))
+    BigTorque = np.zeros((1,3))
+    BigForce = np.zeros((1,3))
+    BigPosition = np.zeros((1,3))
+    BigPosIdx = []
 
+    listpos = [4,5,6,10,11,12]
+    #listpos = [15]
+    xs = [4.6, 4.1, 3.5, 3.1, 2.6] #pos 1, x coord = 4.6 cm
+    xs = [4.1, 3.1] #pos 1, x coord = 4.6 cm
+    ys = [0.2, -0.1, -0.4]
+    posX = np.repeat(xs,3)
+    posY = np.tile(ys, 5)
+    posZ = np.array([0]*15)
 
-listpos = [4,5,6,10,11,12]
-#listpos = [15]
-xs = [4.6, 4.1, 3.5, 3.1, 2.6] #pos 1, x coord = 4.6 cm
-xs = [4.1, 3.1] #pos 1, x coord = 4.6 cm
-ys = [0.2, -0.1, -0.4]
-posX = np.repeat(xs,3)
-posY = np.tile(ys, 5)
-posZ = np.array([0]*15)
+    #===============================================
+    #### ACCUMULATE DATA ACROSS ALL POSITIONS  ####
+    #===============================================
+    for idx in range(len(listpos)):
+        i = listpos[idx]
+        #### READ DATA ####
+        fname =  '%02d.txt'%(i)
+        imuDat = pd.read_csv(inputpath+fname, header=None,sep=';', 
+                             names = IMUCols, skip_blank_lines=True, usecols=[0,1,2,3,4]) 
+        imuDat = imuDat.drop(['timeSysCal', 'XYZ'], 1)
+        bkgd = imuDat.iloc[0::2]  
+        signal = imuDat.iloc[1::2]
+        zer = bkgd.as_matrix()
+        sig = signal.as_matrix()
 
-#===============================================
-#### ACCUMULATE DATA ACROSS 15 POSITIONS  ####
-#===============================================
-for idx in range(len(listpos)):
-    i = listpos[idx]
-    #### READ DATA ####
-    fname =  '%02d.txt'%(i)
-    imuDat = pd.read_csv(path+fname, header=None,sep=';', 
-                        names = IMUCols, skip_blank_lines=True, usecols=[0,1,2,3,4]) 
-    imuDat = imuDat.drop(['timeSysCal', 'XYZ'], 1)
-    bkgd = imuDat.iloc[0::2]  
-    signal = imuDat.iloc[1::2]
-    zer = bkgd.as_matrix()
-    sig = signal.as_matrix()
+        #### DECLARE CONSTANTS ####
+        pos = np.array([posX[idx], posY[idx], posZ[idx]])
+        thetas = sig-zer
+        print('Thetas: ', thetas)
 
-    #### DECLARE CONSTANTS ####
-    pos = np.array([posX[idx], posY[idx], posZ[idx]])
-    thetas = sig-zer
-    print('Thetas: ', thetas)
+        # we have some issues with overflow of 3rd col; detect and compensate
+        overflow_idx = np.where(thetas[:,2] < -300)
+        thetas[overflow_idx, :] += np.array([0,0,2*179])
 
-    # we have some issues with overflow of 3rd col; detect and compensate
-    overflow_idx = np.where(thetas[:,2] < -300)
-    thetas[overflow_idx, :] += np.array([0,0,2*179])
+        #IMU.z is roll IRL. But in our coordinate system, torque_z = yaw
+        thetas = np.fliplr(thetas)
 
-    #IMU.z is roll IRL. But in our coordinate system, torque_z = yaw
-    thetas = np.fliplr(thetas)
+        n = thetas.shape[0] # num datapoints
+        #print('num datapoints: ',n)
 
-    n = thetas.shape[0] # num datapoints
-    #print('num datapoints: ',n)
+        #### CALCULATE TORQUE ####
+        # we simplify model as only have force in z direction
+        # 36 datapoints / 3 samples pre position / 2 (zero and applied force) datapoints per sample
+        numforces = int(imuDat.shape[0]/6)
+        possibForces = np.array(ForcesList[0:numforces])
+        # print('possib forces', possibForces)
+        forcesZ = np.repeat(possibForces, 3) 
+        # print('forcesZ', forcesZ))
 
-    #### CALCULATE TORQUE ####
-    # we simplify model as only have force in z direction
-    # 36 datapoints / 3 samples pre position / 2 (zero and applied force) datapoints per sample
-    numforces = int(imuDat.shape[0]/6)
-    possibForces = np.array(ForcesList[0:numforces])
-    # print('possib forces', possibForces)
-    forcesZ = np.repeat(possibForces, 3) 
-    # print('forcesZ', forcesZ))
+        # print('numforces', numforces, 'forcesZ shape', forcesZ.shape)
+        # print('n', n)
+        forces = np.column_stack((np.zeros((n,2)),forcesZ)) #n.3
 
-    # print('numforces', numforces, 'forcesZ shape', forcesZ.shape)
-    # print('n', n)
-    forces = np.column_stack((np.zeros((n,2)),forcesZ)) #n.3
+        torques = np.cross(pos.reshape(-1,1).T, forces) #n.3
+        #print('torques\n', torques)
+        BigTheta = np.vstack((BigTheta, thetas))
+        BigTorque = np.vstack((BigTorque, torques))
+        positions = np.tile(pos, n).reshape(n, -1)
+        BigPosition = np.vstack((BigPosition, positions))
+        BigForce = np.vstack((BigForce, forces))
+        BigPosIdx.extend([i]*n)
 
-    torques = np.cross(pos.reshape(-1,1).T, forces) #n.3
-    #print('torques\n', torques)
-    BigTheta = np.vstack((BigTheta, thetas))
-    BigTorque = np.vstack((BigTorque, torques))
-    positions = np.tile(pos, n).reshape(n, -1)
-    BigPosition = np.vstack((BigPosition, positions))
-    BigForce = np.vstack((BigForce, forces))
-    BigPosIdx.extend([i]*n)
+    BigTheta = BigTheta[1:,:] #remove first row of zeros, from init
+    BigTorque = BigTorque[1:,:]
+    BigPosition = BigPosition[1:,:] #remove first row of zeros, from init
+    BigForce = BigForce[1:,:]
+    BigPosIdx = np.array(BigPosIdx)
+    print(BigPosIdx)
 
-BigTheta = BigTheta[1:,:] #remove first row of zeros, from init
-BigTorque = BigTorque[1:,:]
-BigPosition = BigPosition[1:,:] #remove first row of zeros, from init
-BigForce = BigForce[1:,:]
-BigPosIdx = np.array(BigPosIdx)
-print(BigPosIdx)
+    print('number of datapoints', BigTheta.shape)
 
-print('number of datapoints', BigTheta.shape)
-
-with shelve.open('cleaned_data', 'c') as shelf:
-    shelf['BigTheta'] = BigTheta
-    shelf['BigTorque'] = BigTorque
-    shelf['listpos'] = listpos 
-    shelf['BigForce'] = BigForce
-    shelf['BigPosition'] = BigPosition
-    shelf['BigPosIdx'] = BigPosIdx 
-    # shelf['forces'] = forces 
-    # shelf['posXYZ'] = posXYZ 
+    with shelve.open(outfilename, 'c') as shelf:
+        shelf['BigTheta'] = BigTheta
+        shelf['BigTorque'] = BigTorque
+        shelf['listpos'] = listpos 
+        shelf['BigForce'] = BigForce
+        shelf['BigPosition'] = BigPosition
+        shelf['BigPosIdx'] = BigPosIdx 
+        # shelf['forces'] = forces 
+        # shelf['posXYZ'] = posXYZ 
 
 
 # print(BigPosition.shape)
@@ -115,3 +117,6 @@ with shelve.open('cleaned_data', 'c') as shelf:
 # print(BigTheta.shape)
 # print(BigTorque.shape)
 
+basepath = '/home/nrw/Documents/projects_Spring2018/howe299r/Experiments/06May2018/Python_Analysis/'
+clean_data('imu_data/no_tendon/' ,'cleaned_data_no_tendon')
+clean_data('imu_data/loaded_tendon/' ,'cleaned_data_loaded_tendon')
