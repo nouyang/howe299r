@@ -1,10 +1,10 @@
 '''
-9 April 2018
-This file caculates the torques across all 492 datapoints and creates a CSV of format
-1 - posx posy posz - thetax thetay thetaz -  etc.
-|
-v
-nth datapoint
+Created on 07 May 2018
+@author: nrw
+
+Takes IMU files from final dataset (06 May)
+Shelves all the data:
+-- position force applied XYZ, theta deflected XYZ, torque XYZ, force applied XYZ
 '''
 import math
 import shelve
@@ -53,6 +53,7 @@ for i in listpos:
     #### DECLARE CONSTANTS ####
     pos = np.array([posX[i], posY[i], posZ[i]])
     thetas = sig-zer
+    print('Thetas: ', thetas)
 
     # we have some issues with overflow of 3rd col; detect and compensate
     overflow_idx = np.where(thetas[:,2] < -300)
@@ -69,12 +70,12 @@ for i in listpos:
     # 36 datapoints / 3 samples pre position / 2 (zero and applied force) datapoints per sample
     numforces = int(imuDat.shape[0]/6)
     possibForces = np.array(ForcesList[0:numforces])
-    print('possib forces', possibForces)
+    # print('possib forces', possibForces)
     forcesZ = np.repeat(possibForces, 3) 
-    print('forcesZ', forcesZ)
+    # print('forcesZ', forcesZ))
 
-    print('numforces', numforces, 'forcesZ shape', forcesZ.shape)
-    print('n', n)
+    # print('numforces', numforces, 'forcesZ shape', forcesZ.shape)
+    # print('n', n)
     forces = np.column_stack((np.zeros((n,2)),forcesZ)) #n.3
 
     torques = np.cross(pos.reshape(-1,1).T, forces) #n.3
