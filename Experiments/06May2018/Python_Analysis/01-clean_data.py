@@ -12,9 +12,10 @@ import shelve
 import pandas as pd
 import numpy as np
 
-path = "~/Documents/projects_Spring2018/howe299r/Experiments/03April2018/WIP/"
+path = "~/Documents/projects_Spring2018/howe299r/Experiments/06May2018/Python_Analysis"
 #IMUDats = [ '%02dIMU.txt'% x for x in pos ]
 IMUCols = ['timeSysCal', 'XYZ','X', 'Y', 'Z']
+possibForces = [20,50,70,100,150,200]
 
 #===============================================
 #### DECLARE CONSTANTS ####
