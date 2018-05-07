@@ -2,8 +2,9 @@
 Created on 07 May 2018
 @author: nrw
 
-Plot original theta, & predicted theta,  vs torque
-Plot predicted theta vs original theta 
+Let's make lots of plots!
+Now using seaborn.
+Now plotting by the three groups.
 """
 
 import numpy as np
@@ -13,6 +14,8 @@ import shelve
 from datetime import datetime
 
 from sklearn import linear_model
+from sklearn.linear_model import Ridge
+from sklearn import metrics
 
 import seaborn as sns
 
@@ -85,16 +88,8 @@ df=pd.DataFrame({'Resid of TorqX fit':resid[:,0],
 # sns.pairplot(data=df, hue='Colors', y_vars=['TorqX measured (g*cm)', 'TorqY measured (g*cm)'],
              # x_vars=[ 'TorqX estimated (g*cm)', 'TorqY estimated (g*cm)' ])
 
-# sns.pairplot(data=df, hue='Colors', y_vars=['TorqX measured (g*cm)', 'TorqY measured (g*cm)'],
-	     # x_vars=[ 'ThetaX (deg)' ,'ThetaY (deg)', 'ThetaZ (deg)'])
+# sns.lmplot(data=df, hue='Colors', y='TorqY measured (g*cm)', x='TorqY estimated (g*cm)')
 
-f, (ax1, ax2) = plt.subplots(1,2)
-ax1.set(xlim=(-550,50), ylim=(-550,50))
-ax2.set(xlim=(-550,50), ylim=(-550,50))
-rg = sns.regplot(data=df, x='TorqX measured (g*cm)', y='TorqX estimated (g*cm)', ax=ax1)
-rg2 = sns.regplot(data=df, x='TorqY measured (g*cm)', y='TorqY estimated (g*cm)', ax=ax2)
-
-plt.suptitle('Torques X & Y, measured vs estimated\n(by definition, there is no TorqZ)\nNo applied tendon load')
 # sns.pairplot(data=df, hue='Colors', y_vars=['Resid of TorqX fit', 'Resid of TorqY fit'],
 	     # x_vars=[ 'TorqX measured (g*cm)', 'TorqY measured (g*cm)', 
 		 # 'TorqX estimated (g*cm)', 'TorqY estimated (g*cm)' ])
@@ -117,6 +112,7 @@ plt.suptitle('Torques X & Y, measured vs estimated\n(by definition, there is no 
                  # 'ThetaZ (deg)'
                  # 'TorqX estimated (g*cm)'
                  # 'TorqY estimated (g*cm)'
+plt.suptitle('Residual investigation')
 strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 ax = plt.gca()
 plt.text(1.1, 0, 'Time: '+strtime, horizontalalignment='left', verticalalignment='bottom',

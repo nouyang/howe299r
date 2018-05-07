@@ -86,3 +86,7 @@ print(np.average(resids_corrected[:,1]**2)**0.5)
 #===============================================
 #### DECLARE CONSTANTS ####
 #===============================================
+
+print('\n---- Using  RF: ')
+rfrmse = metrics.mean_squared_error(torq, rfpred, multioutput='raw_values')**0.5
+print('Root Mean Squared Error: %s' % str(rfrmse))

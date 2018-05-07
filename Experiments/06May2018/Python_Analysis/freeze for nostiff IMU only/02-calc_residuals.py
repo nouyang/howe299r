@@ -3,7 +3,6 @@ Created on 07 May 2018
 @author: nrw
 
 Calculates linear fit and plots torque estimate
-This is the "physical model" fit part, where we asssume a linear fit is appropriate
 Adds linear fit torque estimate XYZ, linear fit residuals XYZ to shelved data
 """
 
@@ -34,6 +33,7 @@ with shelve.open('cleaned_data', 'r') as shelf:
 
 print('number of datapoints', BigTheta.shape)
 
+
 #===============================================
 #### FIT TO ESTIMATE K ####
 #===============================================
@@ -61,6 +61,12 @@ dim = 1
 linK = K_lin
 yPredLin= linReg.predict(myX) 
 
+### 
+# --- Random Forest Fit
+###
+rfreg = RandomForestRegressor(max_depth=2, random_state=0)
+rfreg.fit(myX, myy)
+rfpred = rfreg.predict(myX)
 
 print('\n======================')
 print('LinReg K Coefficients: \n', K_lin)
@@ -85,6 +91,9 @@ print('Linear fit torq Est Std Dev: ', torq_est.std(axis=0))
 # -- Fit metrics 
 #######################################
 print('\n=======  SkLearn Metrics====')
+print('\n---- Using  RF: ')
+rfrmse = metrics.mean_squared_error(torq, rfpred, multioutput='raw_values')**0.5
+print('Root Mean Squared Error: %s' % str(rfrmse))
 
 print('\n---- Using sklearn LinearRegression.pred(theta).   ========')
 linrmse = metrics.mean_squared_error(torq, yPredLin, multioutput='raw_values')**0.5
@@ -129,28 +138,44 @@ df=pd.DataFrame({'Resid of Lin TorqX fit':resid[:,0],
                  'TorqY measured (g*cm)':BigTorque[:,1],
                  'TorqX linear estimated (g*cm)': torq_est[:,0],
                  'TorqY linear estimated (g*cm)': torq_est[:,1],
+                 'TorqX rf estimated (g*cm)': rfpred[:,0],
+                 'TorqY rf estimated (g*cm)': rfpred[:,1],
                  'Theta Y (deg)': BigTheta[:,1]
                  })
 
-# Naive Bayes
-# Random Forest Classifier
-# Multi-Layer Perceptron
-# Support Vector Machine
 
 
 # ----------------------- Plot pair (or more) of plots
 # these two graphs don't make sense, because RF is not a kind='ref' linear fit graph
 # sns.pairplot(data=df, kind='scatter', y_vars=['TorqY linear estimated (g*cm)', 'TorqY measured (g*cm)'],
-# sns.pairplot(data=df, kind='reg', y_vars=['TorqY linear estimated (g*cm)'],
+# sns.pairplot(data=df, kind='reg', y_vars=['TorqY linear estimated (g*cm)', 'TorqY rf estimated (g*cm)'],
              # x_vars=['Theta Y (deg)'])
 
+# plt.scatter(df['Theta Y (deg)'], df['TorqY linear estimated (g*cm)'], label='Lin fit, RMSE: %0.2f'% linrmse[1])
+# plt.scatter(df['Theta Y (deg)'], df['TorqY rf estimated (g*cm)'], label='RF fit, RMSE: %0.2f'% rfrmse[1])
 # plt.scatter(df['Theta Y (deg)'], df['TorqY measured (g*cm)'], label='Measured data') 
 # plt.legend()
 # plt.title('Fitting models to torque Y data')
 # plt.xlabel('Theta Y (deg)')
 # plt.ylabel('Torque Y (g*cm)')
 
-# sns.lmplot(data=df, y='TorqY measured (g*cm)', x='Theta Y (deg)')
-# sns.pairplot(data=df, kind='reg', y_vars=['TorqY linear estimated (g*cm)'],
-             # x_vars=['Theta Y (deg)'])
+sns.lmplot(data=df, y='TorqY measured (g*cm)', x='Theta Y (deg)')
 plt.show()
+
+
+
+# Matplotlib color cycle example
+# from itertools import cycle
+# import numpy as np
+
+# import matplotlib.pyplot as plt
+
+# color_gen = cycle(('blue', 'lightgreen', 'red', 'purple', 'gray', 'cyan'))
+
+# for lab in np.unique(df['dataset']):
+    # plt.scatter(df.loc[df['dataset'] == lab, 'x'], 
+                # df.loc[df['dataset'] == lab, 'y'], 
+                # c=next(color_gen),
+                # label=lab)
+
+# plt.legend(loc='best')
