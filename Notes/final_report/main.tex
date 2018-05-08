@@ -1,0 +1,193 @@
+\documentclass[11pt]{article}
+
+\usepackage{common}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{amsmath}
+\usepackage[font=small,skip=0pt]{caption}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\code}[1]{\colorbox{light-gray}{\texttt{#1}}}
+
+\title{Practical 4: Reinforcement Learning}
+\author{Nao Ouyang, David Zhang |  nouyang@g.harvard.edu, dzhang@hbs.edu}
+
+\begin{document}
+\maketitle{}
+In this assignment our goal is to teach the computer to play the game \textit{Swingy Monkey}. In each frame, we were given a set of states $s \in S$ and have to choose an action $a \in \{0,1\}$, after which we observe reward $r(s,a)$. The goal is then to choose a strategy $a=\sigma(s)$ that maximizes the expected discounted sum of rewards:
+\begin{align}
+    E\sum_{t=0}^\infty \delta^t r(s_t,\sigma(s_t))
+\end{align}
+
+The first thing to notice with the problem statement is that, if the agent is to maximize total scores, we may want $\delta = 1$. However, with infinite horizons this leads to an infinite value function. So, we pick a $\delta<1$ for our learning algorithm. One justification for this is Jiang (2017),\footnote{``A Theory of Model Selection in Reinforcement Learning'', https://515980e7-a-ab15346e-s-sites.googlegroups.com/a/umich.edu/nanjiang/thesis\_jiang.pdf} whose first essay shows that a policy learned from a planning horizon may be \textit{better} than that what is learned using the actual horizon, so it might make sense to use a smaller $\delta<1$ than the agent's true problem.
+
+
+\section{Technical Approach}
+
+The Q-function for this problem is:
+\begin{align}
+    Q(s,a) &= r(s,a) + \delta Q(s', a')
+\end{align}
+
+We tried two approaches for this problem, the MDP approach and the Q-learning approach.
+
+Where $s' \sim P(s,a)$ and $a' = \argmax_a Q(s',a)$. 
+
+\subsection{Sets of states and actions}
+The set of possible actions are to jump (1) or not jump (0).
+
+We use the following set of six states: 1. The bottom position of the monkey, 2. The velocity of the monkey, 3. The bottom position of the tree, 4. The distance between the monkey and the tree, 5. The top position of the tree, and 6. Gravity.
+
+Note that we do not use the top position of the monkey as a state because it is completely determined by the bottom position of the monkey such that it is extraneous. We also added gravity as a state since it varies game to game and affects the Q-function through its effect on the state transitions. We estimate gravity for each epoch using the change in the monkey's velocity during periods of inaction and add it to the set of states.
+
+
+\subsection{Computational approach}
+
+\subsubsection{The MDP approach}
+
+The code for this approach may be run by using \texttttpython{\$ python learn\_dz.py}.
+
+One way to approach the problem is to estimate $r(s,a)$ and $P(s,a)$ directly, and then solve the MDP problem. This is different from the Q-learning approach which we explore in the next section.
+
+One way to estimate is to bin $s$ and then learn $r(s,a)$ and $P(s,a)$ non-parametrically using running averages. We were interested in experimenting, so we use a Random Forest Regression, so that:
+\begin{align}
+    \hat{r}(s_T,a_T) \sim RandomForestRegression \left(\{(s_t,a_t), r(s_t, a_t) : t=0, \ldots, T-1 \}\right)
+\end{align}
+
+Which uses a Random Forest on historical observations as an approximation. In practice, we fit the Random Forest only at the beginning of each epoch to save computational time. We estimate the transitions $\hat{P}(s,a)$ using some knowledge of the game, although we could have done it agnostically using a Random Forest as well. The transitions $\hat{P}(s,a)$ are modelled as:
+\begin{itemize}
+    \item The bottom position of the monkey $b_t$ changes by velocity $b_{t+1} = b_t + v_t$ if $a_t=0$. If $a_t=1$, the bottom position of the monkey increases by $j_t \sim Possion(\hat{\mu}_t)$.
+    \item The velocity of the monkey $v_t$ changes by gravity,$v_{t+1} = v_t + \hat{g}_t$, if $a_t=0$. If $a_t=1$, the bottom position of the monkey increases by $j_t \sim Possion(\hat{\mu}_t)$.
+    \item The distance between the monkey and the tree decreases by 25.
+    \item The other states do not change.
+\end{itemize}
+
+This set of transitions does not take into account of future trees after passing the current tree. This likely constraints the effectiveness of the algorithm, and if we had more time I would have liked to model game ending states and tree transitions better. Then, I estimate $\hat{Q}(s,a)$ using another Random Forest regression:
+\begin{align*}
+    \hat{Q}_T(s,a) &= RandomForestRegression\left(\{(s_t, a_t), \hat{r}_{T-1}(s_t, a_t) + \delta \max_a(\hat{Q}_{T-1}(s_t',a))  : t=0, \ldots, T-1\} \right)
+\end{align*}
+
+Where $s_t' \sim P(s_t, a_t)$ is simulated using 10 draws. I run this update on all historical states at the beginning of each epoch. I obtain the following results over 200 runs, for different initial $\epsilon_0$, in Table~\ref{tab:MDP_calibration}. I divide $\epsilon_0$ by 2 every 10 epoches.
+\begin{table}[H]
+    \centering
+    \caption{Performance of MDP algorithm over 200 epoches}\label{tab:MDP_calibration}
+    \begin{tabular}{l|c|c|c|c}
+         \hline \hline
+         & $\epsilon_0=.05$, Average & $\epsilon_0=.05$, Max & $\epsilon_0 = .8$, Average & $\epsilon_0 = .8$, Max \\
+         \hline 
+    First 50 epochs   & 1.02 & 11 & 0.35 & 2 \\
+    50-100 epoches    & 2.20 & 12 & 1.67 & 11 \\
+    100-150 epoches   & 2.24 & 13 & 2.55 & 10 \\
+    150-200 epoches   & 2.90 & 12 & 2.55 & 22 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+Which shows that increasing $\epsilon_0$ leads to more exploration and a lower average score early on (for the first 50 epoches and 50-100 epoches), but it is unclear whether it leads to a better policy after 100 epoches. In later applications we use $\epsilon_0 = .8$.
+
+\subsubsection{The Q-learning approach}
+
+Note: The code for Q-learning may be run by using \texttttpython{\$ python no\_stub.py}.
+
+In the q-learning approach, we do not attempt to learn the transition or reward models. Instead, we directly obtain our Q(s,a) values. These Q values work as a sort of "expected award" if we are at a state and take a particular action. Then, we can obtain our policy by simply selecting at each state the action which leads to the highest Q value. The q-learning equation is much simpler. We only need a (s,a, s', a') observation and a table of Q(s,a) values. The q-learning equation is as in the image below (credit to Berkeley CS188 course materials).
+
+\begin{figure}[htp]
+\centering
+\includegraphics[width=6cm]{q-learning.png}
+\caption{Q-learning equation, as obtained from Berkeley CS188 class slides.}
+\label{fig:qequation}
+\end{figure}
+
+This may be thought of as a form of stochastic gradient descent toward the optimal policy.
+In standard q-learning, there are three variables to tune.  There is the $\alpha$, the learning rate; $\gamma$, the discount rate; and $\epsilon$, the exploration rate. The learning rate dictates how large of a step we take towards the solution. 
+The discount rate means that rewards from "further away" (that is, more actions / timesteps in the future) will matter less. In essence, this means that we care more about we can get sooner rather than later. 
+In order to prevent q-learning from converging to a non-optimal policy, we occasionally do not follow our estimated best policy (exploitation) and do some exploration instead. With $\epsilon$ chance, we will flip a coin (randomly select from available actions).
+
+For tabular q-learning, the main technical challenge is how we approximate the infinite state space. Our initial haphazard ways of reducing the statespace (by dividing the values by 30) was insufficient. A quick calculation showed that our initial code in fact had a total possibility of over 30 million states. Initially, for 1000 epochs, we might take a total of 20000 actions (each game lasting on average less than 1 tree), with a q table consisting of 5000 entries. From this, we concluded that some states were being visited multiple times. However, we were still putting in new entries into the table over half the time, so we were nowhere near convergence. With our final code, across 100 (10x less!) epochs, we might take 54k actions and get a q-table with 1.2k entries. We used the fact that the window is 600x400 in order to reduce each state to the desired # of bins (about 3000). Roughly, we allocated for 3,3,3,5,4,5, bins for monkey top, tree top, tree bottom, tree distance, gravity, and monkey velocity respectively. %We did a bit off non-linear binning using intuition, e.g. we care a bit more about velocity values close to 0, whereas if the velocity is too high, we can bin all those values into one state since our action will be the same for all those velocity values (don't jump). A few mistakes were made: notably, forcing the monkey to not care about negative tree distance values was very bad for average monkey lifespan. Unfortunately we did not have time to quantitively inspect the impact of the non-linear vs. linear binning techniques.
+
+The major break-through came from adding some common-sense rules to the code, which presumably reduced the state space even more. Specifically, we added two simple rules, which were roughly, if the top of the monkey is above the top of the tree, don't jump; and if the bottom of the monkey is below the bottom of the tree, do jump. This brought our average score from $\leq$2, all the way to $\geq$ 10. (Note: due to binning, the actual implementation is a little more approximate than the previous rule). 
+
+Through a few quick trials, we have the average scores across 100 epochs: pure RL (no tree check) 0.84; no RL and if the monkey is in the middle we choose 50/50: 0.0; combined RL and tree check 16.93; tree check only and default to 0: 2.29. Thus, we can tell that both the RL and tree check combined are needed.
+
+Finally, we played around with the hyperparameters. We list the parameters in order of $\alpha$, $\gamma$, $\epsilon$, followed by the average score across 100 epochs.
+0.9, 0.5, 0.01: 16.95; 1, 0.1, 0: 3.12; 1, 0, 0: 16.65; 1,1,0: 21.94.
+In the discussion, we picked both the initial settings (0.9, 0.5, 0) and after that gave puzzling results, we chose the final setting (1,1,0). Experimentally speaking, we definitely need some discounting and a lot of learning, but exploration does not seem necessary.
+
+\begin{figure}%
+\centering
+\subfigure[Q-learning \#1. By visual inspection, the average score hits a peak between 150 and 200 epochs, and then decreases thereafter.]{%
+  \includegraphics[width=.4\linewidth]{swingymonkey_plot.png}}%
+\qquad
+\subfigure[2]{%
+  \includegraphics[width=.4\linewidth]{Swingy_Monkey_plot110.png}}%
+  \caption{Q-learning \#2. By tweaking the parameters (see table below for Q1 and Q2 values), we get better performance.}
+\end{figure}
+
+
+\subsubsection{Comparing the approaches}
+
+The following Table~\ref{tab:method_comparison2} compares the average scores of various algorithms over epoches, with the random baseline being the ``stub'' file.
+\begin{table}[H]
+    \centering
+    \caption{Performance of algorithms over 1000 epoches, \textbf{average} score. \\
+    Q1 parameters: $\alpha=0.9$, $\gamma=0.5, \epsilon=0.01$. Q2 parameters: $\alpha=1$, $\gamma=1, \epsilon=0$}
+    \label{tab:method_comparison2}
+    \begin{tabular}{l|c|c|c|c}
+         \hline 
+         & Random baseline & MDP & Q-learning \#1 & Q \#2 \\
+         \hline \hline
+    First 200 epochs   & 0.25 & 1.94 &  16.59 & 17.01\\
+    200-400 epoches    & 0.19 & 5.67 & 15.19 & 16.04\\
+    400-600 epoches   & 0.24 & 10.25 & 9.29 & 13.93  \\
+    600-800 epoches   & 0.23 & 9.34 & 10.92 & 17.01\\
+    800-1000 epoches   & 0.25 & 10.54 & 9.61 & 19.32\\
+    \hline
+    \end{tabular}
+\end{table}
+
+
+The following Table~\ref{tab:method_comparison} compares the maximum scores of various algorithms over epoches.
+\begin{table}[H]
+    \centering
+    \caption{Performance of algorithms over 1000 epoches, \textbf{max} score}
+    \label{tab:method_comparison}
+    \begin{tabular}{l|c|c|c|c}
+         \hline 
+         & Random baseline & MDP & Q-learning \#1 & Q \#2\\
+         \hline \hline
+    First 200 epochs   & 2 & 18 & 245 & 176\\
+    200-400 epoches    & 2 & 23 & 155 & 109\\
+    400-600 epoches   & 2 & 47 & 122 & 161\\
+    600-800 epoches   & 6 & 107 & 92 & 225 \\
+    800-1000 epoches   & 3 & 56 & 98 & 170 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+
+\section{Discussion} 
+
+As shown in Tables~\ref{tab:method_comparison}~and~\ref{tab:method_comparison2}, the MDP approach learns fast since it uses more information from the environment. However, it is a lot slower computationally since we are re-computing the Q function each epoch. Furthermore, the fact that it used a faulty transition model (did not take future trees into account) limited its maximum performance. 
+
+On the other hand, the model-free Q-learning approach requires much less knowledge about the environment and implementation is more standardized, while being guaranteed to converge eventually. So it is hugely advantageous in the context where the agent has an uncertain model of the environment. Therefore, the choice of which approach to use depends a lot on context.
+
+
+\newpage
+
+Bonus picture: \\
+Happy monkey in the middle of successfully clearing a tree!
+\begin{figure}[htp]
+\centering
+\includegraphics[width=10cm]{game.png}
+\label{fig:happymonkey}
+\end{figure}
+
+
+\end{document}
