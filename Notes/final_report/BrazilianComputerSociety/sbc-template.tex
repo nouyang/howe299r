@@ -17,6 +17,7 @@
 \usepackage{times} % assumes new font selection scheme installed
 \usepackage{amsmath} % assumes amsmath package installed
 \usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{float}
 \definecolor{verde}{rgb}{0,0.5,0}
 
 %para customizar o código (ver https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings)
@@ -235,7 +236,7 @@ where
 
 \subsection{Sanity Check: Simplify to 2D case}
 
-We know that $\tau=r\times\F$
+We know that $\tau = r \times F$
 
 
 \begin{align}
@@ -309,13 +310,32 @@ causing the finger to roll and create non-zero elements for $\theta_y$ ( our rol
 (our yaw). However, after solving for K, I found that I ended up with a bottom row consisting
 entirely of zeroes.
 
+There is a good summary on wikipedia of the relevant linear model, which I enjoyed.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\textwidth]{images/misc/stiffness_tensor.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
 
 \section{Methods}
+
+\subsection{Setup}
 
 For the setup, I used a triple-beam balance as a way to apply force while retaining a vertical
 angle. I hot-glued a pumpkin awl to the bottom of the plate and put standard weights on top of of
 the scale. This caused the awl to contact the surface of the finger, and the finger would then
-deflect. In the 1D case, I simply placed a ruler behind the finger and used a webcam to take
+deflect. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.3\textheight]{images/setup/webcam.jpg}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+In the 1D case, I simply placed a ruler behind the finger and used a webcam to take
 pictures. By mapping pixel counts to millimeters, I could then estimate the deflection of the
 finger. The linear fit from these very imprecise measurements proved linear enough that I then
 relied on the IMU going forward and skipped the step (which should be completed eventually) of
@@ -326,6 +346,14 @@ I then created a grid of 15 points on the finger. For each of the 15 points, I a
 amounts of force, with three samples at each force-point combination. Each sample consisted of a
 "zero" measurement pre-contact and a measurement post-contact. In post-processing, I then subtracted
 the two to obtain my final sensor data.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.3\textheight]{images/setup/grid.jpg}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
 
 Complications arose from the limited travel of the triple beam balance, which meant I could only
 measure small deflections (initially on the order of 4 mm; after discovering that I could take the
@@ -341,10 +369,24 @@ developed by Adafruit for all of its products. It was recommended to me by
 %(person) 
 at Right Hand Robotics, which is a spinoff of this lab.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\textwidth]{images/setup/bno055.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
 \textit{"Bosch is the first company to get this right by taking a MEMS accelerometer, magnetometer and
     gyroscope and putting them on a single die with a high speed ARM Cortex-M0 based processor to digest
     all the sensor data, abstract the sensor fusion and real time requirements away, and spit out data
 you can use in quaternions, Euler angles or vectors." (source: adafruit.com)}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\textwidth]{images/setup/IMU.jpg}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
 
 I also attached an apriltag (which looks like a QR code) and a micontracker tag (which has a
 checkerboard like cross), both of which can simply be printed out on paper, and calibrated the
@@ -358,6 +400,23 @@ of freedom on the L brackets (removing t-nuts). This led to a lot of worry on my
 creakiness and variability in the data collection as I could not guarantee angle consistency,
 although in retrospect this is almost completely mitigated by the fact that I am zeroing before
 every reading. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.3\textheight]{images/setup/leveling.jpg}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+In order to apply load to pull on the tendon and change the stiffness of the finger, I decided on a
+simple setup where I hung a weight from the tendon.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.8\textwidth]{images/setup/loading.jpg}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}%
 
 As I progressed, I trended toward collecting coarser and coarser data as I grew confident
 that measurements still provided enough data for me to see overall trends in the data
@@ -374,16 +433,178 @@ scale keel all the way to up when the weight was removed. This made zero measure
 faster, which reduced the cognitive load to remember which measurement I was at, which both reduced
 data cleanup and needing to recollecting data. This led to significant time savings.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=.3\textheight]{images/setup/scale_calibration.jpg}
+\caption{Scales and more scales: calibrating the weight applied with the triple beam balance using an electronic scale }
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{images/setup/scale_calibration_graph.png}
+\caption{Scale calibration graph, with nominal offset of 5g. I observed that the offset is not
+constant and increases with increasing load.}
+%\label{fig:figura1}
+\end{figure}
+
+
 %TODO pictures
 
 \section{Data Analysis}\label{sec:analisedosdados}
 
+\subsection{Loaded tendon data}
 
+For the final dataset, I collected data in 50g intervals at 2 y locations and 3 x locations on the
+finger (total of 6 positions). 
+
+First, a quick sanity check. By plotting torque versus measured theta, we see that the data follows
+a linear pattern, as we would expect.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{images/stiff/GOODtorqtheta.png}
+\caption{Relaxed tendon}
+%\label{fig:figura1}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{images/stiff/GOODtorqtheta_loaded.png}
+\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+Additionally, we may see that we have properly fitted our data with a K matrix by comparing our
+newly created torque estimates, versus the original measurements. The datapoints do not fall
+precisely on a line because the K matrix and fit is in three-dimension. In picking a single
+dimension to plot, the projection results in datapoints that are not linear in one dimension despite
+a linear fit overall.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{images/stiff/GOODtorqsanity.png}
+\caption{Relaxed tendon}
+%\label{fig:figura1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{images/stiff/GOODtorqsanity_loaded.png}
+\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+
+
+Next we can look at the residuals. Based on the previous experiment, I was expecting to see a linear
+relationship in the residuals between ThetaY and TorqueY. However, I did not see any such
+relationship in the relaxed case, which should have most closely matched the data in the previous
+experiment. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{images/stiff/GOODResid_vs_Theta.png}
+\caption{Relaxed :tendon}
+%\label{fig:figura1}
+\end{figure}
+
+A pattern did appear in the loaded case. Further investigation will be required.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{images/stiff/GOODResid_vs_Theta_loaded.png}
+\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+Patterns in the thetaZ may be ignored as it was not used in the fit (zeroed out by zero for Force)
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{images/stiff/GOODStiffnessComparison.png}
+\caption{Loaded case shown in green, relaxed tendon shown in orange. This graph shows that the
+loaded tendon is stiffer (slope is steeper), as we expect. Both models seem mostly linear, but it's
+possible that in the loaded case, the fit is more exponential. Note that physically the model must
+go through the y-intercept, and I have graphed the actual fit used to calculated residuals in light
+green (albeit for a nonlinear fit). The dark green line is plotted due to limitations in my plotting
+library}
+%\label{fig:figura1}
+\end{figure}
+
+\subsection{Initial data (relaxed tendon only)}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{images/round1/LinearResid_thetaY.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{images/round1/TorqX_hueX.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{images/round1/TorqX_hueY.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{images/round1/ResidX_hueX.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=.3\textwidth]{fig1.jpg}
+%\caption{Exemplo de figura}
+%\label{fig:figura1}
+%\end{figure}
+
+\subsection{1D case}
+
+In the 1D case I simply took pictures of the finger against a ruler in order to measure angular deflection. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.3\textwidth]{images/1d/zero.png}
+\caption{Zeroed}
+%\label{fig:figura1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.3\textwidth]{images/1d/weighted.png}
+\caption{With pressure applied}
+%\label{fig:figura1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.3\textwidth]{images/1d/torque_calc.jpg}
+\caption{Drawing lines to estimate neutral axis}
+%\label{fig:figura1}
+\end{figure}
+
+\subsection{Attempted fit improvements}
 %Nesta seção, o aluno descreve o efetivo procedimento metodológico adotado e aponta os resultados da pesquisa. Na análise de dados, é  aconselhável o uso de tabelas, figuras, linhas de códigos etc para representar os resultados do estudo.
 
 %As Tabelas, Quadros e Figuras, assim como as legendas de Tabelas, Quadros e Figuras devem estar centralizadas se conterem apenas em uma linha (Figura~\ref{fig:figura1}), caso contrário devem estar tabuladas em 0.8cm em ambas as margens, como mostra a Figura~\ref{fig:figura2}. 
 
-%\begin{figure}[ht]
+%\begin{figure}[H]
 %\centering
 %\includegraphics[width=.3\textwidth]{fig1.jpg}
 %\caption{Exemplo de figura}
@@ -421,6 +642,135 @@ data cleanup and needing to recollecting data. This led to significant time savi
 %\end{table}
 \section{Sensor Design}
 
+
+MLP
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\textwidth]{images/sensor/old_datasheet.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+Newer (smaller footprint)
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\textwidth]{images/sensor/new_datasheet.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+Prototype
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\textwidth]{images/sensor/SENSOR.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+I produced Arduino and python code that allowed me to view a plot in real time of the sensor data.
+
+Additionally, I integrated the Arduino with an RGB LED strip, where if you pressed on the sensor,
+more LEDs would light up.
+
+The sensor displayed a large amount of hysteresis, which should be investigated and addressed.
+
+This required use of a separate power supply, otherwise the Arduino would refuse to talk to the
+computer (for real-time plotting) when the LED strip drew load on the 5V line.
+
+\section{Miscellaneous}
+
+\subsection{Online documentation}
+I documented my work on a blog, http://orangenarwhals.github.io/, using the Hexo flatfile content
+management system. I chose this because it allowed me to host for free on github, allowed for easy
+version control of content, and also had an admin plugin that allowed me to drag-and-drop images,
+which is crucial for documenting experiments where I have a lot of graphs. I was also able to get
+Latex to work on the site so that I could have equations rendered on there.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.8\textwidth]{images/misc/blog.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.8\textwidth]{images/misc/blog_latex.png}
+\caption{Getting latex to work was a major source of frustration.}
+%\label{fig:figura1}
+\end{figure}
+
+\subsection{Apriltags}
+I decided to investigate apriltags, which helped me refresh on my knowledge of C++. I struggled to
+find an appropriate ROS driver, and ultimately was able to get the C++ working (despite some issues
+with the openCV version on my laptop) with the help of Patrick from Prof. Kuindersma's lab.
+
+\begin{lstlisting}
+nrw@earlgrey:~/projects/apriltags$ vi CMakeLists.txt 
+    (line 14)
+        find_package(OpenCV 2.4.9.1 EXACT REQUIRED)
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.8\textwidth]{images/april/applications_april.png}
+\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.8\textwidth]{images/april/webcam_calibration.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+This gave estimates
+
+\begin{lstlisting}
+nrw@earlgrey:~/projects/video2calibration$ ./calibrate.py ~/Videos/Webcam/2018-03-26-112657.webm calibration.yaml --debug-dir out
+
+Performing calibration...
+ RMS: 0.442700776066
+ camera matrix:
+ [[ 666.78668352    0.          343.73827809]
+ [   0.          665.79103853  227.19081685]
+ [   0.            0.            1.        ]]
+ distortion coefficients:  [  6.06301194e-02  -1.94620209e-02   1.45555284e-04   1.24410189e-03
+ -2.51439333e-01]
+\end{lstlisting}
+
+
+\begin{lstlisting}
+public:
+
+  // default constructor
+  Demo() :
+    // default settiwgs, most can be modified through command line options (see below)
+ [...excerpted section...]
+    m_width(640),
+    m_height(480),
+    m_tagSize(0.00944), // in meters
+    m_fx(667), // in pixels
+    m_fy(666), //
+    m_px(344), // principal point
+    m_py(227),
+\end{lstlisting}
+
+\subsection{Time estimates}
+
+An additional yet important thing in any project is measuring project slip in the hopes of
+developing better time estimates. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.8\textwidth]{images/misc/timeline.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+%TODO
 
 \section{Knowledge}
 
