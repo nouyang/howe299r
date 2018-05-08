@@ -59,12 +59,26 @@
 \begin{introduction}
     This is my final report for my 299r rotation during Spring 2018 in Prof. Robert Howe's lab.
 \end{introduction}
-%\begin{abstract} 
-    
-%\end{abstract}
+\begin{abstract} 
+    Despite decades of research, robots remain unable to reliably grasp objects in environments not
+    designed for robots. Thus, they are not able to work alongside us in human environments or
+    outside buildings. One approach is to use tactile sensing to predict whether a
+    grasp will succeed or not as well as build simulations to evaluate potential grasps.
+    In this lab, we use an underactuated three-fingered gripper, which makes it difficult to
+    estimate the location of the fingers and and the location of the force with respect to the robot
+    frame of reference.  
+    I investigated the use of an inertial measurement unit to provide such information. By
+    characterizing the stiffness matrix $K$ of the finger, I could investigate whether using an
+    inexpensive inertial measurement unit (IMU) to estimate $\theta$ deflection with the linear equation
+    $\tau = K \theta$, I could discover information about the force applied. I did very preliminary
+    work, limiting my experiments to the case where we only desire to estimate the change from
+    directly before to second or two after
+    contact. Additionally, I looked at using of off-the-shelf machine learning approaches to reduce the
+    errors in our model. Finally, I investigated adding more sensors to the fingertip in
+    order to better estimate contact location. 
+\end{abstract}
 
 \section{Introduction}
-
 State-of-the art robots are bad at grasping in unstructured environmnents, limiting their use to
 structured environments like factory floors. An active area of research in order for robots to expand to unstructured
 environments (such as kitchens or hospital environments),  is the ability to grasp
@@ -76,105 +90,396 @@ our grasp to be unstable, and assuming the object has not moved during grasping 
 our grip might e.g. cause it to tumble, we can simply release our grasp and try again. 
 
 Physical model approaches involve modeling the contact forces, contact location, and surface normals
-(which will differ from the force XYZ if the surface(s) are squishy). However, over the last few
-decades physical models have proven insufficient, in part due to complex gripper-object interactions
-during grasping which are both difficult to measure and hard to model. Thus, one of the aspects of
-this investiation.
+(which will differ from the force XYZ if the surface(s) are squishy).  However, over the last few
+decades physical models have proven insufficient. This in part due to complex gripper-object
+interactions during grasping which are both difficult to measure and hard to model. Thus, one of the
+aspects of this investigation is to evaluate whether machine learning can be used to improve
+physical models. We can combine the good aspects of physical models (good generalizability,
+requiring significantly less data than in pure computer vision machine learning approaches) with
+(not having to have extremely precise models). I tried to charactize the residuals in
+the physical models and determine if these residuals could be more accurately modelled by a black
+box machine learning approach rather than making the physical model more complex. This is an
+increasingly popular approach, which makes intuitive sense. We can leverage
+domain knowledge, instead of using an end-to-end approach for sensor data to stability prediciton.
 
-During the course of this rotation, senior gad student Qian Wan discoverd 
+Although there are a few compact 6 axis force torque sensors, they cost multiple thousands of
+dollars and are finicky and fragile. Thus, we would like to use an inexpensive nine
+degree-of-freedom (three-axis acceleromter, gyrometer, and magnetic heading) IMU instead.
 
-\section{Referencial Teórico} \label{sec:firstpage}
+During the course of this rotation, senior graduate student Qian Wan discoverd that the current tactile
+sensors are insufficent for estimating contact location accurately enough to develop a good grasp
+stability estimate. Thus, this project includes a brief exploration of a new sensor design using the
+same elements (barometric pressure sensors covered by a layer of elastomer, such as urethane), but
+more of them.
 
-A primeira página deve apresentar o título do trabalho, o nome e o endereço (institucional) dos autores, o resumo em portutguês e o “abstract” em inglês. O título deve ser centralizado, em fonte no estilo negrito e tamanho 16pts, com 12pts de espaçamento antes do início da linha do título. 
-
-Os nomes dos autores devem ser centralizados, todos dispostos na mesma linha, em fonte 12pt, negrito, separados por vírgulas e com 12pts de espaço entre o título. 
-
-O endereço institucional dos autores deve ser centralizado, em fonte 12pt, também com 12pts de espaço depois dos nomes dos autores. Os endereços de e-mail devem ser escritos usando fonte estilo “Courier New”, tamanho 10 pontos, com 6 pontos de espaço antes e 6 pontos de espaço depois da linha dos endereços de e-mail.
-
-O abstract e o “resumo” (se for o caso) devem ser escritos em fonte Times, tamanho 12, tabulado em 0.8cm em ambos os lados. As palavras \textbf{Abstract} e \textbf{Resumo} devem ser escritas em negrito e devem preceder o texto.
-
-\subsection{Sobre o Referencial teórico}
-O Referencial teórico é a fundamentação do estudo/pesquisa. Os assuntos teóricos explorados pelos alunos nesta seção devem ter relação direta com o tema da pesquisa e estar alinhados aos objetivos traçados.
-
-Nesta seção, o aluno pode abordar também os estudos relacionados ao tema. É importante o uso de artigos publicados em anais e periódicos recentes.
-
-
-\section{Metodologia}
-
-Descreve os métodos e técnicas utilizados na pesquisa
-
-\subsection{Sobre seções e parágrafos}
-
-Os títulos das seções devem estar em negrito, fonte 13pt, alinhados a esquerda. A linha do título da seção deve possuir 12pts de espaçamento antes do seu início. A numeração das seções é opcional, embora recomendado. O primeiro parágrafo de cada seção não deve ser tabulado, enquanto que as primeiras linhas dos parágrafos subsequentes devem ser tabulados em 1.27 cm.
-
-Os títulos das subseções devem estar em negrito, 12pt, alinhados a esquerda.
+\section{Theory} \label{sec:firstpage}
 
 
-\section{Análise dos dados}\label{sec:analisedosdados}
+\subsection{Model}
 
-Nesta seção, o aluno descreve o efetivo procedimento metodológico adotado e aponta os resultados da pesquisa. Na análise de dados, é  aconselhável o uso de tabelas, figuras, linhas de códigos etc para representar os resultados do estudo.
+For the model, we are making a few simplifying assumptions:
 
-As Tabelas, Quadros e Figuras, assim como as legendas de Tabelas, Quadros e Figuras devem estar centralizadas se conterem apenas em uma linha (Figura~\ref{fig:figura1}), caso contrário devem estar tabuladas em 0.8cm em ambas as margens, como mostra a Figura~\ref{fig:figura2}. 
+1. There is a linear relationship between force and deflection, or alternatively torque and angle of
+deflection
+2. The center of the axis of rotation was at the tip of the proximal joint
+(in reality, likely it is two or three mm shifted outward, and changes as the flex increases)
+3. We consider the z axis to be defined respect to the surface of the finger, so that z=0 is always
+at the tip of the finger
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=.3\textwidth]{fig1.jpg}
-\caption{Exemplo de figura}
-\label{fig:figura1}
-\end{figure}
+The consequence of \#3 is that we cannot estimate z-axis torque.
 
-As legendas devem ser escritas na fonte “Helvetica”, Tamanho 10pts, negrito, com espaço de 6pts antes e depois de cada legenda. Sempre que possível, procure colocar a figura delimitada por um quadro (Figura~\ref{fig:figura1} e Figura~\ref{fig:figura2})
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=.2\textwidth]{fig2.jpg}
-\caption{Essa figura foi referenciada na Seção~\ref{sec:analisedosdados}.}
-\caption{Fonte: SBC.}
-\label{fig:figura2}
-\end{figure}
-
-Em tabelas, tente evitar o uso de fundos coloridos ou preenchidos, assim como linhas duplas na borda, ou linhas desnecessárias. Quando \cite{knuth:84} relatar dados empíricos, não faça uso de mais dígitos decimais do que o necessário. A legenda da tabela deve ser colocada antes da tabela (veja Tabela 1) e a fonte usada na legenda deve ser Helvetica, tamanho 10pts, negrito, com 6pts de espaço antes e depois de cada legenda.
-
-\begin{table}[!ht]
-\centering
-\caption{Exemplo de tabela de 3 colunas e 2 linhas}
-\label{tab:exTable1}
-\smallskip
-\begin{tabular}{l c c}
-\hline
-& Value 1 & Value 2\\[0.5ex]
-\hline
-&&\\[-2ex]
-Case 1 & 1.0 $\pm$ 0.1 & 1.75$\times$10$^{-5}$ $\pm$ 5$\times$10$^{-7}$\\[0.5ex]
-\hline
-&&\\[-2ex]
-Case 2 & 0.003(1) & 100.0\\[0.5ex]
-\hline
-\end{tabular}
-\end{table}
-
-\subsection{Código fonte}
-A inserção de código fonte deve ser por meio
+\subsection{Reference Frame}
 
 \begin{lstlisting}
+Coordinates
+----> + x (roll)
+|
+|
+v
++ y (pitch)
 
-int main(){
-  int a,b,c;
-  float x;
-  printf("informe o tamanho do lado do quadrado");
-  scanf("%d", &a);
-  printf("A area do quadrado %d", b=area(a));
-  printf("Duas vezes o valor do lado do quadrado %d", c=aumenta(a));
++ z (up out of page) (yaw)
 
+
+Finger Positions
+=======      ====================.
+ {CL}  || --- || 15  12  9  6  3 ||
+ {A} [xy=0]-- || 14  11  8  5  2 ||
+ {MP}  || --- || 13  10  7  4  1 ||
+=======      ====================.
+
+
+  [[---]]
+||  WEB  ||
+||  CAM  ||
+  ||--- ||
+  
+Points 13 through 15 are at x=2.6 cm, and each x is spaced 5 mm apart.
 \end{lstlisting}
 
+\subsection{Linear Model, 1D case}
+
+In the one-axis case, the math is straightforward.
+
+\begin{align}
+\tau = k \times F
+\end{align}
+
+For example, one datapoint might be
+
+\begin{align}
+k &= F / \tau \\
+k &= (20g \times 9.8 m/s^2)/0.1 \text{ degrees}
+\end{align}
+
+where `k` represents the stiffness of the finger. Let $c$ represent the inverse of $k$.
+
+Using least squares error, we may fit a line to find $\hat{c}$. 
+
+\begin{align}
+ \hat{c} &= \frac{1}{\hat{k}} \\
+ \theta &= \tau \hat{c} + b
+\end{align}
+
+where `b` be a constant determined by the line of fit.
+
+\subsection{Residuals}
+
+From the above, we may calculate the residuals of any of our estimated variables.
+For instance, from our actual data we may obtain an estimate for `k`.
+
+\begin{align}
+ \tau_{data} &= \hat{k} \cdot \theta_{data} \\
+\end{align}
+
+Using this k we can go back and calculate estimates for the "true" torque, assuming our linear model was correct.
+
+\begin{align}
+ \hat{\tau} &= \hat{k} \cdot \theta_{data} 
+\end{align}
+
+We would then calculate our torque residuals as
+
+\begin{align}
+ \epsilon_{\tau} = \hat{\tau} - \tau 
+\end{align}
+
+If we plot a graph of (torque residuals) vs (estimate residuals) and find that our points are randomly scattered around a straight line, then our model well-approximates reality as sensed by a noisy sensor.
+
+However, our residuals may instead follow a parabola, in which case we would want to amend our model
+to have higher-order terms.
+
+\begin{align}
+ \hat{\tau} = \hat{k}\theta_{data} +c_1 \theta_{data} + c_2 \theta_{data}
+\end{align}
+
+and so forth. 
+
+We may eventually use machine learning techniques to fit higher-order terms.
+
+\subsection{3D case}
+The 3d case is exactly the same, except now each of the variables are vectors or matrices. 
+
+    %:s@\\\[:\\begin{bmatrix}:g
+\begin{align}
+    \begin{bmatrix} \vec{\tau} \end{bmatrix}_{3xn}  = \begin{bmatrix} K \end{bmatrix}_{3x3} \cdot \begin{bmatrix} \vec{\theta} \end{bmatrix}_{3xn} 
+\end{align}
+
+where
+
+\begin{align}
+\vec{\tau} &= \begin{bmatrix} \stackrel{3x1}{\tau_1} | \stackrel{3x1}{\tau_2} | ... |\stackrel{3x1}{\tau_n} \end{bmatrix} \\
+\\
+\vec{\theta} &= \begin{bmatrix} \stackrel{3x1}{\theta_1} | \stackrel{3x1}{\theta_2} | ... |\stackrel{3x1}{\theta_n} \end{bmatrix}
+\end{align}
+
+\subsection{Sanity Check: Simplify to 2D case}
+
+We know that $\tau=r\times\F$
 
 
-\section{Considerações Finais}
+\begin{align}
+    \begin{bmatrix}
+        \tau_{x} \
+        \tau_{y} \
+        \tau_{z} \
+    \end{bmatrix} =
+    \Bigg[ \; K \; \Bigg]{3x3} \;
+    \begin{bmatrix}
+        \theta{x} \
+        \theta_{y} \
+        \theta_{z} \
+    \end{bmatrix} \
+\end{align}
 
-Referências bibliográficas devem ser utilizadas dentro de um estilo uniforme e não ambíguo. A SBC sugere os seguintes formatos para referências: \cite{knuth:84}, \cite{boulic:91}, e \cite{smith:99}.
+Further, we can use some of the simplifying assumptions we made about to model our system, in order to have an idea of what values our math should result in for $k$.
 
-\bibliographystyle{sbc}
-\bibliography{sbc-template}
+We may also see that we will only ever have x and y components for $r$; z components for $F$; and thereforce (by how cross products work) only ever have x and y components for $\tau$.
+
+\textbf{Off-axis}
+\begin{align}
+r \approx
+\begin{bmatrix}
+    r_x       \\
+    r_y       \\
+    0       \\
+\end{bmatrix} \; \times \;
+f \approx
+\begin{bmatrix}
+    0       \\
+    0       \\
+    f_z      \\
+\end{bmatrix} \; =  \; \tau \; = 
+\begin{bmatrix}
+    \tau_x       \\
+    \tau_y       \\
+    0      \\
+\end{bmatrix}\\
+\end{align}
+
+
+\textbf{On-Axis}
+
+In the even more simplified case, if we do not apply the force off-axis and there is only a pitch
+deflection
+
+\begin{align}
+r \approx
+\begin{bmatrix}
+    r_x       \\
+    0       \\
+    0       \\
+\end{bmatrix} \; \times \;
+f \approx
+\begin{bmatrix}
+    0       \\
+    0       \\
+    f_z      \\
+\end{bmatrix} \; =  \; \tau \; = 
+\begin{bmatrix}
+    0 \\
+    \tau_y       \\
+    0      \\
+\end{bmatrix}\\
+\end{align}
+
+We \textbf{could} have enough nonzero values for the xyz components of $\theta$ that we will be able
+to calculate a nondegenerate estimate for $k$. This is thanks to applying the force off-axis,
+causing the finger to roll and create non-zero elements for $\theta_y$ ( our roll) and $\theta_z$
+(our yaw). However, after solving for K, I found that I ended up with a bottom row consisting
+entirely of zeroes.
+
+
+\section{Methods}
+
+For the setup, I used a triple-beam balance as a way to apply force while retaining a vertical
+angle. I hot-glued a pumpkin awl to the bottom of the plate and put standard weights on top of of
+the scale. This caused the awl to contact the surface of the finger, and the finger would then
+deflect. In the 1D case, I simply placed a ruler behind the finger and used a webcam to take
+pictures. By mapping pixel counts to millimeters, I could then estimate the deflection of the
+finger. The linear fit from these very imprecise measurements proved linear enough that I then
+relied on the IMU going forward and skipped the step (which should be completed eventually) of
+characterizing the accuracy of the IMU versus a gold standard, such as a stereo camera (the
+Microntracker available in lab) or other methods (such as using Apriltags with a calibrated webcam). 
+
+I then created a grid of 15 points on the finger. For each of the 15 points, I applied several known
+amounts of force, with three samples at each force-point combination. Each sample consisted of a
+"zero" measurement pre-contact and a measurement post-contact. In post-processing, I then subtracted
+the two to obtain my final sensor data.
+
+Complications arose from the limited travel of the triple beam balance, which meant I could only
+measure small deflections (initially on the order of 4 mm; after discovering that I could take the
+end stop off the back edge of the triple beam balance, about 10mm). At the tip of the finger, I
+could only less than a hundred grams of "force" (about 1 N), while 4N is a normal amount of force
+applied by humans to grasp things. This remained a source of frustration throughout the data
+collecting and ate up many hours of adjusting the experimental setup. 
+
+I glued an IMU to the undersid of the finger. The IMU I used was the Bosch BNO055 sensor. A breakout
+was available from adafruit.com for \$35, which is relatively inexpensive.  I chose this sensor not
+only for the built-in processing, and also because of the extensive beginner-friendly documentation
+developed by Adafruit for all of its products. It was recommended to me by 
+%(person) 
+at Right Hand Robotics, which is a spinoff of this lab.
+
+\textit{"Bosch is the first company to get this right by taking a MEMS accelerometer, magnetometer and
+    gyroscope and putting them on a single die with a high speed ARM Cortex-M0 based processor to digest
+    all the sensor data, abstract the sensor fusion and real time requirements away, and spit out data
+you can use in quaternions, Euler angles or vectors." (source: adafruit.com)}
+
+I also attached an apriltag (which looks like a QR code) and a micontracker tag (which has a
+checkerboard like cross), both of which can simply be printed out on paper, and calibrated the
+webcam for use with the Apriltag C++ script. Although I have collected mictrontracker and apriltag
+data for comparing to the IMU deflection data, I have not had a chance to analyze this data yet,
+
+Additionally, the IMU acclerometer would consistently refuse to calibrate if the sensor did not
+start parallel to the ground. The significant slope of the finger versus the clamp and 90 degree
+angle of the 80/20 meant that I had to approximate a slanted 80/20 setup by increasing the degrees
+of freedom on the L brackets (removing t-nuts). This led to a lot of worry on my part about the
+creakiness and variability in the data collection as I could not guarantee angle consistency,
+although in retrospect this is almost completely mitigated by the fact that I am zeroing before
+every reading. 
+
+As I progressed, I trended toward collecting coarser and coarser data as I grew confident
+that measurements still provided enough data for me to see overall trends in the data
+(such as the linearity of the data). I shifted from 2g increments, to 20g, and in the end 50g
+increments. This meant that for the finger when stiffness was applied, I had to change the setup so
+that the finger started at an angle and became parallel to the floor when load was applied to the
+tendon. After my deep grievances with producing angles on the 80/20 setup, I decided to use legos
+with popsicle stick props on one end in order to produce the correct angles.
+
+Finally, I discovered at the very end that I could calibrate the scale to have a constant force
+offset. Thus, instead of collecting a zero measurement with the tip starting just above the surface,
+which meant that I had to wait for the oscillations to settle, I could put an offset which made the
+scale keel all the way to up when the weight was removed. This made zero measurements 2-3x
+faster, which reduced the cognitive load to remember which measurement I was at, which both reduced
+data cleanup and needing to recollecting data. This led to significant time savings.
+
+%TODO pictures
+
+\section{Data Analysis}\label{sec:analisedosdados}
+
+
+%Nesta seção, o aluno descreve o efetivo procedimento metodológico adotado e aponta os resultados da pesquisa. Na análise de dados, é  aconselhável o uso de tabelas, figuras, linhas de códigos etc para representar os resultados do estudo.
+
+%As Tabelas, Quadros e Figuras, assim como as legendas de Tabelas, Quadros e Figuras devem estar centralizadas se conterem apenas em uma linha (Figura~\ref{fig:figura1}), caso contrário devem estar tabuladas em 0.8cm em ambas as margens, como mostra a Figura~\ref{fig:figura2}. 
+
+%\begin{figure}[ht]
+%\centering
+%\includegraphics[width=.3\textwidth]{fig1.jpg}
+%\caption{Exemplo de figura}
+%\label{fig:figura1}
+%\end{figure}
+
+%As legendas devem ser escritas na fonte “Helvetica”, Tamanho 10pts, negrito, com espaço de 6pts antes e depois de cada legenda. Sempre que possível, procure colocar a figura delimitada por um quadro (Figura~\ref{fig:figura1} e Figura~\ref{fig:figura2})
+
+%\begin{figure}[!ht]
+%\centering
+%\includegraphics[width=.2\textwidth]{fig2.jpg}
+%\caption{Essa figura foi referenciada na Seção~\ref{sec:analisedosdados}.}
+%\caption{Fonte: SBC.}
+%\label{fig:figura2}
+%\end{figure}
+
+%Em tabelas, tente evitar o uso de fundos coloridos ou preenchidos, assim como linhas duplas na borda, ou linhas desnecessárias. Quando \cite{knuth:84} relatar dados empíricos, não faça uso de mais dígitos decimais do que o necessário. A legenda da tabela deve ser colocada antes da tabela (veja Tabela 1) e a fonte usada na legenda deve ser Helvetica, tamanho 10pts, negrito, com 6pts de espaço antes e depois de cada legenda.
+
+%\begin{table}[!ht]
+%\centering
+%\caption{Exemplo de tabela de 3 colunas e 2 linhas}
+%\label{tab:exTable1}
+%\smallskip
+%\begin{tabular}{l c c}
+%\hline
+%& Value 1 & Value 2\\[0.5ex]
+%\hline
+%&&\\[-2ex]
+%Case 1 & 1.0 $\pm$ 0.1 & 1.75$\times$10$^{-5}$ $\pm$ 5$\times$10$^{-7}$\\[0.5ex]
+%\hline
+%&&\\[-2ex]
+%Case 2 & 0.003(1) & 100.0\\[0.5ex]
+%\hline
+%\end{tabular}
+%\end{table}
+\section{Sensor Design}
+
+
+\section{Knowledge}
+
+In the process of this research, I learned about how accelerometers are calibrated, which I found
+very interesting (although ultimately, thanks to the built-in sensor fusion and calibration routines of the BNO055
+sensor, I did not need to write my own calibration algorithms). The common presence of the gravity
+vector across meaurements at diffent angles makes this calibration possible.
+
+I learned the most about exploratory statistical data analysis. Where previously I had not even
+heard of residuals (only scalar measurements such as mean-square-error), I learned about how they
+could be compared to a horizontal basis against which they would be randomly distributed assuming
+random noise around a proper physical model.
+
+Finally, I learned more about the I2C and SPI protocols for receiving (and writing) to multiple
+sensors. I began work on creating a custom printed circuit board to create a 3x4 array of sensors,
+and decided to switch and learn to use a newcomer in the PCB design space, which has CERN support: the free and open-source
+KiCAD tool.
+
+\section{Conclusions}
+
+The stiffness of the finger was remarkably linear, which meant that machine learning and higher
+order terms had little to contribute to improving the fit between measure theta deflections and
+force estimates.
+
+However, I was only able to apply relatively small loads to the finger. It's possible that with
+large loads, the stiffness becomes less linear, in which case linear fit residuals may become more
+prominent or structured. If this were the case, machine learning approaches might have more to
+contribute to the force estimates. As it were, the data I collected did not benefit much from the
+addition of non-linear models fitted with machine learning techniques such as random forests.
+
+Most crucially, Qian demonstrated to me the process by which grasps fail. By observing the grasping,
+I discovered that when the tendon was pulled taught (as needed to grasp anything), the y-axis was now
+now the stiffest axis! Thus, characterizing the finger with no tendon load applied and primarily in
+the y-axis direction, while a great learning experience, does not generalize at all to practice and becomes a
+toy example.
+
+Additionally, the finger relied extensively on mechanical mechanism intelligence (as opposed to full
+actuated parallel grippers, commonly used in computer science labs).  I saw that complete failures
+tended to occur because the finger had failed to detect contact when contact had already occured.
+This suggests the better instrumentation of the finger is critical. The IMU by itself can only
+suggest contact force, and the tactile sensors are needed to tell contact location. To evaluate the
+contribution of the IMU to force estimates and not just torque estimates, we must build better
+location sensors than the current 1x4 array.
+
+%Referências bibliográficas devem ser utilizadas dentro de um estilo uniforme e não ambíguo. A SBC sugere os seguintes formatos para referências: \cite{knuth:84}, \cite{boulic:91}, e \cite{smith:99}.
+
+%\bibliographystyle{sbc}
+%\bibliography{sbc-template}
+
+\subsection{Future Work}
+
+The microntracker should be used to evaluate the IMU. Evaluating the use of Apriltags with the
+microntracker would help reproducibility by others (or future grad students), as webcams are cheap
+and readily available, and documentation for apriltags is freely available online.
+
+Additionally, a full sensor array on a custom PCB, manufactured into a finger unit, should be
+developed and characterized. By collecting data and then fusing this with the IMU data, we could
+physically evaluate the grasp stability preductions, producing an important tie between theory and
+practice to ensure the two complement each other. The important of this has been mentioned above.
+I 
 
 \end{document}
