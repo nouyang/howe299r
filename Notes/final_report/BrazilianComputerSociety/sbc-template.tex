@@ -13,14 +13,21 @@
 \usepackage{xcolor}
 
 \usepackage{graphics} % for pdf, bitmapped graphics files
+\usepackage{caption} % for pdf, bitmapped graphics files
 \usepackage{mathptmx} % assumes new font selection scheme installed
 \usepackage{times} % assumes new font selection scheme installed
 \usepackage{amsmath} % assumes amsmath package installed
 \usepackage{amssymb}  % assumes amsmath package installed
 \usepackage{float}
+\usepackage[margin=0.5in]{geometry}
 \definecolor{verde}{rgb}{0,0.5,0}
 
+\setlength{\abovecaptionskip}{2pt}
+\setlength{\belowcaptionskip}{2pt}
+\setlength{\intextsep}{2pt}
+\setlength{\textfloatsep}{2pt}
 %para customizar o código (ver https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings)
+
 \lstset{language=C, %defina a linguagem usada no trabalho
               belowcaptionskip=1\baselineskip,
                 breaklines=true,
@@ -537,10 +544,9 @@ library}
 
 \subsection{Initial data (relaxed tendon only)}
 
-
 \begin{figure}[H]
 \centering
-\includegraphics[width=.9\textwidth]{images/round1/LinearResid_thetaY.png}
+\includegraphics[width=1.1\textwidth]{images/round1/LinearResid_thetaY.png}
 %\caption{Loaded tendon}
 %\label{fig:figura1}
 \end{figure}
@@ -706,6 +712,14 @@ I decided to investigate apriltags, which helped me refresh on my knowledge of C
 find an appropriate ROS driver, and ultimately was able to get the C++ working (despite some issues
 with the openCV version on my laptop) with the help of Patrick from Prof. Kuindersma's lab.
 
+Example data output
+\begin{lstlisting}
+2 tags detected: 
+Id: 1 (Hamming: 0) distance=0.079741m, x=0.000532, y=0.006102, z=-1.487915, yaw=-0.134615, pitch=0.071828, roll=-0.041146
+Id: 7 (Hamming: 0) distance=0.079741m, x=0.000532, y=0.006102, z=-1.487915, yaw=-0.134615, pitch=0.071828, roll=-0.041146
+14.9312 fps
+\end{lstlisting}
+
 \begin{lstlisting}
 nrw@earlgrey:~/projects/apriltags$ vi CMakeLists.txt 
     (line 14)
@@ -714,19 +728,26 @@ nrw@earlgrey:~/projects/apriltags$ vi CMakeLists.txt
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=.8\textwidth]{images/april/applications_april.png}
+\includegraphics[width=.4\textwidth]{images/april/applications_april.png}
 \caption{Loaded tendon}
 %\label{fig:figura1}
 \end{figure}
 
+To calibrate the camera, I was able to find a (very!) well-documented python script online that allowed be to calibrate the camera simply by taking a few pictures of a checkerboard.
+
+\begin{lstlisting}
+(venv) nrw@earlgrey:~/projects/video2calibration$ ./calibrate.py example_input/chessboard.avi calibration.yaml --debug-dir out
+\end{lstlisting}
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=.8\textwidth]{images/april/webcam_calibration.png}
+\includegraphics[width=.4\textwidth]{images/april/webcam_calibration.png}
 %\caption{Loaded tendon}
 %\label{fig:figura1}
 \end{figure}
 
-This gave estimates
+Using the output of the calibration script, I could then set the values in the apriltag example code
+to give me (fairly accurate) estimates of the xyz location of the finger in real-world units.
 
 \begin{lstlisting}
 nrw@earlgrey:~/projects/video2calibration$ ./calibrate.py ~/Videos/Webcam/2018-03-26-112657.webm calibration.yaml --debug-dir out
@@ -830,6 +851,5 @@ Additionally, a full sensor array on a custom PCB, manufactured into a finger un
 developed and characterized. By collecting data and then fusing this with the IMU data, we could
 physically evaluate the grasp stability preductions, producing an important tie between theory and
 practice to ensure the two complement each other. The important of this has been mentioned above.
-I 
 
 \end{document}
