@@ -141,8 +141,9 @@ myX = BigTheta
 myy = BigTorque[:,1] 
 #myY = Residuals 
 
-#======= Adaboost on decision tree
+
 '''
+#======= Adaboost on decision tree
 ###############################################################
 #### Ada Boost Fit of Resid (black box)
 ###############################################################
@@ -184,7 +185,6 @@ plt.title("Gradient Boost Regression \ndirectly on Torque data (no linear model)
           + 'RMSE: %.04f' % float(rmse))
 plt.legend()
 plt.show()
-
 
 ###############################################################
 #### RF Fit of Resid (black box)
@@ -249,12 +249,13 @@ plt.title("Polynomial fit on drectly on Torque data\n"
           + 'RMSE: %.04f' % float(rmse))
 plt.legend()
 plt.show()
-'''
+
+
 ###############################################################
 #### Evaluate linear fit on residuals 
 ###############################################################
 
-
+'''
 #####################################################################
 #### Attempting Linear Correction
 #####################################################################
@@ -304,7 +305,53 @@ plt.title("measured Torq vs new torq est (lin adjusted)\n" + 'RMSE: ' + np.array
 plt.legend()
 plt.show()
 
+#####################################################################
+#### Attempting Polynomial correction
+##################################################################### 
 
+myy = resid[:,1]
+poly = PolynomialFeatures(degree=2) #use polynomial basis function!
+X_ = poly.fit_transform(myX)
+# predict_ = poly.fit_transform(X)
+
+clf = linear_model.LinearRegression()
+clf.fit(X_, myy)
+resid_est = clf.predict(X_)
+
+torq_corrected = lin_torq_est + resid_est  
+
+meas_torqY = BigTorque[:,1]
+
+print('orig torq', meas_torqY.shape)
+print('corrected torque', torq_corrected.shape)
+
+rmseResid = metrics.mean_squared_error(myy,resid_est, multioutput='raw_values')**0.5
+
+
+print('myx shape', myX.shape)
+print('myY shape', myy.shape)
+plt.scatter(myy, meas_torqY, label='resids of linear fit of y', color='orange', s=20)
+plt.scatter(resid_est, meas_torqY, label='poly est of resid', linewidth=1, alpha=0.6, color='b',
+            s=20)
+plt.title("Poly fit on residuals\n" + 'RMSE:' +np.array_str(rmseResid, precision=4))
+plt.xlabel('theta Y')
+plt.ylabel('residY')
+plt.legend()
+plt.show()
+
+rmse = metrics.mean_squared_error(meas_torqY,torq_corrected,multioutput='raw_values')**0.5
+thetaY = myX[:,1]
+
+plt.scatter(thetaY, meas_torqY, label='measured torqY', color='orange', s=20)
+plt.scatter(thetaY, torq_corrected, label='torq estimate (poly corrected)', linewidth=1, alpha=0.6,
+            color='g', s=20)
+plt.xlabel('theta Y (deg)')
+plt.ylabel('torqY estimated')
+plt.title("Measured Torq vs new torq est (poly adjusted)\n" + 'RMSE: ' + np.array_str(rmse, precision=4))
+plt.legend()
+plt.show()
+
+'''
 #####################################################################
 #### Attempting Random Forest correction
 ##################################################################### 
@@ -441,3 +488,4 @@ plt.title("measured Torq vs new torq est\n(gradient boost adjusted) " + 'RMSE: '
 plt.legend()
 plt.show()
 
+'''
