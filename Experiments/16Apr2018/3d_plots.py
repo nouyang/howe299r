@@ -78,8 +78,8 @@ def pickXColors(yes):
 
 
 
-def plotResidVs(xvars, filename, colorsXflag):
-    print('~~~~~~~~~~Plotting!' + '~~~~~~~~')
+def plotResidVs(xvars, filename, colorsXflag, show=False):
+    print('~~~~~~~~~~Plotting! Resids vs' + str(xvars) + '~~~~~~~~')
     colorsIdx = pickXColors(colorsXflag)
 
     df=pd.DataFrame({'Resid of TorqX fit':resid[:,0], 'Resid of TorqY fit':resid[:,1],
@@ -153,25 +153,27 @@ def plotResidVs(xvars, filename, colorsXflag):
             transform = ax.transAxes, fontsize=6)
     plt.gcf().savefig(filename)
     # plt.gcf().savefig('TorqResid_Theta')
-    plt.show()
+    if show:
+        plt.show()
 # print(pickXColors(False))
 # plotResidVs([ 'ThetaX (deg)' ,'ThetaY (deg)', 'ThetaZ (deg)'],'resids_theta_coloredY', pickXColors(False))
 # plotResidVs([ 'TorqX measured (g*cm)', 'TorqY measured (g*cm)'], 'resids_torq', pickXColors(False))
 
-# vs tor# q
+# vs torq
 # sns.pairplot(data=df, hue='Colors', y_vars=['Resid of TorqX fit', 'Resid of TorqY fit'],
          # x_vars= ['TorqX estimated (g*cm)', 'TorqY estimated (g*cm)' ],
          # kind='reg', plot_kws={'scatter_kws':{'alpha':0.6, 'linewidths':0.2, 'edgecolors':'k'}, 'fit_reg':False})
 
-plotResidVs([ 'ThetaX (deg)' ,'ThetaY (deg)', 'ThetaZ (deg)'],'resids_theta_coloredX',
-            True)
-plotResidVs([ 'ThetaX (deg)' ,'ThetaY (deg)', 'ThetaZ (deg)'],'resids_theta_coloredY',
-            False)
-# plotResidVs([ 'TorqX measured (g*cm)', 'TorqY measured (g*cm)'], 'resids_torq_coloredX', pickXColors(True))
+plotResidVs([ 'ThetaX (deg)' ,'ThetaY (deg)', 'ThetaZ (deg)'],'resids_Theta_coloredX', True)
+plotResidVs([ 'ThetaX (deg)' ,'ThetaY (deg)', 'ThetaZ (deg)'],'resids_Theta_coloredY', False)
+plotResidVs([ 'TorqX measured (g*cm)', 'TorqY measured (g*cm)'], 'resids_Torq_coloredX', True)
+plotResidVs([ 'TorqX measured (g*cm)', 'TorqY measured (g*cm)'], 'resids_Torq_coloredX', False)
+plotResidVs([ 'ForceZ (g)','PositionX (cm)','PositionY (cm)'], 'resids_Force_coloredX', True)
+plotResidVs([ 'ForceZ (g)','PositionX (cm)','PositionY (cm)'], 'resids_Forc_coloredX', False)
 # vs force pos
 # sns.pairplot(data=df, hue='Colors', y_vars=['Resid of TorqX fit', 'Resid of TorqY fit'],
                  # x_vars - xvars,
-                 # # x_vars=[ 'ForceZ (g)','PositionX (cm)','PositionY (cm)'],
+                 # # x_vars=
                  # plot_kws={'scatter_kws':{'alpha':0.6, 'linewidths':0.2,
                                       # 'edgecolors':'black'}, 'fit_reg':False}, 
                  # size=3, aspect=1)
