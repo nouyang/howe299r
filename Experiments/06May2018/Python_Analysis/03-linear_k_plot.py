@@ -1,4 +1,5 @@
 """
+lstlisting
 Created on 07 May 2018
 @author: nrw
 
@@ -17,7 +18,10 @@ from sklearn import metrics
 
 import seaborn as sns
 
-sns.set(rc={'figure.figsize':(20,10)})
+# sns.set(rc={'figure.figsize':(20,10)}, font_scale=1.1)
+sns.set(rc={'figure.figsize':(10,5)})
+# sns.set(font_scale=1.3)
+sns.set_context("talk")
 #===============================================
 #### DECLARE CONSTANTS ####
 #===============================================
@@ -83,8 +87,8 @@ def plot_fit_and_residuals(infile, infile2, strdatatxt):
                      'ThetaX (deg)': BigTheta[:,0],
                      'ThetaY (deg)': BigTheta[:,1],
                      'ThetaZ (deg)': BigTheta[:,2],
-                     'TorqX estimated (g*cm)': torq_est[:,0],
-                     'TorqY estimated (g*cm)': torq_est[:,1],
+                     'TorqX est. (g*cm)': torq_est[:,0],
+                     'TorqY est. (g*cm)': torq_est[:,1],
                      'Colors':colorsIdx})
 
     #===============================================
@@ -96,7 +100,7 @@ def plot_fit_and_residuals(infile, infile2, strdatatxt):
     sns.regplot(data=df, x='ThetaX (deg)', y='TorqX measured (g*cm)', ax=ax1)
     sns.regplot(data=df, x='ThetaY (deg)', y='TorqY measured (g*cm)', ax=ax2)
 
-    plt.suptitle('Measured Torques vs Theta  \n' + strdatatxt)
+    plt.suptitle('Measured Torques vs Theta: ' + strdatatxt)
 
     strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     ax = plt.gca()
@@ -111,11 +115,29 @@ def plot_fit_and_residuals(infile, infile2, strdatatxt):
     print(K)
     print('Root Mean Squared Error: %s' % str(linrmse))
 
-    plt.text(1.01, 0.2, 'TorqueXYZ linear fit \nRMSE: \n'+ str(linrmse), horizontalalignment='left', verticalalignment='bottom',
+    plt.text(0.8, 0.05, 'TorqueXYZ linear fit \nRMSE: \n'+ str(linrmse), horizontalalignment='left', verticalalignment='bottom',
             transform = ax.transAxes, fontsize=10)
 
-    plt.text(1.01, 0.4, 'K:\n' + np.array_str(K, precision=2, max_line_width=25), horizontalalignment='left', verticalalignment='bottom',
+    # # kstr = ["0.02f" % (k) for k in K]
+    # kstr = [("%0.02f"%k) for k in K]
+    # kstr2 = str(K)
+
+    # kstr3 = np.array_str(K, precision=2)
+    # print('kstr', kstr)
+    # print('kstr2', kstr2)
+    # print('kstr3', kstr3)
+
+
+    formatting_function = np.vectorize(lambda f: (format(f, '2.2f')))
+    print('lambda', formatting_function(K))
+
+    np.set_printoptions(suppress=True)
+
+    plt.text(0.8, 0.25, 'K:\n' + np.array_str(K, precision=2, max_line_width=25), horizontalalignment='left', verticalalignment='bottom',
             transform = ax.transAxes, fontsize=10)
+
+    # plt.text(0.95, 0.4, 'K:\n' + formatting_function(K), horizontalalignment='left', verticalalignment='bottom',
+            # transform = ax.transAxes, fontsize=8)
 
     plt.gcf().savefig('Torq_meas_vs_Theta'+strdatatxt)
     # plt.show()
@@ -127,10 +149,10 @@ def plot_fit_and_residuals(infile, infile2, strdatatxt):
     f, (ax1, ax2) = plt.subplots(1,2)
     ax1.set(xlim=(-550,50), ylim=(-550,50))
     ax2.set(xlim=(-550,50), ylim=(-550,50))
-    rg = sns.regplot(data=df, x='TorqX measured (g*cm)', y='TorqX estimated (g*cm)', ax=ax1)
-    rg2 = sns.regplot(data=df, x='TorqY measured (g*cm)', y='TorqY estimated (g*cm)', ax=ax2)
+    rg = sns.regplot(data=df, x='TorqX measured (g*cm)', y='TorqX est. (g*cm)', ax=ax1)
+    rg2 = sns.regplot(data=df, x='TorqY measured (g*cm)', y='TorqY est. (g*cm)', ax=ax2)
 
-    plt.suptitle('Torques X & Y, measured vs estimated\n' + strdatatxt)
+    plt.suptitle('Measured vs Estimated Torques: ' + strdatatxt)
 
     strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     ax = plt.gca()
@@ -140,15 +162,16 @@ def plot_fit_and_residuals(infile, infile2, strdatatxt):
     #====
     #### Annotate plot with K & RMSE ####
     #===
-    linrmse = np.around(metrics.mean_squared_error(BigTorque, torq_est, multioutput='raw_values')**0.5,
-                        decimals=2)
+    linrmse = np.around(metrics.mean_squared_error(BigTorque, torq_est, multioutput='raw_values')**0.5, decimals=2)
     print(K)
     print('Root Mean Squared Error: %s' % str(linrmse))
 
-    plt.text(1.01, 0.2, 'TorqueXYZ linear fit \nRMSE: \n'+ str(linrmse), horizontalalignment='left', verticalalignment='bottom',
+    plt.text(0.8, 0.05, 'TorqueXYZ linear fit \nRMSE: \n'+ str(linrmse), horizontalalignment='left', verticalalignment='bottom',
             transform = ax.transAxes, fontsize=10)
 
-    plt.text(1.01, 0.4, 'K:\n' + np.array_str(K, precision=2, max_line_width=25), horizontalalignment='left', verticalalignment='bottom',
+    np.set_printoptions(suppress=True)
+
+    plt.text(0.8, 0.25, 'K:\n' + np.array_str(K, precision=2, max_line_width=25), horizontalalignment='left', verticalalignment='bottom',
             transform = ax.transAxes, fontsize=10)
 
     plt.gcf().savefig('Torq_vs_TorqEst'+strdatatxt)
@@ -160,9 +183,9 @@ def plot_fit_and_residuals(infile, infile2, strdatatxt):
 
     # sns.pairplot(data=df, hue='Colors', y_vars=['Resid of TorqX fit', 'Resid of TorqY fit'],
                  # x_vars=[ 'TorqX measured (g*cm)', 'TorqY measured (g*cm)', 
-                     # 'TorqX estimated (g*cm)', 'TorqY estimated (g*cm)' ])
+                     # 'TorqX est. (g*cm)', 'TorqY est. (g*cm)' ])
 
-    adjust_top = 0.85
+    adjust_top = 0.8
     #=== Resid vs Force & Pos 
     sns.pairplot(data=df, hue='Colors', y_vars=['Resid of TorqX fit', 'Resid of TorqY fit'],
                  x_vars=[ 'ForceZ (g)','PositionX (cm)','PositionY (cm)'])
@@ -185,7 +208,7 @@ def plot_fit_and_residuals(infile, infile2, strdatatxt):
 
     #=== Resid vs Torq Est 
     sns.pairplot(data=df, hue='Colors', y_vars=['Resid of TorqX fit', 'Resid of TorqY fit'],
-                 x_vars=[ 'TorqX estimated (g*cm)', 'TorqY estimated (g*cm)' ])
+                 x_vars=[ 'TorqX est. (g*cm)', 'TorqY est. (g*cm)' ])
     plt.suptitle('Residuals vs Torq Estimates \n' + strdatatxt)
     plt.subplots_adjust(top=adjust_top)
     ax = plt.gca()
@@ -199,12 +222,12 @@ def plot_fit_and_residuals(infile, infile2, strdatatxt):
 infile = 'cleaned_data_no_tendon'
 infile2 = 'resid_no_tendon'
 strdatatxt = 'No tendon load'
-# plot_fit_and_residuals(infile, infile2, strdatatxt)
+plot_fit_and_residuals(infile, infile2, strdatatxt)
 
 infile = 'cleaned_data_loaded_tendon'
 infile2 = 'resid_loaded_tendon'
 strdatatxt = 'Loaded tendon'
-# plot_fit_and_residuals(infile, infile2, strdatatxt)
+plot_fit_and_residuals(infile, infile2, strdatatxt)
 
 #===============================================
 #### Plot Loaded vs Noload 
@@ -238,8 +261,8 @@ df=pd.DataFrame({
                  'ThetaX (deg)': BigTheta[:,0],
                  'ThetaY (deg)': BigTheta[:,1],
                  'ThetaZ (deg)': BigTheta[:,2],
-                 'TorqX estimated (g*cm)': torq_est[:,0],
-                 'TorqY estimated (g*cm)': torq_est[:,1],
+                 'TorqX est. (g*cm)': torq_est[:,0],
+                 'TorqY est. (g*cm)': torq_est[:,1],
                  'Colors':colorsIdx})
 
 
@@ -270,8 +293,8 @@ df2=pd.DataFrame({
                  'ThetaX (deg)': BigTheta[:,0],
                  'ThetaY (deg)': BigTheta[:,1],
                  'ThetaZ (deg)': BigTheta[:,2],
-                 'TorqX estimated (g*cm)': torq_est[:,0],
-                 'TorqY estimated (g*cm)': torq_est[:,1],
+                 'TorqX est. (g*cm)': torq_est[:,0],
+                 'TorqY est. (g*cm)': torq_est[:,1],
                  'Colors':colorsIdx})
 
     #===============================================
@@ -287,14 +310,14 @@ sns.regplot(data=df, x='ThetaY (deg)', y='TorqY measured (g*cm)', ax=ax1, color=
 sns.regplot(data=df2, x='ThetaY (deg)', y='TorqY measured (g*cm)', ax=ax1, color=green,
             label='Loaded tendon', fit_reg=True)
 
-print(df['TorqY measured (g*cm)'], df['ThetaY (deg)'])
+# print(df['TorqY measured (g*cm)'], df['ThetaY (deg)'])
 
-plt.plot(df['ThetaY (deg)'], df['TorqY estimated (g*cm)'] ,color=orange, alpha=0.5, label='fit, with no y-intercept', linewidth=1)
-plt.plot(df2['ThetaY (deg)'], df2['TorqY estimated (g*cm)'] ,color=green, alpha=0.5,label='fit, with no y-intercept', linewidth=1)
+plt.plot(df['ThetaY (deg)'], df['TorqY est. (g*cm)'] ,color=orange, alpha=0.5, label='fit, with no y-intercept', linewidth=1)
+plt.plot(df2['ThetaY (deg)'], df2['TorqY est. (g*cm)'] ,color=green, alpha=0.5,label='fit, with no y-intercept', linewidth=1)
 
 plt.legend()
 
-plt.suptitle('Measured Torques X & Y, loaded and not loaded, vs Theta')
+plt.suptitle('Stiffness comparison: Measured Torques X & Y (for both loaded and relaxed tendon), vs Theta')
 
 strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 ax = plt.gca()
@@ -315,6 +338,7 @@ plt.text(1.01, 0, 'Time: '+strtime, horizontalalignment='left', verticalalignmen
 # plt.text(1.01, 0.4, 'K:\n' + np.array_str(K, precision=2, max_line_width=25), horizontalalignment='left', verticalalignment='bottom',
         # transform = ax.transAxes, fontsize=10)
 
+# sns.set(rc={'figure.figsize':(20,10)}, font_scale=0.5:)
 plt.gcf().savefig('Torq_load_noload_vs_Theta'+strdatatxt)
 # plt.show()
 

@@ -1,9 +1,13 @@
 """
+tofix: THIS CODE IS EXTREMELY UGLY AND REPETITIVE 
+
 Calculate residuals and fit with linear & RF models
-Display fit to residuals
 Collect statistics about new compensated model
-Do cross validation
-Created May 2018
+Display fit to residuals
+
+todo: Do cross validation
+
+Created May 6 2018
 @author: nrw
 """
 
@@ -27,6 +31,7 @@ import seaborn as sns
 
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
+from sklearn.preprocessing import PolynomialFeatures
 
 sns.set()
 
@@ -132,14 +137,14 @@ df2=pd.DataFrame({
 #===============================================
 orange='#be5e00'
 
-myX = torq_est 
-myy = BigTheta[:,1]#BigTheta
+myX = BigTheta 
+myy = BigTorque[:,1] 
 #myY = Residuals 
 
 #======= Adaboost on decision tree
-
+'''
 ###############################################################
-#### Ada Boost Fit of Resid 
+#### Ada Boost Fit of Resid (black box)
 ###############################################################
 ada = AdaBoostRegressor(DecisionTreeRegressor(max_depth=4),
                                                      n_estimators=300, random_state=rng)
@@ -149,18 +154,18 @@ y_est= ada.predict(myX)
 rmse = metrics.mean_squared_error(myy, y_est, multioutput='raw_values')**0.5
 print(rmse)
 
-plt.scatter(myX[:,1], myy, label='measured torque y', color='orange', s=20)
-plt.scatter(myX[:,1], y_est, label='ADA estimated torque y', linewidth=1, alpha=0.6, color='k')
+plt.scatter(myX[:,1], myy, label='measured torque y', color='orange', s=15)
+plt.scatter(myX[:,1], y_est, label='ADA estimated torque y',color='k', s=15, alpha=0.5)
 plt.xlabel("theta y (deg)")
 plt.ylabel("torque y (g*cm)")
-plt.title("Boosted Decision Tree Regression \ndirectly on data (no linear model)\n" 
+plt.title("AdaBoosted Decision Tree Regression \ndirectly on Torque data (no linear model)\n" 
           + 'RMSE: %.04f' % float(rmse))
 plt.legend()
 plt.show()
 
 #======= Gradient Boosting Regressor 
 ###############################################################
-#### Gradeint Boost Fit of Resid 
+#### Gradeint Boost Fit (original data) 
 ###############################################################
 gb = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1,
                                     max_depth=1, random_state=0, loss='ls')
@@ -172,17 +177,17 @@ print(rmse)
 
 plt.plot()
 plt.scatter(myX[:,1], myy, label='measured torque y', color='orange', s=15)
-plt.scatter(myX[:,1], y_est, label='GB estimated torque y', linewidth=1, alpha=0.6, color='b')
+plt.scatter(myX[:,1], y_est, label='GB estimated torque y',color='b', s=15, alpha=0.5)
 plt.xlabel("theta y (deg)")
 plt.ylabel("torque y (g*cm)")
-plt.title("Gradient Boost Regression \ndirectly on data (no linear model)\n" 
+plt.title("Gradient Boost Regression \ndirectly on Torque data (no linear model)\n" 
           + 'RMSE: %.04f' % float(rmse))
 plt.legend()
 plt.show()
 
 
 ###############################################################
-#### RF Fit of Resid 
+#### RF Fit of Resid (black box)
 ###############################################################
 rf= RandomForestRegressor(max_depth=2, random_state=0, n_estimators=100)
 rf.fit(myX, myy)
@@ -192,142 +197,246 @@ rmse = metrics.mean_squared_error(myy, y_est, multioutput='raw_values')**0.5
 print(rmse)
 
 plt.scatter(myX[:,1], myy, label='measured torque y', color='orange', s=15)
-plt.scatter(myX[:,1], y_est, label='estimated torque y', linewidth=1, alpha=0.6, color='g')
+plt.scatter(myX[:,1], y_est, label='estimated torque y',color='g', s=15, alpha=0.5)
 plt.xlabel("theta y (deg)")
 plt.ylabel("torque y (g*cm)")
-plt.title("Random Forest Regression \ndirectly on data (no linear model)\n" 
+plt.title("Random Forest Regression \ndirectly on Torque data (no linear model)\n" 
           + 'RMSE: %.04f' % float(rmse))
 plt.legend()
 plt.show()
-
+'''
 ###############################################################
-#### Linear Fit of Resid 
+#### Linear Fit (torq vs theta) 
 ###############################################################
 lin= LinearRegression(fit_intercept=False)
 lin.fit(myX, myy)
-y_est= lin.predict(myX) 
+lin_torq_est= lin.predict(myX) 
+
+rmse = metrics.mean_squared_error(myy, lin_torq_est, multioutput='raw_values')**0.5
+print(rmse)
+
+plt.scatter(myX[:,1], myy, label='measured torque y', color='orange', s=15)
+plt.scatter(myX[:,1], lin_torq_est, label='estimated torque y', s=15, color='r', alpha=0.5)
+plt.xlabel("theta y (deg)")
+plt.ylabel("torque y (g*cm)")
+plt.title("Linear Regression directly on Torque Data\n" 
+          + 'RMSE: %.02f' % float(rmse))
+plt.legend()
+plt.show()
+'''
+###############################################################
+#### Poly Fit (torq vs theta) 
+###############################################################
+
+# z = np.poly1d(np.polyfit(myX,myy,2))
+
+poly = PolynomialFeatures(degree=2) #use polynomial basis function!
+X_ = poly.fit_transform(myX)
+# predict_ = poly.fit_transform(X)
+
+clf = linear_model.LinearRegression()
+clf.fit(X_, myy)
+y_est = clf.predict(X_)
 
 rmse = metrics.mean_squared_error(myy, y_est, multioutput='raw_values')**0.5
 print(rmse)
 
 plt.scatter(myX[:,1], myy, label='measured torque y', color='orange', s=15)
-plt.scatter(myX[:,1], y_est, label='estimated torque y', linewidth=1, alpha=0.6, color='r')
+plt.scatter(myX[:,1], y_est, label='estimated torque y', s=15, color='r', alpha=0.5)
 plt.xlabel("theta y (deg)")
 plt.ylabel("torque y (g*cm)")
-plt.title("Linear Regression directly on data\n" 
+plt.title("Polynomial fit on drectly on Torque data\n" 
           + 'RMSE: %.04f' % float(rmse))
 plt.legend()
 plt.show()
-
+'''
 ###############################################################
-#### Evaluate linear K + linear fit on residuals 
+#### Evaluate linear fit on residuals 
 ###############################################################
 
-# BigTheta = BigTheta[:,1].reshape(-1,1)
-# BigTorque = BigTorque[:,1].reshape(-1,1)
-# torq_est = torq_est[:,1].reshape(-1,1)
-
-myX = BigTheta
-myy = BigTorque
-lin = linear_model.LinearRegression() #allow y intercpt
-lin.fit(myX, myy)
-y_est = lin.predict(myX)
-rmse = metrics.mean_squared_error(BigTorque, y_est, multioutput='raw_values')**0.5
-print('Pure linear fit, rmse: ', np.array_str(rmse, precision=2))
-# torq_est = np.dot(K, BigTheta.T).T #n.3
-
-#===--------------------------
-# resids =  resid #shelved data
-resids = resid.reshape(-1,1)
-#===-------------------------
-# print(resids)
-#===
-#### 2nd linear term , with intercept
 
 #####################################################################
 #### Attempting Linear Correction
 #####################################################################
-plt.plot()
 
-# add residuals
-myX = BigTheta
-print(resids.shape)
-myy = resids[]
+# add LINEAR residuals
+myy = resid[:,1] # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Y ONLY 
 # print(myy)
-lin2 = linear_model.LinearRegression() #allow y intercpt
-lin2.fit(myX, resids)
-lin2_y_est = lin2.predict(myX) 
+linResid = linear_model.LinearRegression() #allow y intercpt
+linResid.fit(myX, myy)
+linResid_est = linResid.predict(myX) 
 # print(lin_y_est)
 
-rmse2 = metrics.mean_squared_error(resids, lin2_y_est, multioutput='raw_values')**0.5
+rmse2 = metrics.mean_squared_error(myy, linResid_est, multioutput='raw_values')**0.5
 print('sanity rmse on resids', np.array_str(rmse2, precision=2))
 
-torq_corrected = np.array(y_est) + np.array(lin2_y_est) #resids
+torq_corrected = lin_torq_est + linResid_est 
+
 print('shape!!',torq_corrected.shape)
-# print('shape!!',torq_est.shape)
-print('lin2 est reid  shape!!',lin2_y_est.shape)
-#lin2_y_est
-# resids_corrected = torq_corrected - BigTorque
+print('lin2 est reid  shape!!',linResid_est.shape)
 print('bigtorq shape', BigTorque.shape)
-# print(torq_est[0:5,:])
-# print(resids[0:5,:])
-# print(lin2_y_est[0:5,:])
-print(torq_corrected[0:5,:])
-# print(resids_corrected[0:5,:])
-rmse = metrics.mean_squared_error(BigTorque, torq_corrected, multioutput='raw_values')**0.5
+
+rmse = metrics.mean_squared_error(BigTorque[:,1], torq_corrected, multioutput='raw_values')**0.5
 print('Resid correct Fit with 2nd term (w/ intercept)\n -- rmse: ', np.array_str(rmse, precision=2))
 
+meas_torqY = BigTorque[:,1]
 
-# plt.scatter(myX, myy, label='resids y', color='orange', s=20)
-# plt.plot(myX, lin2_y_est, label='est resids y', linewidth=1, alpha=0.6, color='c')
-# plt.title("lin resids fit\n" + 'RMSE:' +str(rmse))
-# plt.legend()
-# plt.show()
+print('myx shape', myX.shape)
+print('myY shape', myy.shape)
+plt.scatter(myy, meas_torqY, label='resids of linear fit of y', color='orange', s=20)
+plt.scatter(linResid_est, meas_torqY, label='lin est of resid', linewidth=1, alpha=0.6, color='b',
+            s=20)
+plt.title("lin resids fit\n" + 'RMSE:' +np.array_str(rmse, precision=2))
+plt.xlabel('theta Y')
+plt.ylabel('residY')
+plt.legend()
+plt.show()
 
-# plt.scatter(myX, BigTorque, label='original torq', color='orange', s=20)
-# plt.plot(myX, torq_corrected, label='torq estimate (lin corrected)', linewidth=1, alpha=0.6, color='r')
-# plt.title("measured Torq vs new torq est (lin adjusted), " + 'RMSE: ' + str(rmse))
-# plt.legend()
-# plt.show()
+thetaY = myX[:,1]
+plt.scatter(thetaY, meas_torqY, label='measured torqY', color='orange', s=20)
+plt.scatter(thetaY, torq_corrected, label='torq estimate (lin corrected)', linewidth=1, alpha=0.6,
+            color='g', s=20)
+plt.xlabel('theta Y (deg)')
+plt.ylabel('torqY estimated')
+plt.title("measured Torq vs new torq est (lin adjusted)\n" + 'RMSE: ' + np.array_str(rmse, precision=2))
+plt.legend()
+plt.show()
 
 
 #####################################################################
 #### Attempting Random Forest correction
 ##################################################################### 
-myX = BigTheta
-myy = resids
+myy = resid[:,1]
 rf = RandomForestRegressor(max_depth=2, random_state=0, n_estimators=100)
 rf.fit(myX, myy)
-rf_y_est= rf.predict(myX).reshape(-1,1)
-
-rmse3 = metrics.mean_squared_error(resids, rf_y_est, multioutput='raw_values')**0.5
-print('sanity rmse on randForest resids', np.array_str(rmse3, precision=2))
-
-# plt.scatter(myX, myy, label='resids y', color='orange', s=20)
-# plt.plot(myX, rf_y_est, label='est resids y', linewidth=1, alpha=0.6, color='c')
-# plt.title("rf resids fit\n" + 'RMSE: ' + str(rmse3))
-# plt.legend()
-# plt.show()
+rfResid_est= rf.predict(myX)
 
 
-torq_corrected = np.array(torq_est) + np.array(rf_y_est)
-print('shape11!!',torq_corrected.shape)
-# print('shape11!!',torq_est.shape)
-# print('shape11!!',rf_y_est.shape)
-# resids_corrected = np.array(torq_corrected)-np.array(BigTorque)
+torq_corrected = lin_torq_est + rfResid_est 
 
-print('shape11!!',BigTorque.shape)
-# print('shape11!!',resids_corrected.shape)
-rmse = metrics.mean_squared_error(BigTorque[:,1], torq_corrected, multioutput='raw_values')**0.5
-print('Resid corrected with random forest\n - rmse: ', np.array_str(rmse, precision=2))
+print('shape!!',torq_corrected.shape)
+print('lin2 est reid  shape!!',rfResid_est.shape)
 
-plt.scatter(myX, BigTorque, label='original torq', color='orange', s=20)
-plt.plot(myX, torq_corrected, label='torq estimate (rf corrected)',linewidth=1, alpha=0.6, color='c')
-plt.title("measured Torq vs New Torq Est (rf adjusted), " + 'RMSE: ' + str(rmse))
+meas_torqY = BigTorque[:,1]
+
+print('orig torq', meas_torqY.shape)
+print('corrected torque', torq_corrected.shape)
+
+rmse = metrics.mean_squared_error(meas_torqY, torq_corrected, multioutput='raw_values')**0.5
+print('Resid correct Fit with 2nd term (w/ intercept)\n -- rmse: ', np.array_str(rmse, precision=2))
+
+
+print('myx shape', myX.shape)
+print('myY shape', myy.shape)
+plt.scatter(myy, meas_torqY, label='resids of linear fit of y', color='orange', s=20)
+plt.scatter(rfResid_est, meas_torqY, label='rf est of resid', linewidth=1, alpha=0.6, color='b',
+            s=20)
+plt.title("rf fit on residuals\n" + 'RMSE:' +np.array_str(rmse, precision=2))
+plt.xlabel('theta Y')
+plt.ylabel('residY')
 plt.legend()
 plt.show()
 
+thetaY = myX[:,1]
+plt.scatter(thetaY, meas_torqY, label='measured torqY', color='orange', s=20)
+plt.scatter(thetaY, torq_corrected, label='torq estimate (rf corrected)', linewidth=1, alpha=0.6,
+            color='g', s=20)
+plt.xlabel('theta Y (deg)')
+plt.ylabel('torqY estimated')
+plt.title("measured Torq vs new torq est (rf adjusted)\n" + 'RMSE: ' + np.array_str(rmse, precision=2))
+plt.legend()
+plt.show()
+
+#####################################################################
+#### Attempting Adaboost of Gradient Tree correction
+##################################################################### 
+
+ada = AdaBoostRegressor(DecisionTreeRegressor(max_depth=4),
+                                                     n_estimators=300, random_state=rng)
+myy = resid[:,1]
+ada.fit(myX, myy)
+resid_est= rf.predict(myX)
 
 
+torq_corrected = lin_torq_est + rfResid_est 
 
+print('shape!!',torq_corrected.shape)
+print('lin2 est reid  shape!!',resid_est.shape)
+
+meas_torqY = BigTorque[:,1]
+
+print('orig torq', meas_torqY.shape)
+print('corrected torque', torq_corrected.shape)
+
+rmse = metrics.mean_squared_error(meas_torqY, torq_corrected, multioutput='raw_values')**0.5
+print('Resid correct Fit with 2nd term (w/ intercept)\n -- rmse: ', np.array_str(rmse, precision=2))
+
+
+print('myx shape', myX.shape)
+print('myY shape', myy.shape)
+plt.scatter(myy, meas_torqY, label='resids of linear fit of y', color='orange', s=20)
+plt.scatter(resid_est, meas_torqY, label='ada resid est', linewidth=1, alpha=0.6, color='b',
+            s=20)
+plt.title("Adaboost Decision Tree fit on residuals\n" + 'RMSE:' +np.array_str(rmse, precision=2))
+plt.xlabel('theta Y')
+plt.ylabel('residY')
+plt.legend()
+plt.show()
+
+thetaY = myX[:,1]
+plt.scatter(thetaY, meas_torqY, label='measured torqY', color='orange', s=20)
+plt.scatter(thetaY, torq_corrected, label='torq est (ada corrected)', linewidth=1, alpha=0.6,
+            color='g', s=20)
+plt.xlabel('theta Y (deg)')
+plt.ylabel('torqY estimated')
+plt.title("measured Torq vs new torq est\n(adaboost decision tree adjusted) " + 'RMSE: ' + np.array_str(rmse, precision=2))
+plt.legend()
+plt.show()
+
+#####################################################################
+#### Attempting GradientBoost correction
+##################################################################### 
+gb = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1,
+                                    max_depth=1, random_state=0, loss='ls')
+
+myy = resid[:,1]
+gb = RandomForestRegressor(max_depth=2, random_state=0, n_estimators=100)
+gb.fit(myX, myy)
+resid_est= gb.predict(myX)
+
+
+torq_corrected = lin_torq_est + resid_est 
+
+print('shape!!',torq_corrected.shape)
+print('lin2 est reid  shape!!',rfResid_est.shape)
+
+meas_torqY = BigTorque[:,1]
+
+print('orig torq', meas_torqY.shape)
+print('corrected torque', torq_corrected.shape)
+
+rmse = metrics.mean_squared_error(meas_torqY, torq_corrected, multioutput='raw_values')**0.5
+print('Resid correct Fit with 2nd term (w/ intercept)\n -- rmse: ', np.array_str(rmse, precision=2))
+
+
+print('myx shape', myX.shape)
+print('myY shape', myy.shape)
+plt.scatter(myy, meas_torqY, label='resids of linear fit of y', color='orange', s=20)
+plt.scatter(resid_est, meas_torqY, label='gb est of resid', linewidth=1, alpha=0.6, color='b',
+            s=20)
+plt.title("gradient boost fit on residuals\n" + 'RMSE:' +np.array_str(rmse, precision=2))
+plt.xlabel('theta Y')
+plt.ylabel('residY')
+plt.legend()
+plt.show()
+
+thetaY = myX[:,1]
+plt.scatter(thetaY, meas_torqY, label='measured torqY', color='orange', s=20)
+plt.scatter(thetaY, torq_corrected, label='torq estimate (gb corrected)', linewidth=1, alpha=0.6,
+            color='g', s=20)
+plt.xlabel('theta Y (deg)')
+plt.ylabel('torqY estimated')
+plt.title("measured Torq vs new torq est\n(gradient boost adjusted) " + 'RMSE: ' + np.array_str(rmse, precision=2))
+plt.legend()
+plt.show()
 
