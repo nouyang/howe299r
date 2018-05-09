@@ -107,8 +107,7 @@
 % \biboptions{}
 
 
-\journal{Harvard Biorobotics Lab}
-
+\journal{Final report for Spring 2018 rotation in Harvard Biorobotics Lab}
 \begin{document}
 
 \begin{frontmatter}
@@ -118,9 +117,7 @@
 
 %\tnotetext[label0]{This is only an example}
 
-\author{Final report for Spring 2018 rotation in Harvard Biorobotics Lab\\
-~\\
-Nao Ouyang}
+\author{Nao Ouyang}
 %\address[label1]{Address One}
 
 %\address[label2]{Address Two\fnref{label4}}
@@ -772,6 +769,24 @@ Prototype cured
 %\label{fig:figura1}
 \end{figure}
 
+REal time plotting
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\textwidth]{images/sensor/analog_plot.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+LED display of applied pressure
+\begin{figure}[H]
+\centering
+\includegraphics[width=.8\textwidth]{images/sensor/poke.jpg}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+
+
 
 I produced Arduino and python code that allowed me to view a plot in real time of the sensor data.
 
@@ -784,20 +799,6 @@ This required use of a separate power supply, otherwise the Arduino would refuse
 computer (for real-time plotting) when the LED strip drew load on the 5V line.
 
 \section{Miscellaneous}
-\subsection{Time estimates}
-
-An additional yet important thing in any project is measuring project slip in the hopes of
-developing better time estimates. 
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=.8\textwidth]{images/misc/timeline.png}
-%\caption{Loaded tendon}
-%\label{fig:figura1}
-\end{figure}
-
-%TODO
-
 \section{Knowledge}
 
 In the process of this research, I learned about how accelerometers are calibrated, which I found
@@ -857,11 +858,24 @@ developed and characterized. By collecting data and then fusing this with the IM
 physically evaluate the grasp stability preductions, producing an important tie between theory and
 practice to ensure the two complement each other. The important of this has been mentioned above.
 
+\newpage
+\newpage
+
+\clearpage
+\vspace*{\fill}
+\begin{center}
+\begin{minipage}{.6\textwidth}
+\Huge
+\centering{Appendix}
+\normalsize
+\end{minipage}
+\end{center}
+\vfill % equivalent to \vspace{\fill}
+\clearpage
+
 \appendix
 
-\section{Section in Appendix}
-
-\subsection{Apriltags}
+\section{Apriltags}
 I decided to investigate apriltags, which helped me refresh on my knowledge of C++. I struggled to
 find an appropriate ROS driver, and ultimately was able to get the C++ working (despite some issues
 with the openCV version on my laptop) with the help of Patrick from Prof. Kuindersma's lab.
@@ -934,7 +948,21 @@ public:
 
 
 
-\subsection{Online documentation}
+\section{Project Management}
+
+An additional yet important thing in any project is measuring project slip in the hopes of
+developing better time estimates. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.8\textwidth]{images/misc/timeline.png}
+%\caption{Loaded tendon}
+%\label{fig:figura1}
+\end{figure}
+
+
+\section{Hexo: Online documentation}
+
 I documented my work on a blog, http://orangenarwhals.github.io/, using the Hexo flatfile content
 management system. I chose this because it allowed me to host for free on github, allowed for easy
 version control of content, and also had an admin plugin that allowed me to drag-and-drop images,
