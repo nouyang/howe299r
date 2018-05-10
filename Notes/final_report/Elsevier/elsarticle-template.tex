@@ -184,9 +184,9 @@ more of them.
 
 \section{Theory} \label{sec:firstpage}
 
-\subsection{Model}
+\subsection{Linear Model}
 
-For the model, we are making a few simplifying assumptions:
+For the physical model, I am making a few simplifying assumptions:
  
     \begin{enumerate}
         \item There is a linear relationship between force and deflection, or alternatively torque and angle of deflection
@@ -226,8 +226,12 @@ Finger Positions
   
 \end{ttlisting}
 
-Points 13 through 15 are at x=2.6 cm, and each x is spaced 5 mm apart.
-\\
+For the initial (3D stiffness matrix) experiment, Points 13 through 15 are at x=2.6 cm, and each x is spaced 5 mm apart.
+The y's are at 0.4, 0.1, and -0.2mm respectively.
+
+For the final experiment comparing two stiffness, the x spacing remains roughly the same, while the
+y's are now at 0.3, -0.1, and -0.4 mm respectively.
+~\\
 
 \subsection{Linear Model in the 1D case}
 
@@ -416,15 +420,17 @@ In the 1D case I simply took pictures of the finger against a ruler in order to 
 
 \begin{figure}[htbp]
     \centering 
-        \subfloat[ a caption
+        \subfloat[Zero measurement
         ]{%
             \includegraphics[width=0.3\linewidth]{images/1d/zero.png}%
         }\hfil % MUST be right above next figure
-        \subfloat[ caption b
+        \subfloat[Weight (torque) applied 
         ]{%
             \includegraphics[width=0.3\linewidth]{images/1d/weighted.png}%
         }\hfil
-        \caption{ Overall caption.}
+        \caption{I drew lines through the vertical (with reference to the camera image) center of
+            the finger before and after weight was applied. The angle between the two is what I
+        wrote down}
     \label{fig:myfig}
 \end{figure}
 
@@ -558,11 +564,16 @@ constant and increases with increasing load
 
 \subsection{Loaded tendon data}
 
-For the final dataset, I collected data in 50g intervals at 2 y locations and 3 x locations on the
-finger (total of 6 positions). 
+For the final dataset, I aimed to collect data quickly for two different finger tendon loads
+(which I'll refer to as relaxed and loaded respectively). I collected data in 50g intervals at two y
+locations and three x locations on the finger (total of 6 positions).  Specificially, there were
+positions 4,5,6 and 10,11,12.  x = [3.1, 4.1] and y = [0.2, -0.1, -0.4].
 
-First, a quick sanity check. By plotting torque versus measured theta, we see that the data follows
-a linear pattern, as we would expect.
+(Note that I defined the center line of the finger to be y=0, but as there is a mold line there, the
+data is collected from 0.1 mm off of the center line)
+
+First, I conducted a quick sanity check. By plotting torque versus measured theta, I saw that the data follows
+a linear pattern, which is what I expected based previous experiments.
 
 
 \begin{figure}[htbp]
@@ -571,57 +582,73 @@ a linear pattern, as we would expect.
         ]{%
             \includegraphics[width=0.9\linewidth]{images/stiff/torqtheta}%
         }\hfil % MUST be right above next figure
-        \subfloat[ 
+        \subfloat[
         ]{%
             \includegraphics[width=0.9\linewidth]{images/stiff/torqtheta_loaded}%
         }\hfil
-        \caption{ Overall caption.}
+        \caption{ Please note that there are two different y labels. The left graph is of Torque X vs Theta X
+        (roll), while the right graph is of the Y counterparts (Torque Y vs Theta Y)}
 \end{figure}
 
-We may see that we have properly fitted our data with a K matrix by comparing our
-newly created torque estimates, versus the original measurements. The datapoints do not fall
-precisely on a line because the K matrix and fit is in three-dimension. In picking a single
-dimension to plot, the projection results in datapoints that are not linear in one dimension despite
-a linear fit overall.
+For the Theta Y (yaw) case, the relaxed tendon fit has a root mean square error (RMSE) of 14.4 (gram
+centimeters), or in other words, if the average x position is ~3.5cm, then the average error (for
+estimating y-axis torque) is about four grams.
+
+On the other hand, the loaded tendon fit has a much higher RMSE of 80.4 g*cm, which if valid, means
+that the average error is about 23 grams. This is a much larger error, and a bit unfortunate given
+that we care more about the loaded case in real grasping scenarios. 
+
+I then fit a line to the data, and double-checked my work again. The slope of this line gives us our
+stiffness tensor K. I can double check that we've conducted a linear fit by see that we have
+by comparing our newly created torque estimates to the
+original measurements. The datapoints do not fall precisely on a line because the K matrix and fit
+is in three-dimension. In picking a single dimension to plot, the projection results in datapoints
+that are not linear in one dimension despite a linear fit overall. The \cref{fig:sanity1} and
+\cref{fig:sanity2} reassure me that my code is working. 
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{images/stiff/torqsanity.png}
 \caption{Relaxed tendon}
-%\label{fig:figura1}
+\label{fig:sanity1}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{images/stiff/torqsanity_loaded.png}
 \caption{Loaded tendon}
-%\label{fig:figura1}
+\label{fig:sanity2}
 \end{figure}
 
-
-
-Next we can look at the residuals. Based on the previous experiment, I was expecting to see a linear
+Next I looked at the residuals. Based on the previous experiment, I was expecting to see a linear
 relationship in the residuals between ThetaY and TorqueY. However, I did not see any such
 relationship in the relaxed case, which should have most closely matched the data in the previous
-experiment. 
+experiment (see \cref{init-data}).
+
+
+However, in \cref{fig:nopattern} there does not appear to be such a pattern, and it seems like the
+residuals are somewhat randomly noisy.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=.9\textwidth]{images/stiff/GOODResid_vs_Theta.png}
 \caption{Relaxed tendon}
-%\label{fig:figura1}
+\label{fig:nopattern}
 \end{figure}
 
-A pattern did appear in the loaded case. Further investigation will be required.
+Confusingly, as shown in \cref{fig:yespattern} a pattern did appear in the loaded case. Note also that the residuals in the loaded case
+are much larger. Further investigation will be required to figure out what is going on here.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=.9\textwidth]{images/stiff/GOODResid_vs_Theta_loaded.png}
-\caption{Loaded tendon}
-%\label{fig:figura1}
+\includegraphics[width=.8\textwidth]{images/stiff/GOODResid_vs_Theta_loaded.png}
+\caption{Loaded tendon. NOTE: Patterns in the thetaZ may be ignored as it was not used in the fit,
+    due to the assumption that the contact forceZ is always zero.  }
+\label{fig:yespattern}
 \end{figure}
 
-Patterns in the thetaZ may be ignored as it was not used in the fit (zeroed out by zero for Force)
+Perhaps the most satisfying graph that came out of this experiment compares the two stiffness
+matrices in the relaxed and loaded cases. See  \cref{fig:comparison}
 
 \begin{figure}[H]
 \centering
@@ -630,24 +657,94 @@ Patterns in the thetaZ may be ignored as it was not used in the fit (zeroed out 
 loaded tendon is stiffer (slope is steeper), as we expect. Both models seem mostly linear, but it's
 possible that in the loaded case, the fit is more exponential. Note that physically the model must
 go through the y-intercept, and I have graphed the actual fit used to calculated residuals in light
-green (albeit for a nonlinear fit). The dark green line is plotted due to limitations in my plotting
-library}
-%\label{fig:figura1}
+green (albeit for a nonlinear fit). The dark green line is plotted only due to limitations in my plotting
+library.}
+\label{fig:comparison}
 \end{figure}
 
-\subsection{Initial data (relaxed tendon only)}
+\subsection{Initial Experiment: 15 positions, with the relaxed tendon only}
+\label{init-data}
+
+The experiment directly prior to the final experiment consisted of collecting nearly 500 points,
+mostly in 20g increments, from all 15 positions labelled on the finger (albeit a different finger,
+which did not have a tendon string in it -- I had to change fingers because of that).
+
+I started with a sanity check as before, and plotted the estimated vs measured torques.
+
+\begin{figure}[H]
+    \centering 
+        \subfloat[
+        ]{%
+            \includegraphics[width=0.48\textwidth]{images/round1/Nocolor_torqX.png}%
+        }\hfil % MUST be right above next figure
+        \subfloat[
+        ]{%
+            \includegraphics[width=0.48\textwidth]{images/round1/Nocolor_torqY.png}%
+        }\hfil
+        \caption{Measured torques on the X axis, and estimated torques on the Y axis.
+            The left graph shows the X axis (roll) measurements, note the magnitude is much smaller
+        compared to the Y axis torque (yaw) measurements. Please ignore the erroneous title on right graph.}
+\end{figure}
+
+
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=1\textwidth]{images/round1/resids_Theta_coloredX.png}
+%%\caption{Loaded tendon}
+%%\label{fig:figura1}
+%\end{figure}
+The large residuals on the left were alarming. To take a closer look at what was going on, I colored
+the graph in by X and by Y positions. In \cref{fig:x} we see that all of the datapoints way off the
+line come from xpos4 and xpos5, specifically from y = -0.2cm (from  \cref{fig:y}). This does not
+seem to be a fluke, as these are not sequential measurements (positions 12 and 15 respectively).
+
+%\begin{figure}[H]
+    %\centering 
+        %\subfloat[
+        %]{%
+            %\includegraphics[width=0.5\textwidth]{images/round1/TorqX_Colors_X.png}%
+        %}\hfil % MUST be right above next figure
+        %\subfloat[
+        %]{%
+            %\includegraphics[width=0.5\textwidth]{images/round1/TorqX_Colors_Y.png}%
+        %}\hfil
+        %\caption{Measured torques on the X axis, and estimated torques on the Y axis.
+            %The left graph shows the X axis (roll) measurements, note the magnitude is much smaller
+        %compared to the Y axis torque (yaw) measurements. Please ignore the erroneous title on right graph.}
+%\end{figure}
+\begin{figure}[H]
+\centering
+            \includegraphics[width=0.9\textwidth]{images/round1/TorqX_Colors_X.png}%
+            \caption{Torque measured vs estimated, colored in by X position}
+\label{fig:x}
+\end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=1\textwidth]{images/round1/resids_Theta_coloredX.png}
-%\caption{Loaded tendon}
-%\label{fig:figura1}
+            \includegraphics[width=0.9\textwidth]{images/round1/TorqX_Colors_Y.png}%
+\caption{Torque measured vs estimated, colored in by Y position}
+\label{fig:y}
 \end{figure}
+
+
+\begin{figure}[H]
+\centering
+            \includegraphics[width=0.9\textwidth]{images/round1/TorqY_Colors_Y.png}%
+            \caption{By comparison, the torque Y fit seems very clean.}
+\end{figure} 
+%(For the same graph colored
+                %in by X position, see \cref{fig:yX}
+
+I then systematically plotted the residuals against the factors that might 
+affect them: the torques, forces, and angular deflection amounts. For instance, it seems plausible
+that, as the amount of force applied increases, the residuals might increase.
+
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=.95\textwidth]{images/round1/resids_Torq.png}
-%\caption{Loaded tendon}
+\caption{Torque estimate residuals versus torques estimates, colored by their X or Y positions.
+There does appear to be a suspicious trend between the residuals and the torque Y measurement.}
 %\label{fig:figura1}
 \end{figure}
 
@@ -661,10 +758,12 @@ library}
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{images/round1/resids_Force_coloredX.png}
-%\caption{Loaded tendon}
+\caption{There seems to be generally somewhat random residuals, except there's a chunk of large
+residuals on the upper right graph of TorqX residuals vs force applied. I never resolved the cause
+of this. Additionally, note that the first X position, where the finger is least stiff, has a
+noticeably different set of residuals than the other positions.}
 %\label{fig:figura1}
 \end{figure}
-
 
 For additional graphs, please see \ref{appendix-graphs}.
 %\begin{figure}[H]
@@ -673,11 +772,8 @@ For additional graphs, please see \ref{appendix-graphs}.
 %\caption{Exemplo de figura}
 %\label{fig:figura1}
 %\end{figure}
-
-\subsection{1D case}
-
-
 \section{Attempted fit improvements}
+\subsection{Experiment: 15 positions, relaxed tendon only}
 
 K estimate, bylinear regression (no y intercept)
 Torque = K * Theta
@@ -688,9 +784,26 @@ Corrected Torque Estimate
 RMSE Lin K, Lin resid 26.65
 RMSE Lin K, RF resid 22.56
 
+Finally, I briefly attempted to do the "use machine learning or other methods to fit the residuals
+and improve the overall torque estimate". 
+
 \begin{table}[H]
     \centering
-    \caption{Performance of MDP algorithm over 200 epoches}\label{tab:MDP_calibration}
+    \caption{Comparison of fits}\label{tab:MDP_calibration}
+    \begin{tabular}{l|c|c|c|c|c|c}
+         \hline \hline
+         &  Linear & Polynomial & Gradient Boost & Adaboost & Random Forest\\
+         \hline 
+         Black Box          & 36.1 & 9.2 & 15.8 & 25.1 & 80.4 \\ 
+         Corrected Linear fit & 28.5 & 18.8 & 18.8 & 25.1 & 52.9 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+    \centering
+    \caption{Brief investigation of fitting residuals on relaxed+loaded experiment}\label{tab:MDP_calibration}
     \begin{tabular}{l|c|c|c|c|c|c}
          \hline \hline
          &  Linear & Polynomial & Gradient Boost & Adaboost & Random Forest\\
@@ -777,22 +890,25 @@ KiCAD tool.
 
 The stiffness of the finger was remarkably linear, which meant that machine learning and higher
 order terms had little to contribute to improving the fit between measure theta deflections and
-force estimates.
+force estimates. Thus, the IMU appears to have much to contribute to estimating forces applied to
+the finger. However, caution is necessary, since in actual grasping, as Qian demonstrated, the
+axis I measured becomes the stiffest axis when the tendon is pulled taut to grasp an object.It bends
+relatively little compared to the other axes.
 
-However, I was only able to apply relatively small loads to the finger. It's possible that with
-large loads, the stiffness becomes less linear, in which case linear fit residuals may become more
-prominent or structured. If this were the case, machine learning approaches might have more to
-contribute to the force estimates. As it were, the data I collected did not benefit much from the
-addition of non-linear models fitted with machine learning techniques such as random forests.
+%However, I was only able to apply relatively small loads to the finger. It's possible that with
+%large loads, the stiffness becomes less linear, in which case linear fit residuals may become more
+%prominent or structured. If this were the case, machine learning approaches might have more to
+%contribute to the force estimates. As it were, the data I collected did not benefit much from the
+%addition of non-linear models fitted with machine learning techniques such as random forests.
 
-Most crucially, Qian demonstrated to me the process by which grasps fail. By observing the grasping,
-I discovered that when the tendon was pulled taught (as needed to grasp anything), the y-axis was now
-now the stiffest axis! Thus, characterizing the finger with no tendon load applied and primarily in
-the y-axis direction, while a great learning experience, does not generalize at all to practice and becomes a
-toy example.
+%Most crucially, Qian demonstrated to me the process by which grasps fail. By observing the grasping,
+%I discovered that when the tendon was pulled taught (as needed to grasp anything), the y-axis was now
+%now the stiffest axis! Thus, characterizing the finger with no tendon load applied and primarily in
+%the y-axis direction, while a great learning experience, does not generalize at all to practice and becomes a
+%toy example.
 
-The finger relied extensively on mechanical mechanism intelligence (as opposed to full
-actuated parallel grippers, commonly used in computer science labs).  I saw that complete failures
+Qian also showed me how the finger relied extensively on mechanical mechanism intelligence (as opposed to full
+actuated parallel grippers, commonly used in computer science labs). I saw that complete failures
 tended to occur because the finger had failed to detect contact when contact had already occured.
 This suggests the better instrumentation of the finger is critical. The IMU by itself can only
 suggest contact force, and the tactile sensors are needed to tell contact location. To evaluate the
@@ -1043,6 +1159,14 @@ The datapoints are shaded in by their Y position}
 %\label{fig:figura1}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+            \includegraphics[width=0.9\textwidth]{images/round1/TorqY_Colors_X.png}%
+            \caption{From the experiment with all 15 positions, we see that the Torque Y fit
+            (measured vs estimated) is very clean.}
+            \label{fig:yX}
+\end{figure}
+
 \newpage
 
 \section{Additional Setup Pictures}
@@ -1145,4 +1269,3 @@ seller on ebay}
 \end{document}
 
 %%
-%% End of file `elsarticle-template-nem.tex'.
