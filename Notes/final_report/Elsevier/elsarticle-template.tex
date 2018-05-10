@@ -573,21 +573,21 @@ positions 4,5,6 and 10,11,12.  x = [3.1, 4.1] and y = [0.2, -0.1, -0.4].
 data is collected from 0.1 mm off of the center line)
 
 First, I conducted a quick sanity check. By plotting torque versus measured theta, I saw that the data follows
-a linear pattern, which is what I expected based previous experiments.
+a linear pattern, which is what I expected based previous experiments. See \cref{fig:sanityload}.
 
-
-\begin{figure}[htbp]
+\begin{figure}[tb!]
     \centering 
-        \subfloat[
+    \subfloat[Relaxed tendon (no load)
         ]{%
-            \includegraphics[width=0.9\linewidth]{images/stiff/torqtheta}%
+            \includegraphics[width=0.5\textheight]{images/stiff/torqtheta}%
         }\hfil % MUST be right above next figure
-        \subfloat[
+        \subfloat[Loaded tendon (with 900g)
         ]{%
-            \includegraphics[width=0.9\linewidth]{images/stiff/torqtheta_loaded}%
+            \includegraphics[width=0.5\textheight]{images/stiff/torqtheta_loaded}%
         }\hfil
-        \caption{ Please note that there are two different y labels. The left graph is of Torque X vs Theta X
+        \caption{ Please note that there are two different y labels! The left graph is of Torque X vs Theta X
         (roll), while the right graph is of the Y counterparts (Torque Y vs Theta Y)}
+        \label{fig:sanityload}
 \end{figure}
 
 For the Theta Y (yaw) case, the relaxed tendon fit has a root mean square error (RMSE) of 14.4 (gram
@@ -606,16 +606,16 @@ is in three-dimension. In picking a single dimension to plot, the projection res
 that are not linear in one dimension despite a linear fit overall. The \cref{fig:sanity1} and
 \cref{fig:sanity2} reassure me that my code is working. 
 
-\begin{figure}[H]
+\begin{figure}[tb!]
 \centering
-\includegraphics[width=0.9\textwidth]{images/stiff/torqsanity.png}
+\includegraphics[width=0.5\textheight]{images/stiff/torqsanity.png}
 \caption{Relaxed tendon}
 \label{fig:sanity1}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[tb!]
 \centering
-\includegraphics[width=0.9\textwidth]{images/stiff/torqsanity_loaded.png}
+\includegraphics[width=0.5\textheight]{images/stiff/torqsanity_loaded.png}
 \caption{Loaded tendon}
 \label{fig:sanity2}
 \end{figure}
@@ -629,7 +629,7 @@ experiment (see \cref{init-data}).
 However, in \cref{fig:nopattern} there does not appear to be such a pattern, and it seems like the
 residuals are somewhat randomly noisy.
 
-\begin{figure}[H]
+\begin{figure}[tb!]
 \centering
 \includegraphics[width=.9\textwidth]{images/stiff/GOODResid_vs_Theta.png}
 \caption{Relaxed tendon}
@@ -639,7 +639,7 @@ residuals are somewhat randomly noisy.
 Confusingly, as shown in \cref{fig:yespattern} a pattern did appear in the loaded case. Note also that the residuals in the loaded case
 are much larger. Further investigation will be required to figure out what is going on here.
 
-\begin{figure}[H]
+\begin{figure}[tb!]
 \centering
 \includegraphics[width=.8\textwidth]{images/stiff/GOODResid_vs_Theta_loaded.png}
 \caption{Loaded tendon. NOTE: Patterns in the thetaZ may be ignored as it was not used in the fit,
@@ -669,9 +669,10 @@ The experiment directly prior to the final experiment consisted of collecting ne
 mostly in 20g increments, from all 15 positions labelled on the finger (albeit a different finger,
 which did not have a tendon string in it -- I had to change fingers because of that).
 
-I started with a sanity check as before, and plotted the estimated vs measured torques.
+I started with a sanity check as before, and plotted the estimated vs measured torques. See
+\cref{fig:nocolor}.
 
-\begin{figure}[H]
+\begin{figure}[tb!]
     \centering 
         \subfloat[
         ]{%
@@ -684,6 +685,7 @@ I started with a sanity check as before, and plotted the estimated vs measured t
         \caption{Measured torques on the X axis, and estimated torques on the Y axis.
             The left graph shows the X axis (roll) measurements, note the magnitude is much smaller
         compared to the Y axis torque (yaw) measurements. Please ignore the erroneous title on right graph.}
+    \label{fig:nocolor}
 \end{figure}
 
 
@@ -694,9 +696,11 @@ I started with a sanity check as before, and plotted the estimated vs measured t
 %%\label{fig:figura1}
 %\end{figure}
 The large residuals on the left were alarming. To take a closer look at what was going on, I colored
-the graph in by X and by Y positions. In \cref{fig:x} we see that all of the datapoints way off the
-line come from xpos4 and xpos5, specifically from y = -0.2cm (from  \cref{fig:y}). This does not
+the graph in by X and by Y positions. In \cref{fig:torqxcolors} we see that all of the datapoints way off the
+line come from xpos4 and xpos5, specifically from y = -0.2cm (from  \cref{fig:torqxcolors}). This does not
 seem to be a fluke, as these are not sequential measurements (positions 12 and 15 respectively).
+
+On the other hand, the yaw (torque Y) seemed like a very clean fit. \cref{fig:yfit}
 
 %\begin{figure}[H]
     %\centering 
@@ -712,40 +716,44 @@ seem to be a fluke, as these are not sequential measurements (positions 12 and 1
             %The left graph shows the X axis (roll) measurements, note the magnitude is much smaller
         %compared to the Y axis torque (yaw) measurements. Please ignore the erroneous title on right graph.}
 %\end{figure}
-\begin{figure}[H]
-\centering
-            \includegraphics[width=0.9\textwidth]{images/round1/TorqX_Colors_X.png}%
-            \caption{Torque measured vs estimated, colored in by X position}
-\label{fig:x}
+
+\begin{figure}[tb!]
+    \centering 
+        \subfloat[Torque measured vs estimated, colored in by X position
+        ]{%
+            \includegraphics[width=0.8\textwidth]{images/round1/TorqX_Colors_X}%
+        }\hfil % MUST be right above next figure
+        \subfloat[ Torque measured vs estimated, colored in by Y position
+        ]{%
+            \includegraphics[width=0.8\textwidth]{images/round1/TorqX_Colors_Y}%
+        }\hfil
+        \caption{Measured torques on the X axis, and estimated torques on the Y axis.
+            The left graph shows the X axis (roll) measurements, note the magnitude is much smaller
+        compared to the Y axis torque (yaw) measurements. Please ignore the erroneous title on right graph.}
+        \label{fig:torqxcolors}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-            \includegraphics[width=0.9\textwidth]{images/round1/TorqX_Colors_Y.png}%
-\caption{Torque measured vs estimated, colored in by Y position}
-\label{fig:y}
-\end{figure}
 
-
-\begin{figure}[H]
+\begin{figure}[tb!]
 \centering
-            \includegraphics[width=0.9\textwidth]{images/round1/TorqY_Colors_Y.png}%
-            \caption{By comparison, the torque Y fit seems very clean.}
+            \includegraphics[width=0.8\textwidth]{images/round1/TorqY_Colors_Y.png}%
+            \caption{Compared to the torque X fit, the torque Y fit seems very clean.}
+            \label{fig:yfit}
 \end{figure} 
 %(For the same graph colored
                 %in by X position, see \cref{fig:yX}
 
 I then systematically plotted the residuals against the factors that might 
 affect them: the torques, forces, and angular deflection amounts. For instance, it seems plausible
-that, as the amount of force applied increases, the residuals might increase.
+that, as the amount of force applied increases, the residuals might increase. See 
 
 
-\begin{figure}[H]
+\begin{figure}[p!]
 \centering
-\includegraphics[width=.95\textwidth]{images/round1/resids_Torq.png}
+\includegraphics[width=0.95\textwidth]{images/round1/resids_Torq.png}
 \caption{Torque estimate residuals versus torques estimates, colored by their X or Y positions.
 There does appear to be a suspicious trend between the residuals and the torque Y measurement.}
-%\label{fig:figura1}
+\label{fig:figura1}
 \end{figure}
 
 %\begin{figure}[H]
@@ -755,7 +763,7 @@ There does appear to be a suspicious trend between the residuals and the torque 
 %%\label{fig:figura1}
 %\end{figure}
 
-\begin{figure}[H]
+\begin{figure}[tb!]
 \centering
 \includegraphics[width=1\textwidth]{images/round1/resids_Force_coloredX.png}
 \caption{There seems to be generally somewhat random residuals, except there's a chunk of large
@@ -773,23 +781,33 @@ For additional graphs, please see \ref{appendix-graphs}.
 %\label{fig:figura1}
 %\end{figure}
 \section{Attempted fit improvements}
-\subsection{Experiment: 15 positions, relaxed tendon only}
 
-K estimate, bylinear regression (no y intercept)
-Torque = K * Theta
-Residual
-RMSE Lin K, no resid: 36.63
-Residual prediction using Theta
-Corrected Torque Estimate
-RMSE Lin K, Lin resid 26.65
-RMSE Lin K, RF resid 22.56
-
-Finally, I briefly attempted to do the "use machine learning or other methods to fit the residuals
+Finally, I briefly attempted to "use machine learning or other methods to fit the residuals
 and improve the overall torque estimate". 
+\begin{itemize}
+    \item For the first experiment (with 492 datapoints) the linear fit RSME was 36.63. 
+\item With an additional term consisting of a linear fit on the residuals, where I allowed 
+    a y-intercept, RMSE = 26.65
+\item With a random forest fit, RMSE = 22.56
+\end{itemize}
 
+However, without any cross validation, it's likely that the improvements are due to overfitting and
+will not generalize at all, so really this is just a sort of hand-waving exercise.
+
+I did briefly look into the generalization problem, both by calculating cross-validation statistics
+(now lost to time) and a brief inspection involving taking out one of the xy positions in the training
+data, training on the remaining torque-theta data, and then fitting to the thetas inthe  dropped-position test
+set (see \cref{fig:general}).
+
+I also did a brief look into fitting the residuals on the new dataset (with both loaded and relaxed
+tendon measurements).
 \begin{table}[H]
     \centering
-    \caption{Comparison of fits}\label{tab:MDP_calibration}
+    \caption{Brief investigation of fitting residuals on final experiment. "Black box" indicates
+    fitting the model directly to the theta inputs and torque outputs. "Corrected linear fit"
+    indicates taking a linear fit (with no y-intercept), calculating residuals, training another
+    model on those residuals, and updating the model with that new residual estimate.}
+\label{tab:residfit}
     \begin{tabular}{l|c|c|c|c|c|c}
          \hline \hline
          &  Linear & Polynomial & Gradient Boost & Adaboost & Random Forest\\
@@ -800,28 +818,23 @@ and improve the overall torque estimate".
     \end{tabular}
 \end{table}
 
+I graphed the results in \cref{fig:residfit}. Note that this is a very prelimary exploratory analysis, since I only
+used one dimension of data for the residual calculations (the K was still fit with all three
+dimensions). I found the graphs really interesting in displaying what each algorithm attempts to do.
+Of course, each of the machine learning algorithms can be tuned and should be tested to eliminate
+overfitting.  
 
-\begin{table}[H]
-    \centering
-    \caption{Brief investigation of fitting residuals on relaxed+loaded experiment}\label{tab:MDP_calibration}
-    \begin{tabular}{l|c|c|c|c|c|c}
-         \hline \hline
-         &  Linear & Polynomial & Gradient Boost & Adaboost & Random Forest\\
-         \hline 
-         Black Box          & 36.1 & 9.2 & 15.8 & 25.1 & 80.4 \\ 
-         Corrected Linear fit & 28.5 & 18.8 & 18.8 & 25.1 & 52.9 \\
-    \hline
-    \end{tabular}
-\end{table}
+Notably, as shown in \cref{tab:residfit}, the polynomial fit directly on the data (torque Y vs theta Y \textbf{in the loaded case}) was very good, and did better than even models with additional residual terms.
 
-
-\begin{figure}[H]
+\begin{figure}[p!]
 \centering
 \includegraphics[width=\textwidth]{images/residcorrect/layout_vertical.png}
-\caption{How much does it improve our torque predictions to include an estimate of the residuals on
-our linear physical model?}
-%\label{fig:figura1}
+\caption{Visualization of the black box approach (leftmost column), then a linear model with
+residual correction (middle column), and finally a look at how each algorithm is interacting with
+the residuals (rightmost column)}
+\label{fig:residfit}
 \end{figure}
+
 
 \section{Sensor Design}
 
@@ -829,23 +842,25 @@ For datasheets, please see \ref{appendix-sensors}.
 
 \begin{figure}[htbp]
     \centering 
-        \subfloat[ a caption
+    \subfloat[Mold for casting (I found some leftover Dragonskin 20 in lab 
         ]{%
             \includegraphics[width=0.2\linewidth]{images/sensor/sensor.jpg}%
         }\hfil % MUST be right above next figure
-        \subfloat[ caption b
+        \subfloat[After degassing in a vacuum chamber and curing
         ]{%
             \includegraphics[width=0.2\linewidth]{images/sensor/sensor2.jpg}%
         }\hfil
-        \subfloat[ caption c
+        \subfloat[Sensor readings as plotted in python on my laptop
         ]{%
             \includegraphics[width=0.5\textwidth]{images/sensor/analog_plot.png}%
-            \label{fig:c}%
+            \label{fig:sensor}%
         }\hfil 
-    \caption{ Overall caption.}
+    \caption{Sensor prototype.}
 \end{figure}
 
-I produced Arduino and python code that allowed me to view a plot in real time of the sensor data.
+I produced Arduino and python code that allowed me to view a plot in real time of the sensor data. I
+was able to read data from three sensors, plot data from two in real time (more possible of course),
+and test the addition of some elastomer on top of the sensor. See \cref{fig:sensor}
 
 I also integrated the Arduino with an RGB LED strip, where if you pressed on the sensor,
 more LEDs would light up.
@@ -864,7 +879,7 @@ The sensor showed a large amount of hysteresis, which should be investigated and
 Note that the setup required use of a separate power supply, otherwise the Arduino would refuse to talk to the
 computer (for real-time plotting) when the LED strip drew load on the 5V line.
 
-Evaluation of the sensor is ongoing. It has a built-in pressure sensor, which
+Evaluation of the sensor is ongoing. It has a built-in temperature sensor, which
 can be used to compensate for temperature changes (for instance, if you press on
 it with your finger, the heat compounds the reading and also resuls in a
 noticeably tail as the heat dissipates relatively slowly.
@@ -933,18 +948,13 @@ practice to ensure the two complement each other. The important of this has been
 
 \section{Thanks}
 
-Thanks To Qian, who took a lot of time out of her busy about-to-graduate life to explain her
-research and the field of grasping to me. Thanks to Buse, who I really enjoyed talking to and look
-forward to getting to know more over the years. Thanks to Alperen for patiently explaining
-Micontrackers and training me in lab safety, Yash for some terrible jokes and stepping in when I
-needed to push back my final presentation, James Weaver for very late night encouragements, and to
+Thanks to Qian who fielded many of my naive questions about grasping and and had to deal with my relative
+over-enthusiasm, Buse, who I enjoyed comisserating with, Alperen teaching me how to be safe in lab,
+Yash for many admirably terrible jokes James Weaver for very late night encouragements, and to
 my friends at MD309 and my fellow first-year SEAS PhD students.  And thanks to Prof. Robert Howe for 
 patiently giving me a fairly gentle introduction to the world of research, and offering to advise
 me.
 
-\section{Felicitous news}
-
-Semester is over! The future awaits, and it seems likely to be full of robots.
 
 \newpage
 
@@ -1143,6 +1153,8 @@ I will be using Hexo in the future for my own projects (e.g. a portfolio website
 Here are a few graphs I didn't include for the sake of space, as they do not add
 to the conversation.
 
+
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{images/round1/resids_Torq_coloredY}
@@ -1165,6 +1177,20 @@ The datapoints are shaded in by their Y position}
             \caption{From the experiment with all 15 positions, we see that the Torque Y fit
             (measured vs estimated) is very clean.}
             \label{fig:yX}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{images/round1/generalize_residfit.png}
+\caption{I accidentally tested the generalizability of the residual fit, instead of the overall
+torque fit after using residual corrections. Thus this graph is relegated to the appendix. In faded
+blue we have the training dataset, and in green we have the data we removed to be the test set.The
+faded blue and the green together comprise all 492 datapoints I measured. In the red, we have the
+predictions made by the linear fit (on the training data, for the test data) and the same in purple
+for the random forest fit. The residuals seem somewhat more polynomial than linear, so the random
+forest appears to do a bit better. }
+\label{fig:general}
 \end{figure}
 
 \newpage
@@ -1266,6 +1292,25 @@ seller on ebay}
 %\bibliography{sample}
 
 
-\end{document}
 
 %%
+
+\newpage
+
+\clearpage
+\vspace*{\fill}
+\begin{center}
+\begin{minipage}{.8\textwidth}
+\huge
+\centering{Thanks for watching. 
+Tune in next semester for 
+another episode of \\
+~\\
+\textbf{\scshape{Grad School: \\
+Research in Progress!}}}
+\end{minipage}
+\end{center}
+\vfill % equivalent to \vspace{\fill}
+\clearpage
+
+\end{document}
