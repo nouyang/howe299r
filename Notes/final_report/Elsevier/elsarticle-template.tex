@@ -131,7 +131,7 @@
     $\tau = K \theta$, I could discover information about the force applied. I did very preliminary
     work, limiting my experiments to the case where we only desire to estimate the change from
     directly before to second or two after
-    contact. Additionally, I looked at using of off-the-shelf machine learning approaches to reduce the
+    contact. I also I looked at using of off-the-shelf machine learning approaches to reduce the
     errors in our model. Finally, I investigated adding more sensors to the fingertip in
     order to better estimate contact location. 
 \end{abstract}
@@ -485,7 +485,7 @@ analyze this data yet.
 %\label{fig:figura1}
 \end{figure}
 
-Additionally, the IMU acclerometer would consistently refuse to calibrate if the sensor did not
+Unfortnuately, the IMU acclerometer would consistently refuse to calibrate if the sensor did not
 start parallel to the ground. The significant slope of the finger versus the clamp and 90 degree
 angle of the 80/20 meant that I had to approximate a slanted 80/20 setup by increasing the degrees
 of freedom on the L brackets (removing t-nuts). This led to a lot of worry on my part about the
@@ -500,10 +500,9 @@ end stop off the back edge of the triple beam balance, about 10mm). At the tip o
 could only less than a hundred grams of "force" (about 1 N), while 4N is a normal amount of force
 applied by humans to grasp things. This remained a source of frustration throughout the data
 collecting and ate up many hours of adjusting the experimental setup.
-Additionally, it took several attempts to find the MiconTracker manual (found on
+Another source of delay was that it took several attempts to find the MiconTracker manual (found on
 the old desktop in lab), without which the Microntracker interface was difficult
 to use.
-
 
 In order to apply load to pull on the tendon and change the stiffness of the finger, I decided on a
 simple setup where I hung a weight from the tendon.
@@ -579,7 +578,7 @@ a linear pattern, as we would expect.
         \caption{ Overall caption.}
 \end{figure}
 
-Additionally, we may see that we have properly fitted our data with a K matrix by comparing our
+We may see that we have properly fitted our data with a K matrix by comparing our
 newly created torque estimates, versus the original measurements. The datapoints do not fall
 precisely on a line because the K matrix and fit is in three-dimension. In picking a single
 dimension to plot, the projection results in datapoints that are not linear in one dimension despite
@@ -735,7 +734,7 @@ For datasheets, please see \ref{appendix-sensors}.
 
 I produced Arduino and python code that allowed me to view a plot in real time of the sensor data.
 
-Additionally, I integrated the Arduino with an RGB LED strip, where if you pressed on the sensor,
+I also integrated the Arduino with an RGB LED strip, where if you pressed on the sensor,
 more LEDs would light up.
 
 \begin{figure}[H]
@@ -792,7 +791,7 @@ now the stiffest axis! Thus, characterizing the finger with no tendon load appli
 the y-axis direction, while a great learning experience, does not generalize at all to practice and becomes a
 toy example.
 
-Additionally, the finger relied extensively on mechanical mechanism intelligence (as opposed to full
+The finger relied extensively on mechanical mechanism intelligence (as opposed to full
 actuated parallel grippers, commonly used in computer science labs).  I saw that complete failures
 tended to occur because the finger had failed to detect contact when contact had already occured.
 This suggests the better instrumentation of the finger is critical. The IMU by itself can only
@@ -811,19 +810,26 @@ The microntracker should be used to evaluate the IMU. Evaluating the use of Apri
 microntracker would help reproducibility by others (or future grad students), as webcams are cheap
 and readily available, and documentation for apriltags is freely available online.
 
-Additionally, a full sensor array on a custom PCB, manufactured into a finger unit, should be
+A full sensor array on a custom PCB, manufactured into a finger unit, should be
 developed and characterized. By collecting data and then fusing this with the IMU data, we could
 physically evaluate the grasp stability preductions, producing an important tie between theory and
 practice to ensure the two complement each other. The important of this has been mentioned above.
 
 \section{Thanks}
 
-Thanks To Qian, Buse, Alperen, Yash, Finale, James
-My friends at MD309
-%Fellow classmates
-And thanks to Prof. Robert Howe for being super understanding and patient. I really appreciate the kindness in giving me multiple extensions on my assignments, and acknowledging that I am failry  
+Thanks To Qian, who took a lot of time out of her busy about-to-graduate life to explain her
+research and the field of grasping to me. Thanks to Buse, who I really enjoyed talking to and look
+forward to getting to know more over the years. Thanks to Alperen for patiently explaining
+Micontrackers and training me in lab safety, Yash for some terrible jokes and stepping in when I
+needed to push back my final presentation, James Weaver for very late night encouragements, and to
+my friends at MD309 and my fellow first-year SEAS PhD students.  And thanks to Prof. Robert Howe for 
+patiently giving me a fairly gentle introduction to the world of research, and offering to advise
+me.
 
-\newpage
+\section{Felicitous news}
+
+Semester is over! The future awaits, and it seems likely to be full of robots.
+
 \newpage
 
 \clearpage
@@ -942,11 +948,11 @@ turned in the last two milestones a week+ late.
 Although this seems like a dire in terms of project management, I did  spend a
 lot of time on items related to research but not listed directly as milestones. 
 I spent a lot of time learning about the grasping field. Additionally designing and
-prototyping a new sensor was not on the milestones. As a result, I do not
-personally feel disappointed in terms of personal goals such as making progess
+prototyping a new sensor was not on the milestones. As a result, by taking a longer-term view, I
+personally do not feel as disappointed as I might be, given my personal goals such as making progess
 toward understanding the research process and learning concrete skills.
 
-\section{Additional Resources}
+\section{Outside Resources}
 
 Here is a well-formatted version on Wikipedia describing the 3D stiffness tensor. 
 
@@ -985,7 +991,37 @@ equations in your webpages) to work was a major source of frustration.}
 %\label{fig:figura1}
 \end{figure}
 
-\section{Additional Graphs}
+
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{images/misc/hexo_editor.jpg}
+\caption{Hexo uses markdown, which is a nice simple markup language (although gets annoying really fast if you violate the KISS and try to do fancy things like include latex). It has a very nice GUI interface for editing posts. }
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/misc/hexo_image.jpg}
+\caption{The particular feature I was looking for was a drag-and-drop image manager. Although I
+    could not get drag-and-drop plugin working, the default Hexo Admin editor allows you to copy
+    paste (ctrl-c ctrl-v) pictures into the editor, and name them appropriately, which I considered
+    good enough (and much better than the normal flat-file editor requirement of manually typing in
+the file names and locations.}
+\end{figure}
+
+In particular, since I deal with many pictures for a given post, Hexo had a built-in configuration
+to have a folder per post, which allowed for relatively easy image management.
+\begin{lstlisting}
+~$ vi _config.yml
+    post_asset_folder: true  # REQUIRED even if you make folder by hand!!
+\end{lstlisting}
+
+I will be using Hexo in the future for my own projects (e.g. a portfolio website).
+
+
+\section{Extra Graphs}
 \label{appendix-graphs}
 
 Here are a few graphs I didn't include for the sake of space, as they do not add
@@ -1008,6 +1044,25 @@ The datapoints are shaded in by their Y position}
 \end{figure}
 
 \newpage
+
+\section{Additional Setup Pictures}
+\label{appendix-setup}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/setup/setup_closeup_tape.jpg}
+\caption{Gratuitious amounts of tape were used as strain relief, to ensure that randomly bumping into or accidentally pulling on any of the power or sensor lines would not destroy the setup of equipment. Next time, I would just buy some white masking tape right away.
+}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{images/setup/setup_overview.jpg}
+\caption{An overview of the entire setup. This image is not included above as it's extremely messy and confusing, but it shows the relative placement of the microntracker, the webcam, the IMU, the arduino, and the triple beam balance.
+}
+\end{figure}
 
 \section{Sensor Datasheets}
 \label{appendix-sensors}
