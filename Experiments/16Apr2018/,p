@@ -19,7 +19,9 @@ from sklearn import metrics
 import seaborn as sns
 
 sns.set()
+sns.set_context("talk")
 # sns.set_palette(sns.color_palette("cubehelix", 8))
+sns.set_palette("husl")
 
 #===============================================
 #### DECLARE CONSTANTS ####
@@ -168,9 +170,8 @@ def plotResidVs(xvars, filename, colorsXflag, show=False):
              # x_vars=[ 'ThetaX (deg)' ,'ThetaY (deg)', 'ThetaZ (deg)']) 
              
 
-colorsXflag= True
-colorsIdx = pickXColors(True)
-colorsIdxY = pickXColors(False)
+colorsXflag = True
+colorsIdx = pickXColors(colorsXflag)
 
 df=pd.DataFrame({'Resid of TorqX fit':resid[:,0],
                  'Resid of TorqY fit':resid[:,1],
@@ -184,117 +185,30 @@ df=pd.DataFrame({'Resid of TorqX fit':resid[:,0],
                  'ThetaZ (deg)': BigTheta[:,2],
                  'TorqX estimated (g*cm)': torq_est[:,0],
                  'TorqY estimated (g*cm)': torq_est[:,1],
-                 'Colors':colorsIdx,
-                 'ColorsY':colorsIdxY})
+                 'Colors':colorsIdx})
 
 if colorsXflag:
     colors = ["rust red", "orange", "sun yellow", "jade green", "sea blue"]
 else:
 # colors = ["robin's egg", "navy blue", "jade green", "rust red", "orange", "sea blue", "orange"]
     colors = ["eggplant purple", "blue", "grey blue"] 
-sns.set_palette(sns.color_palette("RdBu_r", 7))
-sns.set(rc={'lines.markersize':5})#, 'figure.figsize':(10,50)})
-# sns.set(rc={'lines.markersize':5, 'figure.figsize':(50,50)})
+# sns.set_palette(sns.color_palette("RdBu_r", 7))
+sns.set(rc={'lines.markersize':3})#, 'figure.figsize':(10,50)})
 sns.set_palette(sns.xkcd_palette(colors))
 
+sns.pairplot(data=df, hue='Colors', y_vars=["TorqX estimated (g*cm)"],
+                 x_vars = "TorqX measured (g*cm)",
+                 plot_kws={'scatter_kws':{'alpha':0.6, 'linewidths':0.2,
+                                      'edgecolors':'black'}, 'fit_reg':True}, 
+                 size=3, aspect=1)
 
-SHOW = False
-
-############ NO COLORS
-sns.lmplot(x="TorqX measured (g*cm)", y="TorqX estimated (g*cm)", data=df, size=5, aspect=1.5)
-
-plt.suptitle('Torques, measured vs. estimated')
-strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-ax = plt.gca()
-plt.text(1.1, 0, 'Time: '+strtime, horizontalalignment='left', verticalalignment='bottom',
-        transform = ax.transAxes, fontsize=6)
-plt.gcf().savefig('Nocolor_torqX')
-if SHOW:
-    plt.show()
-
-sns.lmplot(x="TorqY measured (g*cm)", y="TorqY estimated (g*cm)", data=df, size=5, aspect=1.5)
 plt.suptitle('95% Confidence Interval')
+# plot
+sns.set_style('ticks')
+# the size of A4 paper
 strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 ax = plt.gca()
 plt.text(1.1, 0, 'Time: '+strtime, horizontalalignment='left', verticalalignment='bottom',
         transform = ax.transAxes, fontsize=6)
-plt.gcf().savefig('Nocolor_torqY')
-if SHOW:
-    plt.show()
-
-
-############ X 
-
-
-if colorsXflag:
-    colors = ["rust red", "orange", "sun yellow", "jade green", "sea blue"]
-else:
-    colors = ["eggplant purple", "blue", "grey blue"] 
-sns.set(rc={'lines.markersize':4})#, 'figure.figsize':(10,50)})
-sns.set_palette(sns.xkcd_palette(colors))
-
-
-
-sns.lmplot(x="TorqX measured (g*cm)", y="TorqX estimated (g*cm)", data=df, size=5, aspect=1.5,
-           hue='Colors')
-
-plt.suptitle('Torques, measured vs. estimated')
-strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-ax = plt.gca()
-plt.text(1.1, 0, 'Time: '+strtime, horizontalalignment='left', verticalalignment='bottom',
-         transform = ax.transAxes, fontsize=6)
-plt.gcf().savefig('TorqX_Colors_X')
-
-############  
-
-# sns.lmplot(x="TorqY measured (g*cm)", y="TorqY estimated (g*cm)", data=df, size=8, aspect=1.5,
-           # hue='Colors', scatter_kws={'alpha':0.6, 'linewidths':0.2, })
-                                      
-
-# plt.suptitle('Torques, measured vs. estimated')
-# strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-# ax = plt.gca()
-# plt.text(1.1, 0, 'Time: '+strtime, horizontalalignment='left', verticalalignment='bottom',
-         # transform = ax.transAxes, fontsize=6)
-# plt.gcf().savefig('TorqY_Colors_X')
-
-
-############  
-colorsXflag=False
-if colorsXflag:
-    colors = ["rust red", "orange", "sun yellow", "jade green", "sea blue"]
-else:
-    colors = ["eggplant purple", "blue", "grey blue"] 
-sns.set(rc={'lines.markersize':4})#, 'figure.figsize':(10,50)})
-sns.set_palette(sns.xkcd_palette(colors))
-
-sns.lmplot(x="TorqX measured (g*cm)", y="TorqX estimated (g*cm)", data=df, size=5, aspect=1.5,
-           hue='ColorsY')
-
-plt.suptitle('Torques, measured vs. estimated')
-strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-ax = plt.gca()
-plt.text(1.1, 0, 'Time: '+strtime, horizontalalignment='left', verticalalignment='bottom',
-         transform = ax.transAxes, fontsize=6)
-plt.gcf().savefig('TorqX_Colors_Y')
-############  
-
-colorsXflag=False
-if colorsXflag:
-    colors = ["rust red", "orange", "sun yellow", "jade green", "sea blue"]
-else:
-    colors = ["eggplant purple", "blue", "grey blue"] 
-sns.set(rc={'lines.markersize':4})#, 'figure.figsize':(10,50)})
-sns.set_palette(sns.xkcd_palette(colors))
-
-sns.lmplot(x="TorqY measured (g*cm)", y="TorqY estimated (g*cm)", data=df, size=5, aspect=1.5,
-           hue='ColorsY')
-
-plt.suptitle('Torques, measured vs. estimated')
-strtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-ax = plt.gca()
-plt.text(1.1, 0, 'Time: '+strtime, horizontalalignment='left', verticalalignment='bottom',
-         transform = ax.transAxes, fontsize=6)
-plt.gcf().savefig('TorqY_Colors_Y')
-
-
+# plt.gcf().savefig('TorqResid_Theta')
+plt.show()
